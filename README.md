@@ -83,6 +83,25 @@ $$V_E=I_ER_E\ (\text{Emitter/Divider}),\quad V_E=0\ (\text{Fixed}),\quad V_B=V_E
 โปรแกรมยังแสดงค่าที่คำนวณจากสมการ Forward-Active เมื่อมีคำเตือน แต่ค่าเหล่านั้น **อาจใช้ไม่ได้หรือไม่ตรงกับวงจรจริง** โปรแกรมนี้ไม่ใช่ตัวจำลองทรานซิสเตอร์แบบสมบูรณ์
 
 ## การทดสอบ
+### ผลการทดสอบผ่าน Browser (A1–A5)
+
+ทดสอบด้วย Playwright MCP โดยใช้ VCC = 12 V, RC = 2.2 kΩ, β = 100 และ VBE = 0.70 V
+
+| Test | Circuit | Expected IC (mA) | Actual IC (mA) | Expected VCE (V) | Actual VCE (V) | Status |
+|---|---|---:|---:|---:|---:|---|
+| A1 | Voltage Divider | 1.2299 | 1.2299 | 8.0522 | 8.0522 | PASS |
+| A2 | Fixed Bias | 1.1300 | 1.1300 | 9.5140 | 9.5140 | PASS |
+| A3 | Emitter Bias, RE = 1 kΩ | 1.0263 | 1.0263 | 8.7055 | 8.7054 | PASS |
+| A4 | Emitter Bias, RE = 2 kΩ | 0.9401 | 0.9401 | 8.0328 | 8.0328 | PASS |
+| A5 | Fixed Bias, RB = 0 | Error | Error | — | — | PASS |
+
+A5: เบราว์เซอร์แจ้ง “Enter a value greater than zero.” และไม่แสดงผลเก่า
+
+รายละเอียดค่าอ้างอิง ผลจริง วิธีตรวจ และหลักฐาน: [Browser Validation Report](docs/validation.md)
+
+### ตัวอย่างหน้าเว็บ
+
+![Lab 03 BJT DC Bias Web App](docs/lab03-a1-playwright.png)
 
 หลังติดตั้ง dependencies และเปิดใช้ virtual environment ให้รัน:
 
