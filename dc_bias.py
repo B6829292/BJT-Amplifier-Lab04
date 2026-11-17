@@ -55,3 +55,39 @@ def calculate_bias(vcc: float, r1: float, r2: float, rc: float,
         warnings.append('Saturation: VCE ≤ 0.2 V is an approximate threshold; forward-active results may be invalid, not an exact model.')
     return dict(ib=ib, ic=ic, ie=ie, vb=vb, vc=vc, ve=ve, vce=vce,
                 vth=vth, warnings=warnings)
+
+
+def _base_bias(vcc, rb, rc, beta, vbe, re=None):
+    values = (vcc, rb, rc, beta, vbe) + (() if re is None else (re,))
+    if not all(math.isfinite(value) for value in values):
+        raise ValueError('All values must be finite numbers.')
+    for value in values:
+        _normal(value)
+    if any(value <= 0 for value in (vcc, rb, rc, beta)) or vbe < 0 or (re is not None and re <= 0):
+        raise ValueError('VCC, resistances and beta must be positive; VBE must be nonnegative.')
+    denominator = rb if re is None else rb + _multiply(beta + 1, re)
+    if not math.isfinite(denominator):
+        raise ValueError('Values are too large for the calculation.')
+    ib = _divide(_normal(vcc - vbe), denominator)
+    ic = _multiply(beta, ib)
+    ie = _multiply(beta + 1, ib)
+    ve = 0 if re is None else _multiply(ie, re)
+    vb = _normal(ve + vbe)
+    vc = _normal(vcc - _multiply(ic, rc))
+    vce = _normal(vc - ve)
+    if not all(math.isfinite(value) for value in (ib, ic, ie, vb, vc, ve, vce, ib * 1000, ic * 1000, ie * 1000)):
+        raise ValueError('Values are too large for the calculation.')
+    warnings = []
+    if ib <= 0:
+        warnings.append('Cutoff: forward-active results may be invalid; this is an approximation, not an exact model.')
+    if vce <= 0.2 or math.isclose(vce, 0.2, rel_tol=0, abs_tol=1e-12):
+        warnings.append('Saturation: VCE ≤ 0.2 V is an approximate threshold; forward-active results may be invalid, not an exact model.')
+    return dict(ib=ib, ic=ic, ie=ie, vb=vb, vc=vc, ve=ve, vce=vce, warnings=warnings)
+
+
+def calculate_fixed_bias(vcc: float, rb: float, rc: float, beta: float, vbe: float) -> dict:
+    return _base_bias(vcc, rb, rc, beta, vbe)
+
+
+def calculate_emitter_bias(vcc: float, rb: float, rc: float, re: float, beta: float, vbe: float) -> dict:
+    return _base_bias(vcc, rb, rc, beta, vbe, re)

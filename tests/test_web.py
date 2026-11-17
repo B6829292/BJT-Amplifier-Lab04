@@ -43,7 +43,7 @@ class WebTests(unittest.TestCase):
 
     def test_visual_structure_and_live_labels(self):
         body = self.client.get('/').get_data(as_text=True)
-        for text in ('Input Parameters', 'Circuit: Common-Emitter Amplifier', 'DC Bias Results', 'Week 2 Goal', 'data-circuit="r1"'):
+        for text in ('Input Parameters', 'Circuit: Common-Emitter Amplifier', 'DC Bias Results', 'Lab 03 Goal', 'data-circuit="r1"'):
             self.assertIn(text, body)
         self.assertNotIn('Active region approximation OK', body)
 
