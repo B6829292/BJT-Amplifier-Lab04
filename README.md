@@ -130,6 +130,6 @@ BJT-DC-Bias-Lab03/
 
 Lab 03: <https://github.com/B6829292/BJT-DC-Bias-Lab03>
 
-Commit SHA: **รอสร้าง commit หลังได้รับอนุมัติ**
+Lab 03 submission commit: 2f26decb29ffad3be4bf9d1233532d2a6cd0d850
 
 Repository ต้นทาง Lab 02: <https://github.com/B6829292/BJT-DC-Bias-Lab02>
