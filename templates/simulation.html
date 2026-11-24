@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CE ngspice Simulator</title>
+  <link rel="icon" href="{{ url_for('favicon') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='lab-compact.css') }}">
+</head>
+<body class="lab-page simulation-page">
+{% set analytical = false %}
+{% include 'lab-header.html' %}
+<div class="lab-layout">
+{% include 'lab-sidebar.html' %}
+<main class="lab-main" id="workspace">
+  <div class="workspace-title"><h1>BJT Common Emitter Amplifier <span>– Voltage Divider Bias</span></h1><span>REFERENCE CIRCUIT</span></div>
+  <div class="spice-dashboard">
+    <section class="card schematic-panel"><h2>Circuit Schematic <span>Common Emitter · NPN</span></h2>
+      <div class="schematic-stage" tabindex="0" role="region" aria-label="Circuit schematic; scroll horizontally on narrow screens"><svg viewBox="0 0 570 275" role="img" aria-labelledby="circuit-title circuit-description"><title id="circuit-title">Voltage-divider common-emitter circuit</title><desc id="circuit-description">Unbypassed NPN circuit with R1, R2, RC, RE, Cin, Cout, RL, source and common ground.</desc>
+      <g fill="none" stroke="#1c3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M180 24H360 M180 24V55 M180 99V164 M360 24V55 M360 99V131"/>
+        <path d="M180 55l-6 4 12 7-12 7 12 7-12 7 12 7-6 5 M360 55l-6 4 12 7-12 7 12 7-12 7 12 7-6 5"/>
+        <circle cx="320" cy="164" r="34" fill="#e7f5fb"/><path d="M180 164H297 M297 147V182 M297 154L345 131H360 M297 174L345 200H360V219"/>
+        <path d="M327 190L345 200 M333 199L338 190L347 202Z" fill="#1c3545"/>
+        <path d="M360 219l-6 4 12 6-12 6 12 6-6 7 M360 248V258 M180 164V190 M180 190l-6 4 12 6-12 6 12 6-12 6 12 6-6 8 M180 232V258"/>
+        <path d="M42 164H100 M110 164H180 M42 164V190 M42 220V258 M100 151V177 M110 151V177"/>
+        <circle cx="42" cy="205" r="15" fill="#fff"/><path d="M32 206Q37 199 42 206T52 206 M360 131H440 M450 131H524V181 M440 117V145 M450 117V145"/>
+        <path d="M524 181l-6 5 12 7-12 7 12 7-12 7 6 8 M524 222V258 M42 258H524 M270 258V264 M259 264H281 M263 269H277 M267 274H273"/>
+      </g>
+      <g fill="#203849" font-size="14" font-family="Arial, sans-serif"><text x="237" y="16">VCC = <tspan data-spice-value="vcc">{{ values.vcc }}</tspan> V</text><text x="195" y="68">R1</text><text x="375" y="68">RC</text><text x="195" y="202">R2</text><text x="375" y="232">RE</text><text x="285" y="225">Q1 NPN</text><text x="95" y="135">Cin</text><text x="430" y="97">Cout</text><text x="540" y="194">RL</text><text x="510" y="116">Vout</text><text x="10" y="236">Vin</text><text x="285" y="249">GND</text></g>
+      <g fill="#365568" font-size="12" font-family="Arial, sans-serif">
+        <text x="195" y="85"><tspan data-spice-value="r1">{{ values.r1 }}</tspan> kΩ</text><text x="375" y="85"><tspan data-spice-value="rc">{{ values.rc }}</tspan> kΩ</text>
+        <text x="195" y="220"><tspan data-spice-value="r2">{{ values.r2 }}</tspan> kΩ</text><text x="375" y="248"><tspan data-spice-value="re">{{ values.re }}</tspan> kΩ</text>
+        <text x="92" y="148"><tspan data-spice-value="cin">{{ values.cin }}</tspan> µF</text><text x="430" y="112"><tspan data-spice-value="cout">{{ values.cout }}</tspan> µF</text><text x="540" y="211"><tspan data-spice-value="rl">{{ values.rl }}</tspan> kΩ</text>
+      </g><g fill="#82265e" font-size="11" font-family="Arial, sans-serif">
+        <g data-dc-badge visibility="hidden"><rect x="208" y="137" width="84" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="212" y="152" data-dc-node="vb"></text></g>
+        <g data-dc-badge visibility="hidden"><rect x="318" y="106" width="98" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="322" y="121" data-dc-node="vc"></text></g>
+        <g data-dc-badge visibility="hidden"><rect x="375" y="181" width="98" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="379" y="196" data-dc-node="ve"></text></g>
+      </g>
+      <g fill="#00867f"><circle cx="180" cy="164" r="4"/><circle cx="360" cy="131" r="4"/></g></svg></div>
+      <div class="schematic-foot"><span id="dc-annotation">DC node annotations available after a current DC run.</span><span>Unbypassed emitter</span><span class="mobile-scroll-hint">Scroll circuit horizontally for all components.</span></div>
+    </section>
+    <section class="card config-panel"><h2>Circuit Configuration <span>Common Emitter</span></h2>
+      <p class="spice-note">Voltage Divider Bias · NPN · unbypassed RE</p>
+      <form id="spice-form" method="post" novalidate>
+        <div class="input-row analysis-row"><label for="analysis">Analysis</label><select id="analysis" name="analysis" class="unit mode-select">
+          <option value="dc" {% if analysis == 'dc' %}selected{% endif %}>DC Operating Point</option>
+          <option value="ac" {% if analysis == 'ac' %}selected{% endif %}>AC Frequency Response</option>
+          <option value="tran" {% if analysis == 'tran' %}selected{% endif %}>Transient Analysis</option>
+        </select></div>
+        {% for key, label, unit, default, factor in fields %}
+        <div class="input-row"><label for="spice-{{ key }}">{{ label }} <span>{{ {'vcc':'Supply','r1':'Upper divider','r2':'Lower divider','rc':'Collector','re':'Emitter','rl':'Load','cin':'Input coupling','cout':'Output coupling'}[key] }}</span></label>
+          <input id="spice-{{ key }}" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" required aria-describedby="unit-{{ key }}">
+          <span id="unit-{{ key }}" class="unit spice-unit">{{ unit }}</span></div>
+        {% endfor %}
+        <button type="submit">Run Simulation</button>
+      </form>
+    </section>
+    <section class="card results-card" id="results"><div class="results-heading"><h2>Analysis Dashboard</h2><nav class="result-nav" aria-label="Analysis and validation overview"><a href="#run-dc">DC</a><a href="#run-ac">AC</a><a href="#run-tran">Transient</a><a href="#run-validation">Validation</a></nav></div>
+      <div id="retained-runs" class="retained-runs">
+        {% for value, title in [('dc','DC Operating Point'),('ac','AC Response'),('tran','Transient Response')] %}
+        <section class="run-panel" id="run-{{ value }}" aria-labelledby="run-title-{{ value }}"><h3 id="run-title-{{ value }}">{{ title }}</h3><p class="run-state" data-run-status="{{ value }}">Not run</p><div class="run-content"></div></section>
+        {% endfor %}
+        <section class="validation-panel" id="run-validation" aria-labelledby="validation-title"><h3 id="validation-title">Validation</h3>
+      <div id="spice-status" class="status {% if error %}status-warning{% elif result %}status-ok{% else %}status-pending{% endif %}" role="status" aria-live="polite">
+        {% if error %}<strong>Error: Simulation failed</strong><p>{{ error }}</p>
+        {% elif result %}<strong>Simulation successful · ngspice</strong>{% if analysis == 'dc' %}<p>Q1 collector current is positive into the collector.</p>{% endif %}
+        {% else %}<strong>Ready</strong><p>Run a simulation to see the operating point.</p>{% endif %}
+      </div>
+        <dl class="validation-facts" aria-label="Model and validation provenance">
+          <div class="validation-row"><dt>Device model</dt><dd>2N3904 · configured external file</dd></div>
+          <div class="validation-row"><dt>Model status</dt><dd>Not independently verified; not instructor-verified</dd></div>
+          <div class="validation-row"><dt>Instructor validation</dt><dd><span class="validation-indicator validation-unverified" aria-hidden="true"></span>Not run</dd></div>
+          <div class="validation-row"><dt>Reference benchmark</dt><dd><span class="validation-indicator validation-unverified" aria-hidden="true"></span>Not run</dd></div>
+        </dl>
+        <p class="validation-footnote">Simulations are not instructor validation. Run history clears on reload.</p>
+        </section>
+      </div>
+      <p class="measurement-note">Vin: source side of Cin (node in). Vout: load side of Cout (node out), relative to ground. Gain = Vout/Vin.</p>
+      {% if result %}
+      <div id="spice-results">
+      {% if analysis == 'dc' %}<table><tbody>
+        {% for key, label, scale, unit in [('vb','VB',1,'V'),('ve','VE',1,'V'),('vc','VC',1,'V'),('vce','VCE',1,'V'),('ic','IC',1000,'mA')] %}
+        <tr><th>{{ label }}</th><td>{{ '%.4f'|format(result[key] * scale) }} {{ unit }}</td></tr>
+        {% endfor %}
+      </tbody></table>{% else %}
+      <p class="plot-scroll-hint">On narrow screens, scroll the plots horizontally to see the full axes.</p>
+      <div id="plots" class="plots" aria-label="ngspice simulation plots"></div>
+      <script id="plot-data" type="application/json">{{ plot_data|tojson }}</script>
+      {% endif %}
+      </div>
+      <details class="spice-note"><summary>Run provenance: netlist and ngspice output</summary><h3>Netlist</h3><pre>{{ result.netlist }}</pre><h3>ngspice output</h3><pre>{{ result.log }}</pre></details>
+      {% endif %}
+    </section>
+  </div>
+</main>
+</div>
+<script id="initial-run" type="application/json">{{ {'mode': analysis, 'inputs': values, 'result': result, 'error': error}|tojson }}</script>
+<script src="{{ url_for('static', filename='plots.js') }}" defer></script>
+<script src="{{ url_for('static', filename='run-history.js') }}" defer></script>
+<script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
+</body>
+</html>

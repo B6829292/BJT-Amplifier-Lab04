@@ -1,0 +1,132 @@
+/* Reference-fidelity presentation; all rules scoped to the simulation surface. */
+.simulation-page {
+  --lab-line: #cfdee7;
+  --lab-wash: #eaf4f9;
+  --lab-text: #193d50;
+  --lab-action: #007183;
+  --lab-muted: #365568;
+  --lab-panel: #f7fbfe;
+  --lab-panel-head: #e6f1f8;
+  --lab-ok: #176b43;
+  --lab-ok-bg: #e9f6ef;
+  --lab-warn-bg: #fff5df;
+  font-variant-numeric: tabular-nums;
+  scrollbar-color: #8aa9b9 #edf4f9;
+}
+.simulation-page ::selection { background: #bce9e6; color: #153f4b; }
+.simulation-page input { caret-color: var(--lab-action); }
+.simulation-page .lab-header { min-height: 46px; padding: 6px 12px; gap: 10px; }
+.simulation-page .lab-header strong { font-size: 16px; }
+.simulation-page .lab-mark img { width: 29px; height: 29px; }
+.simulation-page .lab-layout { grid-template-columns: 164px minmax(0,1fr); padding: 8px; gap: 8px; }
+.simulation-page .lab-sidebar { gap: 6px; }
+.simulation-page .lab-sidebar nav, .simulation-page .sidebar-section { padding: 7px; border-radius: 4px; }
+.simulation-page .nav-link { font-size: 12px; padding: 6px; }
+.simulation-page .sidebar-section h2 { margin-bottom: 5px; font-size: 13px; }
+.simulation-page .sidebar-section a { padding: 4px 6px; font-size: 12px; line-height: 1.3; }
+.simulation-page .sidebar-section a small { padding-left: 0; font-size: 10px; }
+.simulation-page .sidebar-section:has([data-bias-link]) > p { display: none; }
+.simulation-page .sidebar-project p { margin: 4px 0; }
+.simulation-page .signal-section > p { font-size: 11px; margin: 4px 0 6px; }
+.simulation-page .signal-section .input-row { grid-template-columns: minmax(0,1fr) 55px; gap: 3px; margin: 0 0 7px; min-height: 0; }
+.simulation-page .signal-section label { grid-column: 1 / -1; font: 11px Arial,sans-serif; white-space: normal; }
+.simulation-page .signal-section input, .simulation-page .signal-section .unit { height: 30px; padding: 4px; font-size: 12px; border-radius: 3px; }
+.simulation-page .workspace-title { margin: 0 2px 7px; }
+.simulation-page .workspace-title h1 { font-size: 16px; line-height: 1.25; }
+.simulation-page .workspace-title > span { display: none; }
+.simulation-page .spice-dashboard { grid-template-columns: minmax(0,1.8fr) minmax(290px,1fr); gap: 8px; }
+.simulation-page .card { border-radius: 4px; border-color: var(--lab-line); }
+.simulation-page .card h2 { min-height: 33px; padding: 6px 10px; font-size: 14px; background: var(--lab-wash); }
+.simulation-page .schematic-panel { display: flex; flex-direction: column; }
+.simulation-page .schematic-stage { flex: 1; min-height: 0; padding: 5px 8px; background: var(--lab-panel); }
+.simulation-page .schematic-stage svg { max-height: 260px; width: 100%; }
+.simulation-page .schematic-foot { padding: 6px 9px; font-size: 11px; gap: 6px; }
+.simulation-page .config-panel > .spice-note { margin: 7px 10px 3px; color: var(--lab-muted); font-size: 12px; }
+.simulation-page .config-panel form { padding: 7px 10px 10px; gap: 6px 10px; }
+.simulation-page .config-panel .input-row { gap: 3px 4px; }
+.simulation-page .config-panel .input-row label { font-size: 12px; }
+.simulation-page .config-panel input, .simulation-page .config-panel .unit { height: 30px; border-radius: 3px; padding: 3px 6px; font-size: 13px; }
+.simulation-page .config-panel .analysis-row label { display: none; }
+.simulation-page .config-panel .analysis-row { order: 1; grid-column: auto; margin-top: 3px; }
+.simulation-page .config-panel #analysis { height: 32px; font-size: 13px; }
+.simulation-page .config-panel button { order: 1; grid-column: auto; margin-top: 3px; height: 36px; font-size: 14px; border-radius: 4px; }
+.simulation-page .results-card { padding-bottom: 0; }
+.simulation-page .results-heading { display: flex; align-items: center; justify-content: space-between; background: var(--lab-wash); border-bottom: 1px solid var(--lab-line); }
+.simulation-page .result-nav { display: flex; gap: 2px; margin-right: 7px; }
+.simulation-page .result-nav a { color: #17596c; font-size: 11px; text-decoration: none; padding: 5px 8px; border-radius: 3px; }
+.simulation-page .result-nav a:hover, .simulation-page .nav-link:hover { background: #d4eaf4; }
+.simulation-page .retained-runs { grid-template-columns: minmax(125px,.75fr) minmax(0,1.4fr) minmax(0,1.3fr) minmax(145px,.9fr); gap: 0; padding: 0; align-items: start; }
+.simulation-page .run-panel, .simulation-page .validation-panel { border: 0; border-radius: 0; border-right: 1px solid var(--lab-line); background: transparent; min-width: 0; }
+.simulation-page .validation-panel { border-right: 0; }
+.simulation-page .run-panel h3, .simulation-page .validation-panel h3 { margin: 0; padding: 8px; font-size: 13px; line-height: 1.3; color: var(--lab-text); background: var(--lab-panel-head); }
+.simulation-page .run-state { margin: 0; padding: 6px 8px; font-size: 12px; min-height: 28px; color: var(--lab-muted); }
+.simulation-page .run-state::before { content: ''; display: inline-block; width: 7px; height: 7px; margin: 0 6px 1px 0; border-radius: 50%; background: #758b98; }
+.simulation-page .run-panel:not([data-stale="true"]) .run-state:has(+ .run-content:not(:empty))::before { background: var(--lab-ok); }
+.simulation-page .run-panel[data-stale="true"] .run-state::before { background: #785115; }
+.simulation-page .run-panel table { margin: 4px 6px; width: calc(100% - 12px); border: 0; border-radius: 0; }
+.simulation-page .run-panel th, .simulation-page .run-panel td { height: 26px; padding: 3px 6px; font-size: 12px; background: transparent; }
+.simulation-page .run-panel .plots { padding: 5px 3px 0; display: block; }
+.simulation-page .run-panel .plots figure { margin: 0; min-width: 0; }
+.simulation-page .plots figcaption { display: none; }
+.simulation-page .run-panel .plots svg { width: 100%; min-width: 0; min-height: 0; }
+.simulation-page .plots svg text { font: 19px Arial,sans-serif; }
+.simulation-page .plots svg .phase-axis { fill: #94400f; }
+.simulation-page .plot-legend { margin: 2px 2px 0; gap: 8px; justify-content: center; flex-wrap: wrap; font-size: 12px; line-height: 1.4; }
+.simulation-page .bode-note { margin: 4px 6px 0; color: var(--lab-muted); font-size: 12px; line-height: 1.35; text-align: center; }
+.simulation-page .run-panel details { margin: 5px 8px; font-size: 11px; }
+.simulation-page .run-panel summary { padding: 4px 0; min-height: 24px; }
+.simulation-page .validation-panel .status { margin: 8px; padding: 8px; font-size: 12px; line-height: 1.45; }
+.simulation-page .validation-panel .status strong { font-size: 13px; }
+.simulation-page .validation-panel .status::before { content: ''; display: inline-block; width: 8px; height: 8px; margin: 0 7px 1px 0; border-radius: 50%; background: currentColor; }
+.simulation-page .validation-panel .status-ok { color: var(--lab-ok); background: var(--lab-ok-bg); border-color: #b6ddc7; }
+.simulation-page .validation-panel .status-pending { color: var(--lab-muted); background: var(--lab-panel); }
+.simulation-page .validation-panel .status-warning { color: #723d18; background: var(--lab-warn-bg); border-color: #ead1a1; }
+.simulation-page .validation-facts { margin: 8px; border-top: 1px solid var(--lab-line); }
+.simulation-page .validation-row { display: grid; grid-template-columns: minmax(65px,.8fr) minmax(0,1.2fr); gap: 5px; padding: 5px 2px; border-bottom: 1px solid #e7eef2; font-size: 11px; line-height: 1.3; }
+.simulation-page .validation-row dt { color: var(--lab-muted); font-weight: 600; }
+.simulation-page .validation-row dd { margin: 0; color: var(--lab-text); overflow-wrap: anywhere; }
+.simulation-page .validation-indicator { display: inline-block; width: 7px; height: 7px; margin: 0 5px 1px 0; border-radius: 50%; background: #8a692d; }
+.simulation-page .validation-footnote { margin: 8px; color: var(--lab-muted); font-size: 12px; line-height: 1.4; }
+.simulation-page .measurement-note { margin: 0; padding: 7px 10px; color: var(--lab-muted); font-size: 12px; border-top: 1px solid var(--lab-line); }
+.simulation-page .mobile-scroll-hint { display: none; }
+@media (max-width: 1000px) and (min-width: 721px) {
+  .simulation-page .lab-layout { grid-template-columns: 150px minmax(0,1fr); }
+  .simulation-page .spice-dashboard { grid-template-columns: minmax(0,1fr); }
+  .simulation-page .retained-runs { grid-template-columns: 1fr 1fr; }
+  .simulation-page .lab-sidebar nav { display: block; }
+}
+@media (max-width: 720px) {
+  .simulation-page .lab-layout { grid-template-columns: minmax(0,1fr); }
+  .simulation-page .lab-header { padding: 8px; }
+  .simulation-page .lab-header strong { font-size: 14px; }
+  .simulation-page .header-caption { display: none; }
+  .simulation-page .lab-sidebar { gap: 5px; }
+  .simulation-page .lab-sidebar nav { display: flex; flex-wrap: wrap; padding: 3px; gap: 2px; }
+  .simulation-page .nav-link { min-height: 44px; font-size: 11px; padding: 5px; }
+  .simulation-page .sidebar-section:has([data-bias-link]) { display: flex; flex-wrap: wrap; gap: 2px; }
+  .simulation-page .sidebar-section:has([data-bias-link]) h2 { flex-basis: 100%; }
+  .simulation-page .sidebar-section a { flex: 1 1 44%; min-height: 44px; padding: 5px; }
+  .simulation-page .sidebar-project { display: none; }
+  .simulation-page #source-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .simulation-page .signal-section input, .simulation-page .signal-section .unit { height: 44px; font-size: 16px; }
+  .simulation-page .signal-section > p:last-child { display: none; }
+  .simulation-page .spice-dashboard { grid-template-columns: minmax(0,1fr); }
+  .simulation-page .schematic-stage { padding: 12px 2px; overflow-x: auto; }
+  .simulation-page .schematic-stage svg { min-width: 520px; max-height: none; }
+  .simulation-page .schematic-foot { flex-direction: column; }
+  .simulation-page .config-panel input, .simulation-page .config-panel .unit { height: 44px; font-size: 16px; }
+  .simulation-page .config-panel #analysis { height: 44px; font-size: 16px; }
+  .simulation-page .config-panel button { height: 44px; font-size: 16px; }
+  .simulation-page .results-heading { flex-wrap: wrap; }
+  .simulation-page .result-nav { margin: 0 5px; width: 100%; }
+  .simulation-page .result-nav a { min-height: 44px; display: flex; align-items: center; flex: 1; justify-content: center; }
+  .simulation-page .retained-runs { grid-template-columns: minmax(0,1fr); }
+  .simulation-page .run-panel, .simulation-page .validation-panel { border-right: 0; border-bottom: 1px solid var(--lab-line); }
+  .simulation-page .run-panel h3, .simulation-page .validation-panel h3 { font-size: 14px; }
+  .simulation-page .run-panel .plots figure, .simulation-page .run-panel .plots svg { min-width: 400px; }
+  .simulation-page .run-panel summary { min-height: 44px; display: flex; align-items: center; }
+  .simulation-page .run-panel th, .simulation-page .run-panel td { font-size: 14px; }
+  .simulation-page .validation-row { grid-template-columns: minmax(120px,.8fr) minmax(0,1.2fr); font-size: 14px; padding: 9px 4px; }
+  .simulation-page .validation-footnote { font-size: 13px; }
+  .simulation-page .mobile-scroll-hint { display: block; font-size: 12px; color: #405e6f; margin: 4px 8px; }
+}

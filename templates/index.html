@@ -3,18 +3,19 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Lab 03: BJT DC Bias Web App</title>
+  <link rel="icon" href="{{ url_for('favicon') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-<header class="topbar">
-  <svg class="chip" viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><rect x="12" y="12" width="40" height="40" rx="5"/><path d="M20 3v9M28 3v9M36 3v9M44 3v9M20 52v9M28 52v9M36 52v9M44 52v9M3 20h9M3 28h9M3 36h9M3 44h9M52 20h9M52 28h9M52 36h9M52 44h9"/><circle cx="23" cy="23" r="3"/><circle cx="41" cy="41" r="3"/></g></svg>
-  <div class="brand"><h1>Lab 03: BJT DC Bias Web App</h1><p>ENG29 2121 – Common Emitter Bias</p></div>
-  <div class="course"><span>‹/›</span> Computer Programming for<br> Electrical Engineers</div>
-</header>
-<main>
+<body class="lab-page analytical-page">
+{% set analytical = true %}
+{% include 'lab-header.html' %}
+<div class="lab-layout">
+{% include 'lab-sidebar.html' %}
+<main class="lab-main" id="workspace">
+  <div class="workspace-title"><h1>Lab 03: BJT DC Bias Web App <span>— <span id="workspace-mode">{{ mode_labels.get(mode, 'Unknown mode') }}</span></span></h1><span>ANALYTICAL</span></div>
   <div class="dashboard">
     <section class="card inputs-card">
-      <h2><svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M13 3h6l1 3 3 1 3-1 3 5-2 2v4l2 2-3 5-3-1-3 1-1 3h-6l-1-3-3-1-3 1-3-5 2-2v-4l-2-2 3-5 3 1 3-1z"/><circle cx="16" cy="15" r="4"/></svg> Input Parameters</h2>
+      <h2>Circuit Configuration <span>Input Parameters</span></h2>
       <form method="post" id="bias-form" novalidate>
         <div class="input-row"><label for="mode">Bias mode</label><select id="mode" name="mode" class="unit mode-select">{% if mode not in mode_labels %}<option value="" selected>Choose a valid mode</option>{% endif %}{% for value, label in mode_labels.items() %}<option value="{{ value }}" {% if mode == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
         {% for key, symbol, sub, description, unit in [('vcc','V','CC','Supply Voltage','V'), ('r1','R','1','Upper Divider','kΩ'), ('r2','R','2','Lower Divider','kΩ'), ('rb','R','B','Base Resistor','kΩ'), ('rc','R','C','Collector Resistor','kΩ'), ('re','R','E','Emitter Resistor','kΩ'), ('beta','β','','Current Gain','–'), ('vbe','V','BE','Base–Emitter Voltage','V')] %}
@@ -47,7 +48,7 @@
         </g>
       </svg>
     </section>
-    <div class="results-column">
+    <div class="results-column" id="results">
       <section class="card results-card"><h2><svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 28h26M5 27v-9h5v9M13 27V11h5v16M21 27V4h5v23"/></svg> DC Bias Results</h2><p id="result-mode">{{ mode_labels.get(mode, 'Unknown mode') }}</p>
         <table><tbody>{% for key, symbol, sub, scale, unit in [('vb','V','B',1,'V'),('ve','V','E',1,'V'),('vc','V','C',1,'V'),('vce','V','CE',1,'V'),('ib','I','B',1000,'mA'),('ic','I','C',1000,'mA'),('ie','I','E',1000,'mA')] %}
           <tr><th><i>{{ symbol }}<sub>{{ sub }}</sub></i></th><td>{% if result %}{{ '%.4f'|format(result[key] * scale) }} {{ unit }}{% else %}—{% endif %}</td></tr>
@@ -63,6 +64,7 @@
   </div>
   <aside class="goal"><strong><span>◎</span> Lab 03 Goal</strong><p>Extend the existing DC bias calculator to Fixed Bias, Emitter Bias, and Voltage Divider Bias.</p></aside>
 </main>
+</div>
 <script>
   const form = document.getElementById('bias-form');
   const factors = {V: 1, mV: 0.001, ohm: 1, kohm: 1000, Mohm: 1000000};
@@ -78,6 +80,12 @@
   }
   function updateMode() {
     const mode = modeSelect.value;
+    document.getElementById('workspace-mode').textContent = modeSelect.selectedOptions[0].textContent;
+    document.querySelectorAll('[data-bias-link]').forEach(link => {
+      link.classList.toggle('chosen', link.dataset.biasLink === mode);
+      if (link.dataset.biasLink === mode) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
     form.querySelectorAll('[data-input-row]').forEach((row) => {
       const key = row.dataset.inputRow;
       const active = !['r1', 'r2', 'rb', 're'].includes(key) ||

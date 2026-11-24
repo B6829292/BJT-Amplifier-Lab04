@@ -1,154 +1,132 @@
-# Lab 03: BJT DC Bias Web App
+# ENG29 2121 — BJT Amplifier Lab (Lab 04)
 
-## เกี่ยวกับโปรเจกต์
+A local Flask dashboard for learning and checking NPN common-emitter bias. It keeps the Lab 03 analytical calculators separate from a reference-circuit simulator that runs a real ngspice process. The simulator is a teaching aid, not instructor validation or a general-purpose circuit editor.
 
-โปรเจกต์สำหรับรายวิชา **ENG29 2121 – Computer Programming for Electrical Engineers** ต่อยอด Flask จาก Lab 02 เพื่อคำนวณจุดทำงานกระแสตรงของทรานซิสเตอร์ NPN Common-Emitter แบบ Voltage Divider, Fixed Bias และ Emitter Bias แบบแหล่งจ่ายเดียว
+## Supported features
 
-พัฒนาด้วย Python, Flask, HTML, CSS และ JavaScript โดย Flask รับข้อมูลจากหน้าเว็บ เรียกฟังก์ชันคำนวณของ Python แล้วส่งผลกลับมาแสดงในเบราว์เซอร์
+- Analytical DC bias calculations for Fixed, Emitter and Voltage Divider bias, with unit conversion, field validation, result tables and operating-region warnings.
+- ngspice operating-point (DC), logarithmic AC sweep and transient analyses for the Lab 04 unbypassed voltage-divider CE reference circuit.
+- Real returned solver data shown in the circuit schematic, dashboard and plots. DC reports VB, VE, VC, VCE and Q1 IC; AC plots gain and phase; transient plots Vin and Vout.
+- Per-analysis retained results, explicit current/stale/error states and solver provenance (inputs, netlist, model status and log). Results are in-memory/document-local and clear on reload.
+- Responsive desktop and narrow-screen layout. Narrow charts can be scrolled inside their chart regions.
 
-## ความสามารถ
+Not implemented: arbitrary circuit editing, instructor-certified device models, Final Project bypass controls/overlays, save/export, persistent run history or reference-benchmark validation. The dashboard labels the emitter bypass feature as not present.
 
-- เลือกโหมดวงจร รับค่า VCC, RC, β, VBE และฟิลด์เฉพาะวงจร: Divider ใช้ R1, R2, RE; Fixed ใช้ RB; Emitter ใช้ RB, RE พร้อมตรวจข้อมูลและแสดงข้อความใต้ช่องที่ผิด
-- เลือกหน่วยแรงดัน V หรือ mV และความต้านทาน Ω, kΩ หรือ MΩ; เมื่อเปลี่ยนหน่วย ตัวเลขจะปรับตามเพื่อคงค่าทางไฟฟ้าเดิม
-- แสดงแผนภาพวงจร NPN และค่า VB, VE, VC, VCE, IB, IC และ IE พร้อมหน่วย
-- แจ้งเตือนเมื่อผลอาจอยู่นอกสมมติฐาน Forward-Active และมี automated tests ตรวจสูตรและการทำงานของเว็บ
+## Requirements
 
-## ติดตั้งและใช้งาน
+- Python 3.10+ (verified in this worktree with Python 3.12).
+- Flask 3.x (`requirements.txt` declares `Flask>=3.0,<4.0`).
+- ngspice executable for DC/AC/transient runs. This project does not install or bundle ngspice. The current Windows default is `C:\ngspice\Spice64\bin\ngspice_con.exe`; set `NGSPICE_PATH` for another executable.
+- A compatible local 2N3904 SPICE model. Set `BJT_MODEL_PATH` to its file path. A Virginia Tech OPEL 2N3904 model has been used as a **fallback only; it is not instructor-verified**. Obtain the model yourself and check its license/redistribution terms. It is not included in this repository; do not redistribute or commit it without permission. The configured model file is copied into a temporary run directory and passed to ngspice, so only use a trusted file.
 
-**สิ่งที่ต้องมี:** Python 3 และ Git คำสั่งต่อไปนี้รันใน PowerShell หรือ Terminal บนเครื่องของคุณ
+The analytical modes do not require ngspice or a model. Simulation integration tests are skipped if `BJT_MODEL_PATH` is unset.
 
-### 1. เปิดโฟลเดอร์โปรเจกต์
+## Setup
 
-```bash
-cd BJT-DC-Bias-Lab03
-```
-
-### 2. สร้างและเปิดใช้ virtual environment
-
-Virtual environment ช่วยแยกไลบรารีของโปรเจกต์ออกจาก Python ส่วนอื่นในเครื่อง
-
-**Windows PowerShell:**
+Clone/open this repository and work from its root. Create a virtual environment:
 
 ```powershell
+# Windows PowerShell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-**Linux / macOS:**
-
 ```bash
+# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-### 3. ติดตั้งไลบรารีและเริ่มเว็บ
-
-เมื่อเปิดใช้ virtual environment แล้ว ให้รันจากโฟลเดอร์โปรเจกต์:
+Install the declared Python dependency (when network/package access is approved):
 
 ```bash
 python -m pip install -r requirements.txt
+```
+
+Install ngspice separately using its official distribution for your platform. Then configure both paths in the same shell used to launch Python. PowerShell example:
+
+```powershell
+$env:NGSPICE_PATH = 'C:\path\to\ngspice.exe'
+$env:BJT_MODEL_PATH = 'C:\path\to\2N3904.lib'
+```
+
+Environment variables:
+
+| Variable | Required for | Default / behavior |
+|---|---|---|
+| `NGSPICE_PATH` | All real SPICE analyses | Windows executable path above; must point to an executable file. |
+| `BJT_MODEL_PATH` | All real SPICE analyses | No default model; must point to a readable compatible model file. |
+
+The variables are process environment settings, not a checked-in `.env` file. `.env` files are ignored by Git.
+
+## Run the application
+
+```bash
 python -m flask --app app run
 ```
 
-เปิด <http://127.0.0.1:5000/> ในเบราว์เซอร์ เลือก **Bias mode** กรอกฟิลด์ที่แสดง เลือกหน่วย แล้วกด **Calculate DC Bias** เมื่อเปลี่ยนค่าหรือโหมดให้กดคำนวณใหม่ เมื่อต้องการหยุดเซิร์ฟเวอร์ให้กด `Ctrl+C` ใน Terminal หากพอร์ต 5000 ถูกใช้อยู่ ให้ใช้พอร์ตอื่น เช่น `python -m flask --app app run --port 5001` และเปิด URL ที่แสดง
+Open <http://127.0.0.1:5000/>. Select an analytical bias mode from the navigation, or open **Voltage Divider CE / ngspice · Lab 04** for simulation. Select DC, AC or transient, edit the circuit/source fields as needed and choose **Run Simulation**. Stop the local development server with `Ctrl+C`.
 
-> Flask development server ใช้สำหรับทดลองบนเครื่องของตนเอง ไม่เหมาะสำหรับให้บริการสาธารณะ
-
-## หลักการคำนวณ DC Bias
-
-โปรแกรมสมมติว่า β และ VBE คงที่ในย่าน Forward-Active ก่อนคำนวณ Flask แปลงแรงดันเป็น V และความต้านทานเป็น Ω แล้ว Python ส่งกระแสเป็น A ให้หน้าเว็บแปลงแสดงเป็น mA
-
-**วงจรสมมูล Thevenin**
-
-$$V_{TH}=\frac{V_{CC}R_2}{R_1+R_2}, \qquad R_{TH}=\frac{R_1R_2}{R_1+R_2}$$
-
-**กระแสทรานซิสเตอร์**
-
-Fixed: $I_B=(V_{CC}-V_{BE})/R_B$; Emitter: $I_B=(V_{CC}-V_{BE})/[R_B+(\beta+1)R_E]$; Divider: $I_B=(V_{TH}-V_{BE})/[R_{TH}+(\beta+1)R_E]$.
-
-ทั้งสามโหมดใช้ $I_C=\beta I_B$ และ $I_E=(\beta+1)I_B$.
-
-**แรงดันในวงจร**
-
-$$V_E=I_ER_E\ (\text{Emitter/Divider}),\quad V_E=0\ (\text{Fixed}),\quad V_B=V_E+V_{BE},\quad V_C=V_{CC}-I_CR_C,\quad V_{CE}=V_C-V_E$$
-
-## การตรวจสอบข้อมูลและข้อจำกัด
-
-- ช่องที่จำเป็นต้องกรอกต้องไม่ว่าง และข้อมูลต้องเป็นตัวเลขที่มีค่าจำกัด (finite)
-- VCC, ความต้านทาน และ β ต้องมากกว่า 0 ส่วน VBE ต้องไม่ติดลบ
-- ค่าที่เล็กหรือใหญ่มากจน floating-point คำนวณได้ไม่น่าเชื่อถือจะถูกปฏิเสธ ดูรายละเอียดใน `docs/validation.md`
-- **Cutoff:** เมื่อ `IB ≤ 0` (สำหรับ Divider เทียบได้กับ `VTH ≤ VBE`) โปรแกรมเตือนว่าสมมติฐาน Forward-Active อาจใช้ไม่ได้
-- **Saturation:** เมื่อ `VCE ≤ 0.2 V` โปรแกรมเตือนว่าอาจใกล้หรือเข้าสู่ saturation โดย 0.2 V เป็นเกณฑ์ประมาณ ไม่ใช่แบบจำลอง saturation ที่แม่นยำ
-
-โปรแกรมยังแสดงค่าที่คำนวณจากสมการ Forward-Active เมื่อมีคำเตือน แต่ค่าเหล่านั้น **อาจใช้ไม่ได้หรือไม่ตรงกับวงจรจริง** โปรแกรมนี้ไม่ใช่ตัวจำลองทรานซิสเตอร์แบบสมบูรณ์
-
-## การทดสอบ
-### ผลการทดสอบผ่าน Browser (A1–A5)
-
-ทดสอบด้วย Playwright MCP โดยใช้ VCC = 12 V, RC = 2.2 kΩ, β = 100 และ VBE = 0.70 V
-
-| Test | Circuit | Expected IC (mA) | Actual IC (mA) | Expected VCE (V) | Actual VCE (V) | Status |
-|---|---|---:|---:|---:|---:|---|
-| A1 | Voltage Divider | 1.2299 | 1.2299 | 8.0522 | 8.0522 | PASS |
-| A2 | Fixed Bias | 1.1300 | 1.1300 | 9.5140 | 9.5140 | PASS |
-| A3 | Emitter Bias, RE = 1 kΩ | 1.0263 | 1.0263 | 8.7055 | 8.7054 | PASS |
-| A4 | Emitter Bias, RE = 2 kΩ | 0.9401 | 0.9401 | 8.0328 | 8.0328 | PASS |
-| A5 | Fixed Bias, RB = 0 | Error | Error | — | — | PASS |
-
-A5: เบราว์เซอร์แจ้ง “Enter a value greater than zero.” และไม่แสดงผลเก่า
-
-รายละเอียดค่าอ้างอิง ผลจริง วิธีตรวจ และหลักฐาน: [Browser Validation Report](docs/validation.md)
-
-### ตัวอย่างหน้าเว็บ
-
-![Lab 03 BJT DC Bias Web App](docs/lab03-a1-playwright.png)
-
-หลังติดตั้ง dependencies และเปิดใช้ virtual environment ให้รัน:
+For another port, for example:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m flask --app app run --port 5001
 ```
 
-ชุด regression เดิมตรวจสมการ Flask routes การแปลงหน่วย ข้อมูลผิด และคำเตือน ผลตรวจล่าสุด **24/24 tests ผ่าน**; `docs/test-log.txt` เป็นบันทึกผล Lab 02 ในอดีต ดูผล A1–A5 และภาพจริงจาก Playwright MCP ใน `docs/validation.md`
+The Flask development server is for local coursework use only; it is not hardened or configured for public deployment.
 
-## โครงสร้างโปรเจกต์
+The adapter may also be called from Python with `spice_engine.simulate('dc'|'ac'|'tran', values=None)`. Circuit values are SI units: volts, ohms, farads, peak volts and hertz. The UI converts its displayed units before calling the adapter. AC is V(out)/V(in), with `in` on the source side of Cin and `out` on the load side of Cout. Transient duration is five input periods. See `spice_engine.py` for exact bounds and output fields.
 
-```text
-BJT-DC-Bias-Lab03/
-├── .gitignore
-├── README.md
-├── app.py
-├── dc_bias.py
-├── requirements.txt
-├── opencode.json
-├── templates/
-│   └── index.html
-├── static/
-│   └── style.css
-├── tests/
-│   ├── test_dc_bias.py
-│   └── test_web.py
-└── docs/
-    ├── browser-demo.png
-    ├── lab03-a1-playwright.png
-    ├── design-note.md
-    ├── reflection.md
-    ├── test-log.txt
-    ├── validation.md
-    └── superpowers/
-        └── plans/
-            └── 2026-11-10-bjt-dc-bias.md
+## Screenshots (real browser captures)
+
+These are actual screenshots of the implemented dashboard after successful DC, AC and transient runs, captured with Playwright MCP. They are not mockups.
+
+| Viewport | Capture |
+|---|---|
+| 1085 × 613 | ![Dashboard at 1085 by 613](docs/evidence/phase7/dashboard-1085.png) |
+| 1280 × 900 | ![Dashboard at 1280 by 900](docs/evidence/phase7/dashboard-1280.png) |
+| 390 × 844 | ![Dashboard at 390 by 844](docs/evidence/phase7/dashboard-390.png) |
+
+## Tests and validation
+
+Run the complete test suite from the repository root:
+
+```powershell
+python -B -m unittest discover -s tests -v
 ```
 
-- `app.py` รับ HTTP requests; `dc_bias.py` คำนวณวงจร; `templates/` และ `static/` จัดการหน้าเว็บ
-- `docs/design-note.md` และ `docs/superpowers/plans/` บันทึกแนวคิดและแผนพัฒนา
-- `docs/validation.md` บันทึกการตรวจสูตร; `docs/test-log.txt` และ `docs/browser-demo.png` เป็นหลักฐานการทดสอบและภาพหน้าเว็บ
-- `docs/reflection.md` เป็นร่าง reflection สำหรับให้นักศึกษาตรวจและปรับตามประสบการณ์จริง
+To include real ngspice integration tests, configure `NGSPICE_PATH` and `BJT_MODEL_PATH` first. The suite covers the analytical calculations, routes/forms, input validation, solver failures/timeouts/parsing, retained/stale result behavior, chart data and integration paths. The recorded Phase 7 run found **51 tests, all passed with a local fallback model configured**. The final independent comparison summary and regression log are in [`docs/evidence/phase7/`](docs/evidence/phase7/); generated netlists, raw solver outputs, machine-specific paths, and the model are intentionally not published.
 
-## GitHub Repository
+## Limitations and known qualifications
 
-Lab 03: <https://github.com/B6829292/BJT-DC-Bias-Lab03>
+- The fallback 2N3904 model is not instructor-verified. Its results cannot establish instructor acceptance or match an instructor starter model.
+- Analytical calculations assume simplified forward-active equations with fixed beta and VBE; warnings do not turn them into a full transistor model.
+- The SPICE page models the specified unbypassed reference circuit only; it is not an arbitrary netlist editor.
+- Simulation results/history are not persisted after reload. AC and transient runs use finite sampled arrays and are not a substitute for physical measurement.
+- Playwright phone checks use desktop Chromium viewport emulation, not physical-device, touch, Safari/Firefox or assistive-technology testing. No full WCAG certification is claimed; see validation notes for readability/audit limitations.
+- Local source review does not establish ngspice/model supply-chain trust. No project-level license file or model redistribution grant was established during this verification; clarify both before redistribution.
 
-Lab 03 submission commit: 2f26decb29ffad3be4bf9d1233532d2a6cd0d850
+## Troubleshooting
 
-Repository ต้นทาง Lab 02: <https://github.com/B6829292/BJT-DC-Bias-Lab02>
+| Symptom | Check |
+|---|---|
+| `ngspice executable not found` | Confirm ngspice is installed and `NGSPICE_PATH` points to the executable, not its containing folder. Set it in the same shell before starting Flask. |
+| `2N3904 model not found` | Confirm `BJT_MODEL_PATH` points to an existing compatible `.lib` file and is set in the server's environment. The application does not download a model. |
+| Simulation failed / timed out | Check the model is trusted and compatible, input values are in range, ngspice runs independently, and the model defines subcircuit/device name `2N3904`. Inspect the run's provenance/log disclosure; failed analyses do not count as successful results. |
+| Real-solver tests are skipped | `BJT_MODEL_PATH` was not configured when Python/test process started; set it, then rerun the full suite. |
+| Port 5000 is occupied | Start Flask with `--port 5001` (or another free port) and open that address. |
+| Plot is wider than a phone screen | Horizontally scroll within the chart region; this is intentional to preserve plot detail. The page itself was checked for horizontal overflow at the recorded emulated viewport. |
+| Previous results disappeared | Run history is document-local and intentionally clears after reload/navigation. |
+
+## Repository and submission
+
+Repository remote confirmed in this worktree: <https://github.com/B6829292/BJT-Amplifier-Lab04>. This verification did not commit, push or merge. The final submission SHA is therefore not assigned by this work. After reviewing and approving the working-tree changes, create the commit yourself and obtain its full SHA with:
+
+```bash
+git status --short
+git add <reviewed-files>
+git commit -m "Complete Lab 04 dashboard"
+git rev-parse HEAD
+```
+
+Before submission, confirm the instructor model and its terms, review all changed/untracked files, include only permitted assets, verify screenshots and evidence links, run tests with the intended model, commit only approved files, then record the resulting SHA and repository URL in the submission form.
