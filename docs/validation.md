@@ -298,3 +298,9 @@ RE=2 kΩ, changed-source arrays and their plots were also independently checked 
 **Submission checklist:** obtain/verify the instructor's model and terms; review the complete Git status/diff including untracked files; keep only authorized assets; run tests using the intended model; verify evidence links and README setup; commit only after approval; then record the remote URL and SHA returned by `git rev-parse HEAD`. No repository integration action is authorized or performed in this phase.
 
 **Final resume verification:** the complete suite was rerun: **51 passed, 0 failed, 0 skipped**. The Playwright MCP B1–B8 harness was rerun at all three viewports: **27 simulation submissions, zero uncaught page errors**, all assertions passed. Direct ngspice DC/AC/transient references were freshly generated; only the portable summary is published. The protected `spice_engine.py` SHA-256 remains `7A72907E0611F80E494C8C03F614B66A54705B9AA94B33669271FF90EB03931C`.
+
+## Post-merge submission record — 24 November 2026
+
+PR [#1](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/1) was merged into `main`. The refreshed `origin/main` was verified at merge commit `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f`, which includes feature commit `a7c63e10e2f4ceac406b56876dc210dbae2faa3c`. The historical Phase 6, 6.1, 6.2 and Phase 7 verification results above are retained unchanged; earlier submission-status notes describe the state at the Phase 7 stop point and are superseded by this record.
+
+The Virginia Tech OPEL 2N3904 remains a fallback model and **not instructor-verified**. No instructor verification is claimed, and model redistribution permission remains unresolved; the model file is not included.
