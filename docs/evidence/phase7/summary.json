@@ -1,0 +1,70 @@
+{
+  "phase": "Phase 7 final verification",
+  "environment": {
+    "ngspice_version": "47",
+    "linear_solver": "KLU",
+    "browser": "Playwright MCP Chromium 157.0.8103.79",
+    "model": "2N3904 Virginia Tech OPEL fallback; not instructor-verified",
+    "model_sha256": "ab02e9b61ef31c8833b0abec5c36945ec46f4ee54778a8a72507eea9d2dec6ed",
+    "model_file_included": false,
+    "model_redistribution_permission": "unresolved"
+  },
+  "regression": {
+    "discovered": 51,
+    "passed": 51,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser_acceptance": {
+    "viewport_css_pixels": [
+      [1085, 613],
+      [1280, 900],
+      [390, 844]
+    ],
+    "cases": ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"],
+    "simulation_submissions": 27,
+    "uncaught_page_errors": 0,
+    "assertions_passed": true,
+    "page_horizontal_overflow": false
+  },
+  "analytical_modes_ic_mA": {
+    "fixed": 1.13,
+    "emitter": 1.0263,
+    "voltage_divider": 1.2299
+  },
+  "direct_ngspice_reference": {
+    "baseline_dc": {
+      "vb_V": 2.003674496296638,
+      "ve_V": 1.33287974377382,
+      "vc_V": 9.087216255157696,
+      "vce_V": 7.754336511383876,
+      "ic_A": 0.001324034769550871
+    },
+    "re_2k_ohm_dc": {
+      "vb_V": 2.072695258789149,
+      "ve_V": 1.418858148196376,
+      "vc_V": 10.45038719242099,
+      "vce_V": 9.031529044224614,
+      "ic_A": 0.0007052993755427913
+    },
+    "ac_sample_count": 321,
+    "transient_sample_count": 508,
+    "max_abs_difference_and_tolerance": {
+      "baseline_dc_voltage_V": [5.114e-7, 1e-5],
+      "baseline_dc_collector_current_A": [2.305e-10, 1e-9],
+      "ac_frequency_Hz": [0.049689, 0.1],
+      "ac_gain_dB": [3.011e-8, 1e-5],
+      "ac_wrapped_phase_degrees": [1.55e-7, 1e-5],
+      "transient_time_s": [3.47e-17, 1e-10],
+      "transient_voltage_V": [4.997e-11, 1e-8],
+      "ac_svg_viewbox_units": [0.005001, 0.02],
+      "transient_svg_viewbox_units": [0.004992, 0.02]
+    }
+  },
+  "qualifications": [
+    "The local 2N3904 fallback is not instructor-verified.",
+    "No instructor-model certification or full WCAG certification is claimed.",
+    "Physical-device, touch, screen-reader, Firefox and Safari checks were not performed.",
+    "Raw netlists, model files, local filesystem paths and generated browser runners are intentionally excluded from this public summary."
+  ]
+}

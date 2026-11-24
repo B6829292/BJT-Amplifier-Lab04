@@ -1,0 +1,22 @@
+<aside class="lab-sidebar" aria-label="Lab navigation">
+  <nav><a class="nav-link {{ '' if analytical else 'active' }}" href="{{ url_for('simulation') }}">◉ &nbsp; Simulation</a><a class="nav-link {{ 'active' if analytical else '' }}" href="{{ url_for('index') }}">▤ &nbsp; Analytical DC Bias</a><a class="nav-link" href="#results">▥ &nbsp; Results &amp; Validation</a></nav>
+  <section class="sidebar-section"><h2>Bias Selection</h2><p>COMMON EMITTER BIAS</p>
+    {% for value, label in [('fixed','Fixed Bias'),('emitter','Emitter Bias'),('divider','Voltage Divider')] %}
+    <a data-bias-link="{{ value }}" class="{{ 'chosen' if analytical and mode == value else '' }}" {% if analytical and mode == value %}aria-current="page"{% endif %} href="{{ url_for('index', mode=value) }}">{{ label }} <small>Analytical · Lab 03</small></a>
+    {% endfor %}
+    <a class="{{ '' if analytical else 'chosen' }}" {% if not analytical %}aria-current="page"{% endif %} href="{{ url_for('simulation') }}">Voltage Divider CE <small>ngspice · Lab 04</small></a>
+  </section>
+  <section class="sidebar-section signal-section"><h2>{{ 'Analytical model' if analytical else 'Signal Source' }}</h2>
+    {% if analytical %}<p>Constant β and base–emitter voltage approximation. No SPICE model is used.</p>
+    {% else %}
+    <p>Sine wave · transient input</p>
+    <div id="source-fields">
+      {% for key, label, unit, default, factor in source_fields %}
+      <div class="input-row"><label for="spice-{{ key }}">{{ label }}</label><input id="spice-{{ key }}" form="spice-form" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" aria-describedby="unit-{{ key }}"><span id="unit-{{ key }}" class="unit spice-unit">{{ unit }}</span></div>
+      {% endfor %}
+    </div>
+    <p>Used by Transient analysis only.</p>
+    {% endif %}
+  </section>
+  <section class="sidebar-section sidebar-project"><h2>Project</h2><p>ENG29 2121<br>Common-Emitter Amplifier</p><p>Emitter bypass: future feature (not present)</p></section>
+</aside>
