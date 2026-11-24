@@ -120,13 +120,11 @@ To include real ngspice integration tests, configure `NGSPICE_PATH` and `BJT_MOD
 
 ## Repository and submission
 
-Repository remote confirmed in this worktree: <https://github.com/B6829292/BJT-Amplifier-Lab04>. This verification did not commit, push or merge. The final submission SHA is therefore not assigned by this work. After reviewing and approving the working-tree changes, create the commit yourself and obtain its full SHA with:
+Repository: <https://github.com/B6829292/BJT-Amplifier-Lab04>. The Lab 04 feature was submitted in [PR #1](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/1) and merged into `main`.
 
-```bash
-git status --short
-git add <reviewed-files>
-git commit -m "Complete Lab 04 dashboard"
-git rev-parse HEAD
-```
+| Reference | Commit |
+|---|---|
+| Feature commit | `a7c63e10e2f4ceac406b56876dc210dbae2faa3c` |
+| PR #1 merge commit on `main` | `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f` |
 
-Before submission, confirm the instructor model and its terms, review all changed/untracked files, include only permitted assets, verify screenshots and evidence links, run tests with the intended model, commit only approved files, then record the resulting SHA and repository URL in the submission form.
+The merge records the submitted feature; it does not certify the external BJT model. The fallback 2N3904 remains not instructor-verified, and its redistribution terms remain unresolved.
