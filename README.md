@@ -1,130 +1,424 @@
-# ENG29 2121 — BJT Amplifier Lab (Lab 04)
+# ⚡ ENG29 2121 — BJT Amplifier Lab 04
 
-A local Flask dashboard for learning and checking NPN common-emitter bias. It keeps the Lab 03 analytical calculators separate from a reference-circuit simulator that runs a real ngspice process. The simulator is a teaching aid, not instructor validation or a general-purpose circuit editor.
+### 🔬 ระบบวิเคราะห์และจำลองวงจรขยายสัญญาณ BJT ด้วย Flask และ ngspice
 
-## Supported features
+**BJT Amplifier Simulator** คือเว็บแอปพลิเคชันสำหรับศึกษา วิเคราะห์ และจำลองการทำงานของวงจรทรานซิสเตอร์ชนิด NPN โดยพัฒนาด้วย **Python Flask** และใช้ **ngspice** เป็นเครื่องมือจำลองวงจรไฟฟ้า
 
-- Analytical DC bias calculations for Fixed, Emitter and Voltage Divider bias, with unit conversion, field validation, result tables and operating-region warnings.
-- ngspice operating-point (DC), logarithmic AC sweep and transient analyses for the Lab 04 unbypassed voltage-divider CE reference circuit.
-- Real returned solver data shown in the circuit schematic, dashboard and plots. DC reports VB, VE, VC, VCE and Q1 IC; AC plots gain and phase; transient plots Vin and Vout.
-- Per-analysis retained results, explicit current/stale/error states and solver provenance (inputs, netlist, model status and log). Results are in-memory/document-local and clear on reload.
-- Responsive desktop and narrow-screen layout. Narrow charts can be scrolled inside their chart regions.
+โปรเจกต์นี้ต่อยอดจาก Lab 03 โดยแยกการคำนวณเชิงวิเคราะห์ (Analytical Calculation) ออกจากการจำลองวงจรจริงด้วย SPICE เพื่อช่วยให้ผู้เรียนสามารถศึกษา เปรียบเทียบ และทำความเข้าใจพฤติกรรมของวงจรขยายสัญญาณแบบ Common-Emitter (CE) ได้สะดวกยิ่งขึ้น
 
-Not implemented: arbitrary circuit editing, instructor-certified device models, Final Project bypass controls/overlays, save/export, persistent run history or reference-benchmark validation. The dashboard labels the emitter bypass feature as not present.
+> 📌 **หมายเหตุ:** โปรแกรมนี้จัดทำขึ้นเพื่อการศึกษาและประกอบการทดลอง ไม่ใช่เครื่องมือออกแบบวงจรทั่วไป และผลจำลองยังไม่ได้ผ่านการรับรองจากอาจารย์ผู้สอน
 
-## Requirements
+---
 
-- Python 3.10+ (verified in this worktree with Python 3.12).
-- Flask 3.x (`requirements.txt` declares `Flask>=3.0,<4.0`).
-- ngspice executable for DC/AC/transient runs. This project does not install or bundle ngspice. The current Windows default is `C:\ngspice\Spice64\bin\ngspice_con.exe`; set `NGSPICE_PATH` for another executable.
-- A compatible local 2N3904 SPICE model. Set `BJT_MODEL_PATH` to its file path. A Virginia Tech OPEL 2N3904 model has been used as a **fallback only; it is not instructor-verified**. Obtain the model yourself and check its license/redistribution terms. It is not included in this repository; do not redistribute or commit it without permission. The configured model file is copied into a temporary run directory and passed to ngspice, so only use a trusted file.
+## 📌 สารบัญ
 
-The analytical modes do not require ngspice or a model. Simulation integration tests are skipped if `BJT_MODEL_PATH` is unset.
+1. [🌟 ความสามารถของระบบ](#-ความสามารถของระบบ)
+2. [🖥️ ภาพตัวอย่างโปรแกรม](#️-ภาพตัวอย่างโปรแกรม)
+3. [🛠️ สิ่งที่ต้องติดตั้ง](#️-สิ่งที่ต้องติดตั้ง)
+4. [🚀 วิธีติดตั้งและเริ่มใช้งาน](#-วิธีติดตั้งและเริ่มใช้งาน)
+5. [📊 การวิเคราะห์และจำลองวงจร](#-การวิเคราะห์และจำลองวงจร)
+6. [🧪 การทดสอบและตรวจสอบความถูกต้อง](#-การทดสอบและตรวจสอบความถูกต้อง)
+7. [⚠️ ข้อจำกัดของระบบ](#️-ข้อจำกัดของระบบ)
+8. [🔧 การแก้ไขปัญหาเบื้องต้น](#-การแก้ไขปัญหาเบื้องต้น)
+9. [📦 Repository และประวัติการส่งงาน](#-repository-และประวัติการส่งงาน)
 
-## Setup
+---
 
-Clone/open this repository and work from its root. Create a virtual environment:
+## 🌟 ความสามารถของระบบ
+
+### 🧮 1. การคำนวณ DC Bias — Lab 03
+
+รองรับการวิเคราะห์วงจรไบอัสทรานซิสเตอร์ 3 รูปแบบ ได้แก่
+
+- **Fixed Bias** — วงจรไบอัสแบบคงที่
+- **Emitter Bias** — วงจรไบอัสที่มีตัวต้านทานอิมิตเตอร์
+- **Voltage Divider Bias** — วงจรไบอัสแบบแบ่งแรงดัน
+
+ความสามารถของส่วนนี้ประกอบด้วย
+
+- ✅ รับค่าอุปกรณ์และแปลงหน่วยอัตโนมัติ
+- ✅ ตรวจสอบความถูกต้องของข้อมูลที่กรอก
+- ✅ คำนวณค่าทางไฟฟ้าจากสมการเชิงวิเคราะห์
+- ✅ แสดงผลในรูปแบบตาราง
+- ✅ แจ้งเตือนสถานะการทำงานของทรานซิสเตอร์
+
+### ⚡ 2. การจำลองวงจรด้วย ngspice — Lab 04
+
+จำลองวงจรขยายสัญญาณ **Common-Emitter แบบ Voltage Divider Bias** ที่ไม่มีตัวเก็บประจุบายพาสอิมิตเตอร์ (Unbypassed Emitter Resistor)
+
+รองรับการวิเคราะห์ 3 ประเภท
+
+| ประเภท | รายละเอียด |
+|---|---|
+| 🔋 DC Operating Point | วิเคราะห์แรงดันและกระแส ณ จุดทำงานของวงจร |
+| 📈 AC Analysis | วิเคราะห์อัตราขยายและเฟสของสัญญาณตามความถี่ |
+| 🌊 Transient Analysis | วิเคราะห์รูปคลื่นแรงดันอินพุตและเอาต์พุตตามเวลา |
+
+### 📊 3. Dashboard และกราฟแสดงผล
+
+ระบบแสดงข้อมูลจากการคำนวณของ ngspice จริง ไม่ใช่ผลลัพธ์ที่กำหนดไว้ล่วงหน้า
+
+**DC Analysis**
+
+แสดงค่าทางไฟฟ้าที่สำคัญ เช่น
+
+- `VB` — แรงดันที่ขา Base
+- `VE` — แรงดันที่ขา Emitter
+- `VC` — แรงดันที่ขา Collector
+- `VCE` — แรงดันระหว่าง Collector และ Emitter
+- `IC` — กระแสที่ขา Collector
+
+**AC Analysis**
+
+แสดงกราฟการตอบสนองเชิงความถี่ ประกอบด้วย
+
+- 📈 Voltage Gain (dB)
+- 📉 Phase Shift (Degrees)
+- 🔍 การเปลี่ยนแปลงอัตราขยายและเฟสตามความถี่
+
+**Transient Analysis**
+
+แสดงรูปคลื่นแรงดันตามเวลา ได้แก่
+
+- `Vin` — สัญญาณขาเข้า
+- `Vout` — สัญญาณขาออก
+
+### 🧠 4. การจัดการผลการจำลอง
+
+- ✅ เก็บผล DC, AC และ Transient แยกจากกันระหว่างที่เปิดหน้าเว็บ
+- ✅ แสดงสถานะ `Current`, `Stale` และ `Error`
+- ✅ แสดงอินพุตที่ใช้ในการจำลองแต่ละครั้ง
+- ✅ สามารถตรวจสอบ Netlist และ Log จาก ngspice
+- ✅ แจ้งเตือนเมื่อผลการจำลองไม่ตรงกับค่าปัจจุบัน
+
+> 💡 ผลการจำลองถูกเก็บไว้เฉพาะในหน่วยความจำของหน้าเว็บ เมื่อรีโหลดหรือออกจากหน้าเว็บ ประวัติผลลัพธ์จะถูกล้าง
+
+### 📱 5. Responsive Web Design
+
+หน้า Dashboard ออกแบบให้ใช้งานได้ทั้งบนคอมพิวเตอร์และหน้าจอขนาดเล็ก
+
+กราฟบนหน้าจอแคบรองรับการเลื่อนแนวนอนภายในพื้นที่กราฟ เพื่อรักษารายละเอียดในการอ่านข้อมูล
+
+---
+
+## 🖥️ ภาพตัวอย่างโปรแกรม
+
+ภาพด้านล่างเป็น Screenshot จากการใช้งาน Dashboard จริง โดยทดสอบด้วย **Playwright MCP** หลังจากจำลอง DC, AC และ Transient สำเร็จ
+
+### 💻 Desktop — 1280 × 900
+
+![Dashboard Desktop 1280×900](docs/evidence/phase7/dashboard-1280.png)
+
+### 🖥️ Compact Desktop — 1085 × 613
+
+![Dashboard Compact 1085×613](docs/evidence/phase7/dashboard-1085.png)
+
+### 📱 Mobile View — 390 × 844
+
+![Dashboard Mobile 390×844](docs/evidence/phase7/dashboard-390.png)
+
+> 📷 ภาพเหล่านี้เป็นภาพจากเบราว์เซอร์จริง ไม่ใช่ภาพ Mockup โดยการทดสอบหน้าจอมือถือใช้การจำลองขนาดหน้าจอผ่าน Chromium ไม่ใช่การทดสอบบนโทรศัพท์จริง
+
+---
+
+## 🛠️ สิ่งที่ต้องติดตั้ง
+
+ก่อนเริ่มใช้งาน ควรเตรียมเครื่องมือดังต่อไปนี้
+
+| เครื่องมือ | ข้อกำหนด | หน้าที่ |
+|---|---|---|
+| 🐍 Python | 3.10 ขึ้นไป | ประมวลผลโปรแกรม |
+| 🌐 Flask | 3.x | สร้างเว็บแอปพลิเคชัน |
+| ⚡ ngspice | ติดตั้งแยกต่างหาก | จำลองวงจรไฟฟ้า |
+| 🔬 2N3904 SPICE Model | โมเดลที่เข้ากันได้ | กำหนดคุณลักษณะทรานซิสเตอร์ |
+| 💻 Web Browser | เบราว์เซอร์ที่รองรับ | แสดง Dashboard |
+
+เวอร์ชัน Python ที่ใช้ตรวจสอบโปรเจกต์คือ **Python 3.12**
+
+### ⚠️ ข้อควรทราบเกี่ยวกับโมเดล 2N3904
+
+โปรเจกต์นี้ใช้โมเดล **Virginia Tech OPEL 2N3904** เป็นโมเดลสำรองสำหรับการทดสอบ
+
+- โมเดลดังกล่าวยังไม่ได้รับการยืนยันจากอาจารย์ผู้สอน
+- ไม่มีไฟล์โมเดลรวมอยู่ใน Repository
+- ผู้ใช้งานต้องจัดหาโมเดลที่เข้ากันได้ด้วยตนเอง
+- ควรตรวจสอบสิทธิ์การใช้งานและการเผยแพร่ก่อนนำโมเดลไปแจกจ่าย
+- ควรใช้เฉพาะไฟล์โมเดลจากแหล่งที่เชื่อถือได้
+
+**หมายเหตุ:** การคำนวณ Analytical DC Bias สามารถใช้งานได้โดยไม่ต้องติดตั้ง ngspice หรือโมเดล SPICE
+
+---
+
+## 🚀 วิธีติดตั้งและเริ่มใช้งาน
+
+### 📥 ขั้นตอนที่ 1 — ดาวน์โหลดโปรเจกต์
+
+Clone Repository จาก GitHub
+
+```bash
+git clone https://github.com/B6829292/BJT-Amplifier-Lab04.git
+```
+
+เข้าไปยังโฟลเดอร์โปรเจกต์
+
+```bash
+cd BJT-Amplifier-Lab04
+```
+
+### 🐍 ขั้นตอนที่ 2 — สร้าง Virtual Environment
+
+**สำหรับ Windows PowerShell**
 
 ```powershell
-# Windows PowerShell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
+**สำหรับ Linux / macOS**
+
 ```bash
-# macOS / Linux
 python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Install the declared Python dependency (when network/package access is approved):
+### 📦 ขั้นตอนที่ 3 — ติดตั้ง Dependencies
+
+ติดตั้งไลบรารี Python ที่ระบุใน `requirements.txt`
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-Install ngspice separately using its official distribution for your platform. Then configure both paths in the same shell used to launch Python. PowerShell example:
+Dependency หลักของโปรเจกต์คือ Flask โดยกำหนดเวอร์ชันไว้ดังนี้
+
+```text
+Flask>=3.0,<4.0
+```
+
+### ⚡ ขั้นตอนที่ 4 — ตั้งค่า ngspice และโมเดล BJT
+
+ติดตั้ง ngspice แยกต่างหาก จากนั้นตั้งค่า Environment Variables ให้ชี้ไปยังไฟล์ที่ใช้จริง
+
+ตัวอย่างสำหรับ Windows PowerShell
 
 ```powershell
 $env:NGSPICE_PATH = 'C:\path\to\ngspice.exe'
 $env:BJT_MODEL_PATH = 'C:\path\to\2N3904.lib'
 ```
 
-Environment variables:
+เปลี่ยนเส้นทางตัวอย่างให้ตรงกับตำแหน่งไฟล์ในเครื่องของตนเอง
 
-| Variable | Required for | Default / behavior |
-|---|---|---|
-| `NGSPICE_PATH` | All real SPICE analyses | Windows executable path above; must point to an executable file. |
-| `BJT_MODEL_PATH` | All real SPICE analyses | No default model; must point to a readable compatible model file. |
+| Environment Variable | รายละเอียด |
+|---|---|
+| `NGSPICE_PATH` | ตำแหน่งไฟล์โปรแกรม ngspice |
+| `BJT_MODEL_PATH` | ตำแหน่งไฟล์โมเดล 2N3904 |
 
-The variables are process environment settings, not a checked-in `.env` file. `.env` files are ignored by Git.
+ค่าพื้นฐานของไฟล์ ngspice บน Windows ในโปรเจกต์คือ
 
-## Run the application
+```text
+C:\ngspice\Spice64\bin\ngspice_con.exe
+```
+
+หากติดตั้งไว้ที่ตำแหน่งอื่น ต้องกำหนด `NGSPICE_PATH` ใหม่
+
+> 🔐 โปรเจกต์ไม่ได้จัดเก็บค่าตัวแปรเหล่านี้ไว้ในไฟล์ `.env` ที่ Commit ขึ้น GitHub และมีการตั้งค่า `.gitignore` เพื่อป้องกันไฟล์ `.env` ถูกเพิ่มเข้าสู่ Repository
+
+### ▶️ ขั้นตอนที่ 5 — เริ่มต้น Flask Server
+
+ใช้คำสั่ง
 
 ```bash
 python -m flask --app app run
 ```
 
-Open <http://127.0.0.1:5000/>. Select an analytical bias mode from the navigation, or open **Voltage Divider CE / ngspice · Lab 04** for simulation. Select DC, AC or transient, edit the circuit/source fields as needed and choose **Run Simulation**. Stop the local development server with `Ctrl+C`.
+จากนั้นเปิดเว็บเบราว์เซอร์แล้วเข้าสู่
 
-For another port, for example:
+**http://127.0.0.1:5000/**
+
+หรือเปิดหน้าจำลอง Lab 04 โดยตรงที่
+
+**http://127.0.0.1:5000/simulation**
+
+หากต้องการเปลี่ยนพอร์ต เช่น พอร์ต 5001
 
 ```bash
 python -m flask --app app run --port 5001
 ```
 
-The Flask development server is for local coursework use only; it is not hardened or configured for public deployment.
+เมื่อใช้งานเสร็จ กด `Ctrl+C` ใน Terminal เพื่อหยุด Server
 
-The adapter may also be called from Python with `spice_engine.simulate('dc'|'ac'|'tran', values=None)`. Circuit values are SI units: volts, ohms, farads, peak volts and hertz. The UI converts its displayed units before calling the adapter. AC is V(out)/V(in), with `in` on the source side of Cin and `out` on the load side of Cout. Transient duration is five input periods. See `spice_engine.py` for exact bounds and output fields.
+> ⚠️ Flask Development Server เหมาะสำหรับการเรียนและการทดสอบภายในเครื่อง ไม่ได้ตั้งค่าให้ปลอดภัยเพียงพอสำหรับเปิดให้บริการสาธารณะบนอินเทอร์เน็ต
 
-## Screenshots (real browser captures)
+---
 
-These are actual screenshots of the implemented dashboard after successful DC, AC and transient runs, captured with Playwright MCP. They are not mockups.
+## 📊 การวิเคราะห์และจำลองวงจร
 
-| Viewport | Capture |
-|---|---|
-| 1085 × 613 | ![Dashboard at 1085 by 613](docs/evidence/phase7/dashboard-1085.png) |
-| 1280 × 900 | ![Dashboard at 1280 by 900](docs/evidence/phase7/dashboard-1280.png) |
-| 390 × 844 | ![Dashboard at 390 by 844](docs/evidence/phase7/dashboard-390.png) |
+### 🔋 DC Operating Point
 
-## Tests and validation
+ใช้วิเคราะห์แรงดันและกระแสที่จุดทำงานของทรานซิสเตอร์ โดยแสดงผลผ่าน Dashboard และตำแหน่งต่าง ๆ บนแผนภาพวงจร
 
-Run the complete test suite from the repository root:
+ค่าที่แสดงประกอบด้วย `VB`, `VE`, `VC`, `VCE` และ `IC`
+
+### 📈 AC Frequency Response
+
+ใช้วิเคราะห์การตอบสนองของวงจรเมื่อความถี่เปลี่ยนแปลง
+
+อัตราขยายคำนวณจากอัตราส่วนของแรงดันเอาต์พุตและอินพุต
+
+```text
+Voltage Gain (dB) = 20 log10(|Vout / Vin|)
+```
+
+ระบบแสดงกราฟ Gain และ Phase ตามความถี่ โดยกำหนดให้
+
+- `Vin` วัดจากด้านแหล่งสัญญาณก่อนตัวเก็บประจุ Cin
+- `Vout` วัดจากด้านโหลดหลังตัวเก็บประจุ Cout
+
+### 🌊 Transient Response
+
+ใช้วิเคราะห์การเปลี่ยนแปลงของแรงดันตามเวลา
+
+ผู้ใช้สามารถกำหนด Amplitude และ Frequency ของสัญญาณอินพุตได้ โดยระบบแสดงรูปคลื่น `Vin` และ `Vout` เพื่อศึกษาพฤติกรรมของวงจรขยายแบบ Common-Emitter
+
+ระยะเวลาการจำลองกำหนดให้ครอบคลุม **5 คาบของสัญญาณอินพุต**
+
+### 🧩 การเรียกใช้ Simulation Engine ผ่าน Python
+
+สามารถเรียกใช้ฟังก์ชันจาก `spice_engine.py` ได้โดยตรง เช่น
+
+```python
+import spice_engine
+
+dc_result = spice_engine.simulate('dc')
+ac_result = spice_engine.simulate('ac')
+tran_result = spice_engine.simulate('tran')
+```
+
+ค่าพารามิเตอร์ของ Engine ใช้หน่วย SI เช่น
+
+- แรงดัน: V
+- ความต้านทาน: Ω
+- ความจุไฟฟ้า: F
+- แอมพลิจูด: V peak
+- ความถี่: Hz
+
+ระบบหน้าเว็บจะทำหน้าที่แปลงหน่วยที่ผู้ใช้กรอกก่อนส่งให้ Simulation Engine
+
+---
+
+## 🧪 การทดสอบและตรวจสอบความถูกต้อง
+
+โปรเจกต์มีชุดทดสอบอัตโนมัติเพื่อตรวจสอบการคำนวณ การรับข้อมูล การทำงานของ Flask และการประมวลผลผลจำลอง ngspice
+
+### ▶️ วิธีรันทดสอบ
 
 ```powershell
 python -B -m unittest discover -s tests -v
 ```
 
-To include real ngspice integration tests, configure `NGSPICE_PATH` and `BJT_MODEL_PATH` first. The suite covers the analytical calculations, routes/forms, input validation, solver failures/timeouts/parsing, retained/stale result behavior, chart data and integration paths. The recorded Phase 7 run found **51 tests, all passed with a local fallback model configured**. The final independent comparison summary and regression log are in [`docs/evidence/phase7/`](docs/evidence/phase7/); generated netlists, raw solver outputs, machine-specific paths, and the model are intentionally not published.
+หากต้องการให้รวมการทดสอบที่เรียกใช้ ngspice จริง ต้องตั้งค่า `NGSPICE_PATH` และ `BJT_MODEL_PATH` ให้ถูกต้องก่อน
 
-## Limitations and known qualifications
+### ✅ ผลการทดสอบ Phase 7
 
-- The fallback 2N3904 model is not instructor-verified. Its results cannot establish instructor acceptance or match an instructor starter model.
-- Analytical calculations assume simplified forward-active equations with fixed beta and VBE; warnings do not turn them into a full transistor model.
-- The SPICE page models the specified unbypassed reference circuit only; it is not an arbitrary netlist editor.
-- Simulation results/history are not persisted after reload. AC and transient runs use finite sampled arrays and are not a substitute for physical measurement.
-- Playwright phone checks use desktop Chromium viewport emulation, not physical-device, touch, Safari/Firefox or assistive-technology testing. No full WCAG certification is claimed; see validation notes for readability/audit limitations.
-- Local source review does not establish ngspice/model supply-chain trust. No project-level license file or model redistribution grant was established during this verification; clarify both before redistribution.
-
-## Troubleshooting
-
-| Symptom | Check |
+| รายการ | ผลลัพธ์ |
 |---|---|
-| `ngspice executable not found` | Confirm ngspice is installed and `NGSPICE_PATH` points to the executable, not its containing folder. Set it in the same shell before starting Flask. |
-| `2N3904 model not found` | Confirm `BJT_MODEL_PATH` points to an existing compatible `.lib` file and is set in the server's environment. The application does not download a model. |
-| Simulation failed / timed out | Check the model is trusted and compatible, input values are in range, ngspice runs independently, and the model defines subcircuit/device name `2N3904`. Inspect the run's provenance/log disclosure; failed analyses do not count as successful results. |
-| Real-solver tests are skipped | `BJT_MODEL_PATH` was not configured when Python/test process started; set it, then rerun the full suite. |
-| Port 5000 is occupied | Start Flask with `--port 5001` (or another free port) and open that address. |
-| Plot is wider than a phone screen | Horizontally scroll within the chart region; this is intentional to preserve plot detail. The page itself was checked for horizontal overflow at the recorded emulated viewport. |
-| Previous results disappeared | Run history is document-local and intentionally clears after reload/navigation. |
+| 🧪 Regression Tests | 51 ผ่าน |
+| ❌ Failed Tests | 0 |
+| ⏭️ Skipped Tests | 0 |
+| 🌐 Browser Acceptance | B1–B8 ผ่าน |
+| 📱 Responsive Viewports | 3 ขนาด |
+| ⚡ Simulation Submissions | 27 ครั้ง |
+| 🐛 Uncaught Page Errors | 0 |
 
-## Repository and submission
+การตรวจสอบครอบคลุมการคำนวณ Analytical DC Bias, ข้อมูลอินพุต, ข้อผิดพลาดจาก Solver, ผลการจำลอง DC/AC/Transient และสถานะของผลลัพธ์ที่เก็บไว้ระหว่างใช้งาน
 
-Repository: <https://github.com/B6829292/BJT-Amplifier-Lab04>. The Lab 04 feature was submitted in [PR #1](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/1) and merged into `main`.
+มีการเปรียบเทียบผลจำลองกับการเรียก ngspice โดยตรงแยกจากแอปพลิเคชัน เพื่อใช้ตรวจสอบความสอดคล้องของข้อมูลและการแสดงกราฟ
 
-| Reference | Commit |
+> 📌 ผลการทดสอบข้างต้นเป็นผลที่บันทึกจากสภาพแวดล้อมการตรวจสอบโดยใช้โมเดลสำรอง 2N3904 ไม่ใช่การรับรองความถูกต้องของโมเดลทรานซิสเตอร์จากอาจารย์
+
+### 📂 หลักฐานการทดสอบ
+
+| ไฟล์ | รายละเอียด |
 |---|---|
-| Feature commit | `a7c63e10e2f4ceac406b56876dc210dbae2faa3c` |
-| PR #1 merge commit on `main` | `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f` |
+| [📄 Validation Report](docs/validation.md) | รายงานการตรวจสอบและรายละเอียดการทดสอบ |
+| [📊 Summary JSON](docs/evidence/phase7/summary.json) | สรุปผลการทดสอบเชิงตัวเลข |
+| [🧪 Regression Log](docs/evidence/phase7/regression.txt) | บันทึกผลการทดสอบอัตโนมัติ |
+| [🖥️ Desktop Screenshot](docs/evidence/phase7/dashboard-1280.png) | ภาพ Dashboard ขนาด 1280 × 900 |
+| [📱 Mobile Screenshot](docs/evidence/phase7/dashboard-390.png) | ภาพ Dashboard ขนาด 390 × 844 |
 
-The merge records the submitted feature; it does not certify the external BJT model. The fallback 2N3904 remains not instructor-verified, and its redistribution terms remain unresolved.
+ไฟล์ Netlist ที่สร้างระหว่างการทดสอบ ผลลัพธ์ดิบจาก Solver และไฟล์โมเดลภายนอกไม่ได้เผยแพร่ไว้ใน Repository
+
+---
+
+## ⚠️ ข้อจำกัดของระบบ
+
+โปรเจกต์ถูกพัฒนาภายใต้ขอบเขตการทดลอง Lab 04 จึงมีข้อจำกัดดังต่อไปนี้
+
+1. **โมเดลทรานซิสเตอร์** — ใช้ 2N3904 สำรองที่ยังไม่ได้รับการยืนยันจากอาจารย์
+2. **การจำลองวงจร** — รองรับเฉพาะวงจรอ้างอิง Common-Emitter แบบ Voltage Divider ที่ไม่มี Emitter Bypass Capacitor
+3. **การแก้ไขวงจร** — ไม่รองรับการสร้างหรือแก้ไขวงจรอิสระทุกชนิด
+4. **การบันทึกข้อมูล** — ไม่มีระบบบันทึกผลจำลองถาวรหรือ Export ผลลัพธ์
+5. **ความแม่นยำของ Analytical Mode** — ใช้สมการประมาณภายใต้สมมติฐานค่า β และ VBE คงที่
+6. **การทดสอบมือถือ** — ตรวจสอบผ่าน Chromium Viewport Emulation ยังไม่ได้ทดสอบบนอุปกรณ์มือถือจริง
+7. **Accessibility** — ยังไม่ได้รับการตรวจสอบตามมาตรฐาน WCAG แบบครบถ้วน
+8. **การเผยแพร่โปรเจกต์** — ยังไม่มี Project License และยังไม่ได้ยืนยันสิทธิ์ในการแจกจ่ายโมเดล SPICE
+
+ฟีเจอร์เพิ่มเติมที่ยังไม่รองรับ ได้แก่
+
+- Emitter Bypass Control
+- Animated Circuit Overlays
+- Save / Export
+- Persistent Simulation History
+- Reference Benchmark Validation
+
+---
+
+## 🔧 การแก้ไขปัญหาเบื้องต้น
+
+| ปัญหา | แนวทางแก้ไข |
+|---|---|
+| ❌ ไม่พบ ngspice | ตรวจสอบการติดตั้งและค่า `NGSPICE_PATH` |
+| ❌ ไม่พบโมเดล 2N3904 | ตรวจสอบไฟล์ `.lib` และค่า `BJT_MODEL_PATH` |
+| ⏳ Simulation Timeout | ตรวจสอบความถูกต้องของโมเดลและพารามิเตอร์ |
+| ⏭️ Integration Tests ถูกข้าม | ตั้งค่า `BJT_MODEL_PATH` ก่อนรันทดสอบ |
+| 🌐 Port 5000 ถูกใช้งาน | เปลี่ยนพอร์ตด้วย `--port 5001` |
+| 📱 กราฟกว้างกว่าหน้าจอ | เลื่อนแนวนอนภายในพื้นที่กราฟ |
+| 🔄 ผลการจำลองหายหลัง Refresh | เป็นพฤติกรรมปกติ เนื่องจากไม่ได้บันทึกผลแบบถาวร |
+
+หาก ngspice แสดงข้อผิดพลาด สามารถเปิดดูข้อมูล Netlist และ Log ของการจำลองแต่ละครั้งจาก Dashboard เพื่อช่วยตรวจสอบสาเหตุได้
+
+---
+
+## 📦 Repository และประวัติการส่งงาน
+
+### 🔗 GitHub Repository
+
+**[B6829292/BJT-Amplifier-Lab04](https://github.com/B6829292/BJT-Amplifier-Lab04)**
+
+ระบบ Lab 04 ถูกเพิ่มเข้าสู่ Branch หลัก `main` ผ่าน Pull Request และมีการปรับปรุงเอกสารประกอบภายหลัง
+
+| รายการ | รายละเอียด |
+|---|---|
+| 🔬 Feature Commit | `a7c63e10e2f4ceac406b56876dc210dbae2faa3c` |
+| 🔀 PR #1 Merge Commit | `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f` |
+| 📚 Documentation Commit | `a34c9c4a1a995a7d46edfcd738a6e1811b876d2c` |
+| ✅ Final Main Commit | `2ffb37f59129e818988cccbdfde7226382cdd4b0` |
+
+**ประวัติ Pull Request**
+
+- [PR #1 — Lab 04 BJT Amplifier ngspice Simulator](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/1)
+- [PR #2 — Post-Merge Documentation Cleanup](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/2)
+
+การ Merge โค้ดและการทดสอบที่ผ่านไม่ได้หมายความว่าโมเดล SPICE ภายนอกได้รับการรับรองจากอาจารย์ โดยข้อจำกัดดังกล่าวยังคงมีผลกับโปรเจกต์เวอร์ชันนี้
+
+---
+
+## 🎓 สรุปโครงการ
+
+**BJT-Amplifier-Lab04** เป็นโปรเจกต์เพื่อการศึกษาเกี่ยวกับวงจรขยายสัญญาณทรานซิสเตอร์ ที่ผสานการคำนวณเชิงทฤษฎีจาก Lab 03 เข้ากับการจำลองวงจรด้วย ngspice ใน Lab 04
+
+ผู้ใช้งานสามารถศึกษาจุดทำงาน DC การตอบสนองเชิงความถี่ AC และรูปคลื่น Transient ผ่าน Dashboard พร้อมกราฟและข้อมูลจาก Simulation Engine จริง
+
+โปรเจกต์มีเอกสารประกอบ ชุดทดสอบอัตโนมัติ และหลักฐานการตรวจสอบ เพื่อช่วยให้สามารถตรวจสอบการทำงานและนำไปศึกษาเพิ่มเติมได้
+
+**⚡ Built with Python Flask & ngspice | ENG29 2121 — Lab 04**
