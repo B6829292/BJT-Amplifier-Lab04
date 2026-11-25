@@ -31,7 +31,7 @@
 รองรับการวิเคราะห์วงจรไบอัสทรานซิสเตอร์ 3 รูปแบบ ได้แก่
 
 - **Fixed Bias** — วงจรไบอัสแบบคงที่
-- **Emitter Bias** — วงจรไบอัสที่มีตัวต้านทานอิมิตเตอร์
+- **Emitter Bias (Unbypassed)** — วงจรไบอัสที่มีตัวต้านทานอิมิตเตอร์โดยไม่มีตัวเก็บประจุบายพาส
 - **Voltage Divider Bias** — วงจรไบอัสแบบแบ่งแรงดัน
 
 ความสามารถของส่วนนี้ประกอบด้วย
@@ -56,7 +56,10 @@
 
 ### 📊 3. Dashboard และกราฟแสดงผล
 
-ระบบแสดงข้อมูลจากการคำนวณของ ngspice จริง ไม่ใช่ผลลัพธ์ที่กำหนดไว้ล่วงหน้า
+หน้า Simulation ของ Lab 04 แสดงแผนภาพวงจรและผลที่คำนวณจาก ngspice ผู้ใช้ปรับแอมพลิจูดและความถี่ของสัญญาณอินพุตได้จาก Function Generator แล้วเลือกวิเคราะห์ DC, AC, Transient หรือทั้งสามแบบด้วยปุ่ม **Run Simulation**
+
+- **DC Bias Overlay** แสดงลูกศรสีส้มตามทิศทางกระแส `IC` และ `IE` พร้อมแรงดันที่ขา `VB`, `VC`, `VE` และจุดทำงาน Q-Point จากผล DC
+- **AC Amplification Overlay** แสดงรูปคลื่นอินพุตสีน้ำเงินและเอาต์พุตสีเขียวจากผล Transient ผู้ใช้เปิดหรือปิดแต่ละ Overlay รวมถึงหยุดชั่วคราว เล่นต่อ หรือเริ่มแอนิเมชันใหม่ได้
 
 **DC Analysis**
 
@@ -67,6 +70,7 @@
 - `VC` — แรงดันที่ขา Collector
 - `VCE` — แรงดันระหว่าง Collector และ Emitter
 - `IC` — กระแสที่ขา Collector
+- `IE` — กระแสที่ขา Emitter
 
 **AC Analysis**
 
@@ -86,38 +90,45 @@
 ### 🧠 4. การจัดการผลการจำลอง
 
 - ✅ เก็บผล DC, AC และ Transient แยกจากกันระหว่างที่เปิดหน้าเว็บ
-- ✅ แสดงสถานะ `Current`, `Stale` และ `Error`
+- ✅ แสดงสถานะ `Current`, `Stale` และ `Failed`
 - ✅ แสดงอินพุตที่ใช้ในการจำลองแต่ละครั้ง
 - ✅ สามารถตรวจสอบ Netlist และ Log จาก ngspice
 - ✅ แจ้งเตือนเมื่อผลการจำลองไม่ตรงกับค่าปัจจุบัน
+- ✅ ดาวน์โหลดผลการจำลองและค่าที่ใช้ด้วย **Export** หรือรวมการตั้งค่า Overlay ด้วย **Save Project** ในรูปแบบ JSON
 
-> 💡 ผลการจำลองถูกเก็บไว้เฉพาะในหน่วยความจำของหน้าเว็บ เมื่อรีโหลดหรือออกจากหน้าเว็บ ประวัติผลลัพธ์จะถูกล้าง
+> 💡 หน้าเว็บเก็บผลการจำลองไว้ระหว่างใช้งาน หากต้องการเก็บผลก่อนรีโหลดหรือออกจากหน้า ให้ดาวน์โหลดไฟล์ JSON
 
 ### 📱 5. Responsive Web Design
 
 หน้า Dashboard ออกแบบให้ใช้งานได้ทั้งบนคอมพิวเตอร์และหน้าจอขนาดเล็ก
 
-กราฟบนหน้าจอแคบรองรับการเลื่อนแนวนอนภายในพื้นที่กราฟ เพื่อรักษารายละเอียดในการอ่านข้อมูล
+บนหน้าจอแคบ แผงควบคุมและผลลัพธ์เรียงในแนวตั้ง ส่วนแผนภาพวงจรสามารถเลื่อนแนวนอนภายในแผงเพื่อดูสัญลักษณ์และค่าต่าง ๆ ได้ครบ
 
 ---
 
 ## 🖥️ ภาพตัวอย่างโปรแกรม
 
-ภาพด้านล่างเป็น Screenshot จากการใช้งาน Dashboard จริง โดยทดสอบด้วย **Playwright MCP** หลังจากจำลอง DC, AC และ Transient สำเร็จ
+ภาพจากหน้า Simulation ของ Lab 04 แสดงวงจรขยาย Common-Emitter แบบ Voltage Divider Bias ที่ใช้ทรานซิสเตอร์ 2N3904 และตัวต้านทานอิมิตเตอร์แบบไม่บายพาส จับภาพด้วย **Playwright MCP** หลังจาก ngspice คำนวณผล DC, AC และ Transient สำเร็จ
 
-### 💻 Desktop — 1280 × 900
+### 💻 Desktop — 1440 × 900
 
-![Dashboard Desktop 1280×900](docs/evidence/phase7/dashboard-1280.png)
+![Lab 04 บนเดสก์ท็อป แสดงวงจร แผงตั้งค่า จุดทำงาน DC กราฟ Bode และรูปคลื่น Transient](docs/screenshots/lab04-desktop.png)
+
+### 🔍 วงจรและจุดทำงาน Q-Point
+
+![ภาพขยายวงจร 2N3904 พร้อมลูกศรกระแสสีส้ม กล่อง Q-Point และรูปคลื่นอินพุตกับเอาต์พุต](docs/screenshots/lab04-schematic.png)
+
+ลูกศรสีส้มแสดงทิศทางกระแสตามขา Collector และ Emitter กล่อง Q-Point สีม่วงอยู่ข้างขา Emitter และแสดง `IC` กับ `VCE` จากผล DC ของรอบที่จับภาพ [ดูภาพเทียบกับ Final Project Reference](docs/evidence/schematic-fidelity/current-q-point-comparison.png)
 
 ### 🖥️ Compact Desktop — 1085 × 613
 
-![Dashboard Compact 1085×613](docs/evidence/phase7/dashboard-1085.png)
+![Lab 04 บนเดสก์ท็อปขนาดกะทัดรัด แสดงวงจร และแผงผลลัพธ์พร้อมกัน](docs/screenshots/lab04-compact.png)
 
 ### 📱 Mobile View — 390 × 844
 
-![Dashboard Mobile 390×844](docs/evidence/phase7/dashboard-390.png)
+![ภาพเต็มหน้า Lab 04 บนหน้าจอมือถือจำลอง แสดงแผงวงจรและผลลัพธ์เรียงในแนวตั้ง](docs/screenshots/lab04-mobile.png)
 
-> 📷 ภาพเหล่านี้เป็นภาพจากเบราว์เซอร์จริง ไม่ใช่ภาพ Mockup โดยการทดสอบหน้าจอมือถือใช้การจำลองขนาดหน้าจอผ่าน Chromium ไม่ใช่การทดสอบบนโทรศัพท์จริง
+> 📷 ภาพมือถือเป็นภาพเต็มหน้าจาก Chromium ที่จำลอง viewport ขนาด 390 × 844
 
 ---
 
@@ -257,7 +268,7 @@ python -m flask --app app run --port 5001
 
 ใช้วิเคราะห์แรงดันและกระแสที่จุดทำงานของทรานซิสเตอร์ โดยแสดงผลผ่าน Dashboard และตำแหน่งต่าง ๆ บนแผนภาพวงจร
 
-ค่าที่แสดงประกอบด้วย `VB`, `VE`, `VC`, `VCE` และ `IC`
+ค่าที่แสดงประกอบด้วย `VB`, `VE`, `VC`, `VCE`, `IC` และ `IE` พร้อมสถานะการทำงานของทรานซิสเตอร์
 
 ### 📈 AC Frequency Response
 
@@ -318,7 +329,13 @@ python -B -m unittest discover -s tests -v
 
 หากต้องการให้รวมการทดสอบที่เรียกใช้ ngspice จริง ต้องตั้งค่า `NGSPICE_PATH` และ `BJT_MODEL_PATH` ให้ถูกต้องก่อน
 
-### ✅ ผลการทดสอบ Phase 7
+ชุดทดสอบส่วนที่เรียกใช้ JavaScript ต้องติดตั้ง Node.js ด้วย
+
+### ✅ ผลการทดสอบเวอร์ชันปัจจุบัน
+
+ชุดทดสอบอัตโนมัติผ่าน 65 รายการเมื่อกำหนดค่า ngspice และโมเดล 2N3904 สำหรับการทดสอบ ครอบคลุมการคำนวณ Lab 03 การจำลอง Lab 04 การสลับโหมดไบอัส และพฤติกรรมของแผนภาพวงจร
+
+### 📋 บันทึกการทดสอบ Phase 7 ก่อนปรับหน้าจอ
 
 | รายการ | ผลลัพธ์ |
 |---|---|
@@ -343,8 +360,8 @@ python -B -m unittest discover -s tests -v
 | [📄 Validation Report](docs/validation.md) | รายงานการตรวจสอบและรายละเอียดการทดสอบ |
 | [📊 Summary JSON](docs/evidence/phase7/summary.json) | สรุปผลการทดสอบเชิงตัวเลข |
 | [🧪 Regression Log](docs/evidence/phase7/regression.txt) | บันทึกผลการทดสอบอัตโนมัติ |
-| [🖥️ Desktop Screenshot](docs/evidence/phase7/dashboard-1280.png) | ภาพ Dashboard ขนาด 1280 × 900 |
-| [📱 Mobile Screenshot](docs/evidence/phase7/dashboard-390.png) | ภาพ Dashboard ขนาด 390 × 844 |
+| [🖥️ ภาพหน้าจอปัจจุบัน](docs/screenshots/lab04-desktop.png) | หน้า Simulation ขนาด 1440 × 900 พร้อมผล DC, AC และ Transient |
+| [🔍 ภาพเทียบวงจรกับต้นฉบับ](docs/evidence/schematic-fidelity/current-q-point-comparison.png) | ตำแหน่งลูกศรกระแสและกล่อง Q-Point เทียบกับภาพอ้างอิง |
 
 ไฟล์ Netlist ที่สร้างระหว่างการทดสอบ ผลลัพธ์ดิบจาก Solver และไฟล์โมเดลภายนอกไม่ได้เผยแพร่ไว้ใน Repository
 
@@ -357,7 +374,7 @@ python -B -m unittest discover -s tests -v
 1. **โมเดลทรานซิสเตอร์** — ใช้ 2N3904 สำรองที่ยังไม่ได้รับการยืนยันจากอาจารย์
 2. **การจำลองวงจร** — รองรับเฉพาะวงจรอ้างอิง Common-Emitter แบบ Voltage Divider ที่ไม่มี Emitter Bypass Capacitor
 3. **การแก้ไขวงจร** — ไม่รองรับการสร้างหรือแก้ไขวงจรอิสระทุกชนิด
-4. **การบันทึกข้อมูล** — ไม่มีระบบบันทึกผลจำลองถาวรหรือ Export ผลลัพธ์
+4. **การบันทึกข้อมูล** — ดาวน์โหลดผลเป็น JSON ได้ ประวัติในหน้าเว็บจะล้างเมื่อรีโหลด และยังไม่มีระบบนำเข้าไฟล์โครงการ
 5. **ความแม่นยำของ Analytical Mode** — ใช้สมการประมาณภายใต้สมมติฐานค่า β และ VBE คงที่
 6. **การทดสอบมือถือ** — ตรวจสอบผ่าน Chromium Viewport Emulation ยังไม่ได้ทดสอบบนอุปกรณ์มือถือจริง
 7. **Accessibility** — ยังไม่ได้รับการตรวจสอบตามมาตรฐาน WCAG แบบครบถ้วน
@@ -366,8 +383,6 @@ python -B -m unittest discover -s tests -v
 ฟีเจอร์เพิ่มเติมที่ยังไม่รองรับ ได้แก่
 
 - Emitter Bypass Control
-- Animated Circuit Overlays
-- Save / Export
 - Persistent Simulation History
 - Reference Benchmark Validation
 
@@ -382,8 +397,8 @@ python -B -m unittest discover -s tests -v
 | ⏳ Simulation Timeout | ตรวจสอบความถูกต้องของโมเดลและพารามิเตอร์ |
 | ⏭️ Integration Tests ถูกข้าม | ตั้งค่า `BJT_MODEL_PATH` ก่อนรันทดสอบ |
 | 🌐 Port 5000 ถูกใช้งาน | เปลี่ยนพอร์ตด้วย `--port 5001` |
-| 📱 กราฟกว้างกว่าหน้าจอ | เลื่อนแนวนอนภายในพื้นที่กราฟ |
-| 🔄 ผลการจำลองหายหลัง Refresh | เป็นพฤติกรรมปกติ เนื่องจากไม่ได้บันทึกผลแบบถาวร |
+| 📱 แผนภาพวงจรกว้างกว่าหน้าจอ | เลื่อนแนวนอนภายในแผง Circuit Schematic |
+| 🔄 ต้องการเก็บผลการจำลองก่อน Refresh | กด **Export** เพื่อดาวน์โหลดผลเป็นไฟล์ JSON |
 
 หาก ngspice แสดงข้อผิดพลาด สามารถเปิดดูข้อมูล Netlist และ Log ของการจำลองแต่ละครั้งจาก Dashboard เพื่อช่วยตรวจสอบสาเหตุได้
 
@@ -402,7 +417,8 @@ python -B -m unittest discover -s tests -v
 | 🔬 Feature Commit | `a7c63e10e2f4ceac406b56876dc210dbae2faa3c` |
 | 🔀 PR #1 Merge Commit | `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f` |
 | 📚 Documentation Commit | `a34c9c4a1a995a7d46edfcd738a6e1811b876d2c` |
-| ✅ Final Main Commit | `2ffb37f59129e818988cccbdfde7226382cdd4b0` |
+| ✅ Post-Merge Documentation | `2ffb37f59129e818988cccbdfde7226382cdd4b0` |
+| 🖥️ Dashboard และวงจรเวอร์ชันปัจจุบัน | `4813d96486f94c033eb05c9d8afabd0cf08bf6ac` |
 
 **ประวัติ Pull Request**
 
