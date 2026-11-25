@@ -304,3 +304,21 @@ RE=2 kΩ, changed-source arrays and their plots were also independently checked 
 PR [#1](https://github.com/B6829292/BJT-Amplifier-Lab04/pull/1) was merged into `main`. The refreshed `origin/main` was verified at merge commit `ee2f3a4b7a1c68aebee727e1b0159d2ee73fb92f`, which includes feature commit `a7c63e10e2f4ceac406b56876dc210dbae2faa3c`. The historical Phase 6, 6.1, 6.2 and Phase 7 verification results above are retained unchanged; earlier submission-status notes describe the state at the Phase 7 stop point and are superseded by this record.
 
 The Virginia Tech OPEL 2N3904 remains a fallback model and **not instructor-verified**. No instructor verification is claimed, and model redistribution permission remains unresolved; the model file is not included.
+
+## Lab04 reference-UI replication — 25 November 2026
+
+The new high-fidelity UI revision is separate from the historical verification-only Phase 7 record above. It preserves Lab04 scope, the unbypassed CE netlist, existing Flask routes, device handling and analytical calculations. The source reference is design evidence, never a screenshot background. See the [implementation summary, component checklist, comparison method and remaining differences](reference-ui.md).
+
+New live verification uses actual local ngspice and the configured fallback 2N3904. The complete automated suite, browser results and screenshots are in [reference-UI evidence](evidence/reference-ui/README.md). Desktop captures cover 1085×613, 1920×1080, 1440×900 and 1366×768. The mobile capture uses 390×844 Chromium mobile emulation; physical-device certification is not claimed.
+
+The browser checks include real DC/AC/transient results, mouse/keyboard/emulated-touch rotary inputs, numeric synchronization, current/stale/pending/failure isolation, switches across redraw, animation reset, sampled SVG overlays, chart tooltips, real JSON downloads, no-JavaScript DC submission and canonical Reset following a native POST. Frontend converted-unit bounds are contract-tested against the unchanged engine. IE is derived from simulated VE/RE. The bias-region indicator is a junction/current consistency check, not instructor validation.
+
+Final results: **58 Python tests passed, 0 failed, 0 skipped**, including the original 51. Playwright MCP passed **59 main interaction assertions** and **14 review-regression assertions**. The independent visual finish review returned **ship**, with only minor tab-position/header-lettering differences deferred; see the [review scope and findings](evidence/reference-ui/review.md). The detector's final 270 token-use advisories and Jinja-related hierarchy warning are recorded there, not reported as a clean source scan.
+
+Reference benchmarks and instructor validation remain **NOT RUN**. No visual similarity percentage is claimed: the documented raw static-region RGB errors are not a perceptual score. The independent review findings and their reproducing checks are retained in the reference-UI report. No historical evidence files were overwritten. No commit, push or merge was performed.
+
+## Shared lab UI and schematic refinement — 25 November 2026
+
+The shared layout covers Lab03 Fixed, Emitter, and Voltage Divider Bias and the Lab04 ngspice simulator. The Lab04 workspace shows animated circuit overlays and supports local JSON downloads from Save Project and Export. The supplied README records the earlier Phase 7 workspace.
+
+All 65 automated tests passed with the local ngspice configuration. Playwright checked navigation and calculation behavior, real DC/AC/transient data, overlay controls and reduced motion, and the final current arrows and Q-Point placement. [Shared UI verification](evidence/final-project-ui/README.md) · [Schematic verification](evidence/schematic-fidelity/README.md) · [Final current arrows and Q-Point comparison](evidence/schematic-fidelity/current-q-point-comparison.png)

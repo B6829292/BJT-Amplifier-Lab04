@@ -13,10 +13,10 @@ async (page) => {
   async function run(mode) {
     await page.locator('#analysis').selectOption(mode);
     const pending = page.waitForResponse(response => response.url() === base + '/simulation' && response.request().method() === 'POST');
-    await page.locator('#spice-form button').click();
+    await page.locator('#spice-form button[type=submit]').click();
     const payload = await (await pending).json();
     evidence.runs.push({width:page.viewportSize().width,...payload});
-    await page.waitForFunction(() => !document.querySelector('#spice-form button').disabled);
+    await page.waitForFunction(() => !document.querySelector('#spice-form button[type=submit]').disabled);
     return payload;
   }
   function compare(actual, expected) {
@@ -39,8 +39,10 @@ async (page) => {
         {x:data.frequency_hz,ys:[data.gain_db,data.phase_deg],log:true,wrapped:true}
       ] : [{x:data.time_s,ys:[data.vin_v,data.vout_v]}];
       let maxError = 0, pointsChecked = 0;
-      [...panel.querySelectorAll('svg')].forEach((svg,index) => {
+      [...panel.querySelectorAll('.plots svg')].forEach((svg,index) => {
         const spec=specs[index], map=spec.log?Math.log10:v=>v;
+        const frame=svg.querySelector('[data-plot-frame]');
+        const [left,top,width,height]=['x','y','width','height'].map(key=>Number(frame.getAttribute(key)));
         const xmin=map(spec.x[0]),xmax=map(spec.x.at(-1));
         let low=Math.min(...spec.ys.flat()),high=Math.max(...spec.ys.flat());
         const padding=(high-low||Math.abs(high)||1)*.08;low-=padding;high+=padding;
@@ -56,8 +58,8 @@ async (page) => {
           const segments=1+spec.ys[series].slice(1).filter((v,i)=>spec.wrapped&&series===1&&Math.abs(v-spec.ys[series][i])>180).length;
           if(lines.length!==segments) throw new Error('Phase discontinuity connected');
           actual.forEach(([x,y],i)=>{
-            const px=82+(map(spec.x[i])-xmin)/(xmax-xmin)*236;
-            const py=16+(high-spec.ys[series][i])/(high-low)*184;
+            const px=left+(map(spec.x[i])-xmin)/(xmax-xmin)*width;
+            const py=top+(high-spec.ys[series][i])/(high-low)*height;
             maxError=Math.max(maxError,Math.abs(x-px),Math.abs(y-py));pointsChecked++;
           });
         });
@@ -90,8 +92,9 @@ async (page) => {
     const dcErrors=compare(dc.result,reference.dc);
     const dcRows=await page.locator('#run-dc tr').allTextContents();
     for(const [i,key] of ['vb','ve','vc','vce','ic'].entries()) {
-      const expected=(reference.dc[key]*(key==='ic'?1000:1)).toFixed(4);
-      assert(dcRows[i].includes(expected),`DC displayed ${key} mismatch`);
+      const value=reference.dc[key]*(key==='ic'?1000:1);
+      assert(dcRows[i].includes(value.toFixed(2)),`DC displayed ${key} mismatch`);
+      assert((await page.locator('#run-dc td').nth(i).getAttribute('title')).includes(value.toFixed(4)),`DC precision ${key} mismatch`);
     }
     await page.locator('#run-dc details').evaluate(n=>n.open=true);
     assert((await page.locator('#run-dc pre').last().innerText()).includes('v(b)'),'Missing real solver log');
@@ -129,22 +132,22 @@ async (page) => {
     await page.locator('#spice-re').fill('0');
     assert((await states()).every(s=>s.startsWith('Stale')),'RE edit did not stale all retained analyses');
     const invalid=await run('tran');
-    assert(invalid.error&&!invalid.result&&await page.locator('#run-tran svg').count()===0,'Invalid run showed results');
-    assert(await page.locator('#run-ac svg').count()===1&&await page.locator('#run-dc table').count()===1,'Failure discarded independent retained results');
+    assert(invalid.error&&!invalid.result&&await page.locator('#run-tran .plots svg').count()===0,'Invalid run showed results');
+    assert(await page.locator('#run-ac .plots svg').count()===1&&await page.locator('#run-dc table').count()===1,'Failure discarded independent retained results');
     const invalidText=await page.locator('#spice-status').innerText();
     await page.screenshot({path:`.playwright-mcp/phase6-invalid-${width}.png`,fullPage:true});
     await page.locator('#spice-re').fill('1');await run('tran');
     await page.route('**/simulation',async route=>{const response=await route.fetch({url:'http://127.0.0.1:5158/simulation'});await route.fulfill({response});});
     const missing=await run('ac');await page.unroute('**/simulation');
     assert(missing.error?.includes('model not found')&&!missing.result,'Missing model not reported');
-    assert(await page.locator('#run-ac svg').count()===0&&await page.locator('#run-tran svg').count()===1&&await page.locator('#run-dc table').count()===1,'Failure isolation wrong');
+    assert(await page.locator('#run-ac .plots svg').count()===0&&await page.locator('#run-tran .plots svg').count()===1&&await page.locator('#run-dc table').count()===1,'Failure isolation wrong');
     await page.screenshot({path:`.playwright-mcp/phase6-missing-model-${width}.png`,fullPage:true});
     await capture('B7',width,{invalid:invalidText,missingModel:await page.locator('#spice-status').innerText(),states:await states(),method:'Intercepted AC POST forwarded to actual missing-model Flask instance on port 5158; real JSON response fulfilled unchanged.'});
     await run('ac');
-    assert(await page.locator('.run-panel svg').count()===2,'Recovery did not restore all plots');
+    assert(await page.locator('.run-panel .plots svg').count()===2,'Recovery did not restore all plots');
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
     assert(!overflow,'Page overflows');
-    await capture('B8',width,{overflow,chartCount:await page.locator('.run-panel svg').count(),screenshots:[`phase6-dashboard-${width}.png`,`phase6-source-changed-${width}.png`]});
+    await capture('B8',width,{overflow,chartCount:await page.locator('.run-panel .plots svg').count(),screenshots:[`phase6-dashboard-${width}.png`,`phase6-source-changed-${width}.png`]});
   }
   assert(evidence.errors.length===0,evidence.errors.join('\n'));
   await page.evaluate(data=>{window.phase6Evidence=data;},evidence);

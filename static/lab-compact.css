@@ -1,132 +1,356 @@
-/* Reference-fidelity presentation; all rules scoped to the simulation surface. */
-.simulation-page {
-  --lab-line: #cfdee7;
-  --lab-wash: #eaf4f9;
-  --lab-text: #193d50;
-  --lab-action: #007183;
-  --lab-muted: #365568;
-  --lab-panel: #f7fbfe;
-  --lab-panel-head: #e6f1f8;
-  --lab-ok: #176b43;
-  --lab-ok-bg: #e9f6ef;
-  --lab-warn-bg: #fff5df;
-  font-variant-numeric: tabular-nums;
-  scrollbar-color: #8aa9b9 #edf4f9;
+/* Final Project laboratory design shared by the analytical and SPICE workspaces. */
+@font-face {font-family:Roboto;src:url('fonts/Roboto-Regular.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face {font-family:Roboto;src:url('fonts/Roboto-Medium.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face {font-family:Roboto;src:url('fonts/Roboto-Bold.ttf') format('truetype');font-weight:700;font-display:swap}
+.lab-page {
+  --lab-line:#cddfe9; --lab-wash:#e7f3f9; --lab-text:#152833; --lab-action:#008a9d;
+  --lab-muted:#405969; --lab-panel:#f8fcfe; --lab-ok:#16643a;
+  --lab-font:Roboto,Arial,sans-serif; --lab-math:'Times New Roman',Georgia,serif;
+  --ui:clamp(10px,.94vw,16px); --space:clamp(6px,.65vw,12px);
+  margin:10px 16px 6px 6px; border:1px solid #ccdee7; border-radius:8px;
+  background:linear-gradient(115deg,#e8f1f6,#f4f9fc 65%,#e4eff7);
+  color:var(--lab-text); font:var(--ui)/1.35 var(--lab-font);
+  font-variant-numeric:tabular-nums; scrollbar-color:#9ab7c6 #edf5f9;
 }
-.simulation-page ::selection { background: #bce9e6; color: #153f4b; }
-.simulation-page input { caret-color: var(--lab-action); }
-.simulation-page .lab-header { min-height: 46px; padding: 6px 12px; gap: 10px; }
-.simulation-page .lab-header strong { font-size: 16px; }
-.simulation-page .lab-mark img { width: 29px; height: 29px; }
-.simulation-page .lab-layout { grid-template-columns: 164px minmax(0,1fr); padding: 8px; gap: 8px; }
-.simulation-page .lab-sidebar { gap: 6px; }
-.simulation-page .lab-sidebar nav, .simulation-page .sidebar-section { padding: 7px; border-radius: 4px; }
-.simulation-page .nav-link { font-size: 12px; padding: 6px; }
-.simulation-page .sidebar-section h2 { margin-bottom: 5px; font-size: 13px; }
-.simulation-page .sidebar-section a { padding: 4px 6px; font-size: 12px; line-height: 1.3; }
-.simulation-page .sidebar-section a small { padding-left: 0; font-size: 10px; }
-.simulation-page .sidebar-section:has([data-bias-link]) > p { display: none; }
-.simulation-page .sidebar-project p { margin: 4px 0; }
-.simulation-page .signal-section > p { font-size: 11px; margin: 4px 0 6px; }
-.simulation-page .signal-section .input-row { grid-template-columns: minmax(0,1fr) 55px; gap: 3px; margin: 0 0 7px; min-height: 0; }
-.simulation-page .signal-section label { grid-column: 1 / -1; font: 11px Arial,sans-serif; white-space: normal; }
-.simulation-page .signal-section input, .simulation-page .signal-section .unit { height: 30px; padding: 4px; font-size: 12px; border-radius: 3px; }
-.simulation-page .workspace-title { margin: 0 2px 7px; }
-.simulation-page .workspace-title h1 { font-size: 16px; line-height: 1.25; }
-.simulation-page .workspace-title > span { display: none; }
-.simulation-page .spice-dashboard { grid-template-columns: minmax(0,1.8fr) minmax(290px,1fr); gap: 8px; }
-.simulation-page .card { border-radius: 4px; border-color: var(--lab-line); }
-.simulation-page .card h2 { min-height: 33px; padding: 6px 10px; font-size: 14px; background: var(--lab-wash); }
-.simulation-page .schematic-panel { display: flex; flex-direction: column; }
-.simulation-page .schematic-stage { flex: 1; min-height: 0; padding: 5px 8px; background: var(--lab-panel); }
-.simulation-page .schematic-stage svg { max-height: 260px; width: 100%; }
-.simulation-page .schematic-foot { padding: 6px 9px; font-size: 11px; gap: 6px; }
-.simulation-page .config-panel > .spice-note { margin: 7px 10px 3px; color: var(--lab-muted); font-size: 12px; }
-.simulation-page .config-panel form { padding: 7px 10px 10px; gap: 6px 10px; }
-.simulation-page .config-panel .input-row { gap: 3px 4px; }
-.simulation-page .config-panel .input-row label { font-size: 12px; }
-.simulation-page .config-panel input, .simulation-page .config-panel .unit { height: 30px; border-radius: 3px; padding: 3px 6px; font-size: 13px; }
-.simulation-page .config-panel .analysis-row label { display: none; }
-.simulation-page .config-panel .analysis-row { order: 1; grid-column: auto; margin-top: 3px; }
-.simulation-page .config-panel #analysis { height: 32px; font-size: 13px; }
-.simulation-page .config-panel button { order: 1; grid-column: auto; margin-top: 3px; height: 36px; font-size: 14px; border-radius: 4px; }
-.simulation-page .results-card { padding-bottom: 0; }
-.simulation-page .results-heading { display: flex; align-items: center; justify-content: space-between; background: var(--lab-wash); border-bottom: 1px solid var(--lab-line); }
-.simulation-page .result-nav { display: flex; gap: 2px; margin-right: 7px; }
-.simulation-page .result-nav a { color: #17596c; font-size: 11px; text-decoration: none; padding: 5px 8px; border-radius: 3px; }
-.simulation-page .result-nav a:hover, .simulation-page .nav-link:hover { background: #d4eaf4; }
-.simulation-page .retained-runs { grid-template-columns: minmax(125px,.75fr) minmax(0,1.4fr) minmax(0,1.3fr) minmax(145px,.9fr); gap: 0; padding: 0; align-items: start; }
-.simulation-page .run-panel, .simulation-page .validation-panel { border: 0; border-radius: 0; border-right: 1px solid var(--lab-line); background: transparent; min-width: 0; }
-.simulation-page .validation-panel { border-right: 0; }
-.simulation-page .run-panel h3, .simulation-page .validation-panel h3 { margin: 0; padding: 8px; font-size: 13px; line-height: 1.3; color: var(--lab-text); background: var(--lab-panel-head); }
-.simulation-page .run-state { margin: 0; padding: 6px 8px; font-size: 12px; min-height: 28px; color: var(--lab-muted); }
-.simulation-page .run-state::before { content: ''; display: inline-block; width: 7px; height: 7px; margin: 0 6px 1px 0; border-radius: 50%; background: #758b98; }
-.simulation-page .run-panel:not([data-stale="true"]) .run-state:has(+ .run-content:not(:empty))::before { background: var(--lab-ok); }
-.simulation-page .run-panel[data-stale="true"] .run-state::before { background: #785115; }
-.simulation-page .run-panel table { margin: 4px 6px; width: calc(100% - 12px); border: 0; border-radius: 0; }
-.simulation-page .run-panel th, .simulation-page .run-panel td { height: 26px; padding: 3px 6px; font-size: 12px; background: transparent; }
-.simulation-page .run-panel .plots { padding: 5px 3px 0; display: block; }
-.simulation-page .run-panel .plots figure { margin: 0; min-width: 0; }
-.simulation-page .plots figcaption { display: none; }
-.simulation-page .run-panel .plots svg { width: 100%; min-width: 0; min-height: 0; }
-.simulation-page .plots svg text { font: 19px Arial,sans-serif; }
-.simulation-page .plots svg .phase-axis { fill: #94400f; }
-.simulation-page .plot-legend { margin: 2px 2px 0; gap: 8px; justify-content: center; flex-wrap: wrap; font-size: 12px; line-height: 1.4; }
-.simulation-page .bode-note { margin: 4px 6px 0; color: var(--lab-muted); font-size: 12px; line-height: 1.35; text-align: center; }
-.simulation-page .run-panel details { margin: 5px 8px; font-size: 11px; }
-.simulation-page .run-panel summary { padding: 4px 0; min-height: 24px; }
-.simulation-page .validation-panel .status { margin: 8px; padding: 8px; font-size: 12px; line-height: 1.45; }
-.simulation-page .validation-panel .status strong { font-size: 13px; }
-.simulation-page .validation-panel .status::before { content: ''; display: inline-block; width: 8px; height: 8px; margin: 0 7px 1px 0; border-radius: 50%; background: currentColor; }
-.simulation-page .validation-panel .status-ok { color: var(--lab-ok); background: var(--lab-ok-bg); border-color: #b6ddc7; }
-.simulation-page .validation-panel .status-pending { color: var(--lab-muted); background: var(--lab-panel); }
-.simulation-page .validation-panel .status-warning { color: #723d18; background: var(--lab-warn-bg); border-color: #ead1a1; }
-.simulation-page .validation-facts { margin: 8px; border-top: 1px solid var(--lab-line); }
-.simulation-page .validation-row { display: grid; grid-template-columns: minmax(65px,.8fr) minmax(0,1.2fr); gap: 5px; padding: 5px 2px; border-bottom: 1px solid #e7eef2; font-size: 11px; line-height: 1.3; }
-.simulation-page .validation-row dt { color: var(--lab-muted); font-weight: 600; }
-.simulation-page .validation-row dd { margin: 0; color: var(--lab-text); overflow-wrap: anywhere; }
-.simulation-page .validation-indicator { display: inline-block; width: 7px; height: 7px; margin: 0 5px 1px 0; border-radius: 50%; background: #8a692d; }
-.simulation-page .validation-footnote { margin: 8px; color: var(--lab-muted); font-size: 12px; line-height: 1.4; }
-.simulation-page .measurement-note { margin: 0; padding: 7px 10px; color: var(--lab-muted); font-size: 12px; border-top: 1px solid var(--lab-line); }
-.simulation-page .mobile-scroll-hint { display: none; }
-@media (max-width: 1000px) and (min-width: 721px) {
-  .simulation-page .lab-layout { grid-template-columns: 150px minmax(0,1fr); }
-  .simulation-page .spice-dashboard { grid-template-columns: minmax(0,1fr); }
-  .simulation-page .retained-runs { grid-template-columns: 1fr 1fr; }
-  .simulation-page .lab-sidebar nav { display: block; }
+.lab-page ::selection {background:#beeaf1;color:#123b49}
+.ui-icon {width:1.3em;height:1.3em;flex:none;vertical-align:middle}
+.sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.lab-page :focus-visible {outline:2px solid #00768d;outline-offset:3px}
+.lab-page input {caret-color:#008a9d}
+.lab-page input,.lab-page select,.lab-page .unit {font-family:var(--lab-font)}
+.lab-page button {font:inherit;cursor:pointer;margin:0;width:auto;height:auto;min-width:0;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;gap:.45em}
+.lab-page button:disabled {cursor:wait;background:#557581}
+.lab-page .lab-header {min-height:40px;padding:5px 13px;gap:10px;background:linear-gradient(#fff,#f4f9fc);border-radius:8px 8px 0 0;box-shadow:0 2px 5px #294f5910}
+.lab-page .lab-mark img {width:27px;height:27px}
+.lab-mark > .ui-icon {width:28px;height:28px;color:#205a69}
+.lab-page .lab-header strong {font-size:clamp(15px,1.46vw,25px);line-height:1.05;color:#10182a}
+.lab-page .lab-header small {font-size:.89em;font-weight:500;color:#223244;margin-top:2px}
+.lab-page .course-tag,.lab-page .vision-tag {font-size:.95em;white-space:nowrap;border-radius:3px;padding:3px 10px;box-shadow:0 1px 3px #224e5b12}
+.lab-page .course-tag {background:#0073c3}
+.lab-page .vision-tag {background:linear-gradient(#ddf6f2,#b9e6e0);color:#1e5965;font-weight:700}
+.lab-page .header-caption {font-size:.88em;background:#e9eff7;border:1px solid #dfe6ee;border-radius:4px;padding:3px 7px;color:#172737;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.lab-page .engine-tag {font-size:.83em;color:#26394c;background:#e6ebf2;padding:3px 6px}
+.lab-page .repository-link {display:flex;color:#233c4b;border-left:1px solid #d5e1e8;padding-left:9px}
+.lab-page .save-project {padding:5px 9px;font-size:.95em;background:#00798b linear-gradient(#00798b,#006978);color:#fff;border:1px solid #0a7d88;white-space:nowrap}
+.lab-page .save-project [data-icon=chevron] {width:1em;height:1em;margin-left:3px}
+.lab-page .lab-layout {display:grid;grid-template-columns:minmax(146px,14.5%) minmax(0,1fr);padding:7px 6px 5px;gap:10px;align-items:start}
+.lab-page .lab-sidebar {display:flex;flex-direction:column;gap:8px;min-width:0}
+.lab-page .lab-sidebar nav {border:0;background:transparent;padding:0 2px;display:block}
+.lab-page .nav-link {display:flex;align-items:center;gap:8px;padding:6px 4px;font-size:.97em;color:#23343f;min-height:24px}
+.lab-page .nav-link.active {background:#dbeef7;font-weight:600;color:#134359}
+.lab-page .sidebar-section {border:1px solid #d5e3ec;background:linear-gradient(110deg,#f8fcfe,#eef6fb);padding:0 6px 8px;border-radius:4px;box-shadow:0 2px 3px #3e5e7210}
+.lab-page .sidebar-section h2 {display:flex;align-items:center;gap:6px;margin:0 -3px 4px;padding:5px 3px;font-size:.98em;color:#173745;line-height:1.3}
+.lab-page .sidebar-section h2 .ui-icon {color:#137e86}
+.lab-page .bias-section {padding:0 3px 4px}
+.lab-page .bias-section h2 {margin:0 0 2px;background:linear-gradient(90deg,#d8f1f8,#bce4f4);border-radius:3px;white-space:nowrap}
+.lab-page .bias-caption {padding:0 5px 0 14px;font-weight:700;font-size:.91em;display:flex;justify-content:space-between;margin:2px 0 3px}
+.lab-page .bias-caption [data-icon=chevron] {width:1em;height:1em;margin-top:1px}
+.lab-page .bias-section a,.lab-page .unsupported-bias {display:flex;align-items:center;gap:4px;font-size:.89em;color:#263a49;line-height:1.25;padding:3px 4px;white-space:nowrap}
+.lab-page .unsupported-bias {color:#53616b;font-size:.82em}
+.lab-page .bias-section .ui-icon {width:12px;height:12px}
+.lab-page .bias-section a.chosen {background:linear-gradient(90deg,#d7f0fa,#bce6f7);color:#134359}
+.lab-page .radio-mark {width:8px;height:8px;border:1px solid #aabcc6;border-radius:50%;flex:none}
+.lab-page .chosen .radio-mark {border:2px solid #5ab6d1;background:#007caa;box-shadow:0 0 0 2px #d3edf6}
+.lab-page .bias-label-text {min-width:0;white-space:normal}
+.lab-page .bias-label-text small {display:inline;line-height:1.15;margin:0;padding:0;font-size:.84em;white-space:nowrap}
+.lab-page .generator-name {display:flex;align-items:center;gap:7px;padding:3px 3px;margin:0 0 4px;border:1px solid #e3edf3;border-radius:4px;background:#f9fcff}
+.lab-page .generator-name strong {font-size:.9em}
+.lab-page .generator-name small {display:block;color:#546573;font-size:.85em}
+.lab-page .generator-wave {background:linear-gradient(#008da7,#006680);border:1px solid #0d8395;border-radius:3px;color:#c7fbff;padding:2px 5px}
+.lab-page .generator-wave .ui-icon {width:24px;height:19px}
+.lab-page #source-fields {display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.lab-page .generator-control {display:flex;flex-direction:column;gap:2px;margin:0;min-height:0;min-width:0}
+.lab-page .generator-control label {font:700 .96em var(--lab-font);white-space:normal;text-align:center}
+.lab-page .knob {--knob-fill:calc(var(--knob-angle,-45deg) + 135deg);width:clamp(48px,4.8vw,85px);aspect-ratio:1;border-radius:50%;padding:clamp(6px,.65vw,11px);position:relative;touch-action:none;cursor:ns-resize;user-select:none}
+.lab-page .knob::before,.lab-page .knob::after {content:'';position:absolute;border-radius:50%;pointer-events:none}
+.lab-page .knob::before {inset:0;background:repeating-conic-gradient(from 225deg,#637580 0 3deg,transparent 3deg 9deg);mask-image:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.4px)),conic-gradient(from 225deg,#000 0 270deg,transparent 270deg);mask-composite:intersect}
+.lab-page .knob::after {inset:4px;background:conic-gradient(from 225deg,#02cbd4 0,#10b8c9 var(--knob-fill),#2a3339 var(--knob-fill),#121d26 270deg,transparent 270deg);box-shadow:inset 0 1px 2px #f1ffff4d}
+.lab-page .knob-dial {height:100%;border-radius:50%;border:1px solid #7e8786;position:relative;z-index:1;transform:rotate(var(--knob-angle,-45deg));background:radial-gradient(circle at 32% 23%,#fff9,transparent 47%),conic-gradient(from -23deg,#e5e9e3,#9da5a2 54deg,#5e6563 105deg,#a5aba5 142deg,#eff0e8 181deg,#858c84 225deg,#606b65 270deg,#b5b9af 315deg,#e5e9e3);box-shadow:0 3px 5px #20333e6b,inset 0 1px 2px #fff,inset 0 -1px 2px #283131a0}
+.lab-page .knob-dial span {position:absolute;top:3px;left:calc(50% - .5px);height:37%;width:1px;background:#314749;box-shadow:1px 0 0 #edf8ebaa}
+.lab-page .knob-range {display:flex;justify-content:space-between;width:100%;font-size:.72em;color:#213746}
+.lab-page .generator-value {display:flex;width:100%;margin-top:3px;border:1px solid #c5d6df;border-radius:3px;background:white;overflow:hidden}
+.lab-page .generator-value input {border:0;padding:2px 3px;width:55%;height:20px;font-size:.92em;border-radius:0}
+.lab-page .generator-value .unit {height:20px;font-size:.7em;padding:3px 2px;border:0;width:45%;background:#f4f8fb;white-space:nowrap;border-radius:0;display:flex;align-items:center}
+.lab-page .source-note {display:none}
+.lab-page .sidebar-project p {font-size:.88em;line-height:1.5;margin:4px 0}
+.lab-page .sidebar-project {padding-bottom:6px}
+.lab-page .sidebar-project .project-truth {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.lab-page .lab-workspace {display:grid;grid-template-columns:minmax(0,1.72fr) minmax(0,1fr);gap:6px 9px;align-items:stretch}
+.lab-page .card {border:1px solid #dce8ef;border-radius:4px;background:linear-gradient(110deg,#fafdff,#f2f8fc);box-shadow:0 2px 5px #3459780b}
+.lab-page .schematic-panel {display:flex;flex-direction:column;border-color:transparent;min-width:0;position:relative;background:linear-gradient(110deg,#fafcff,#f7f9fd)}
+.lab-page .workspace-title {display:flex;justify-content:flex-start;gap:6px;margin:0 0 4px;min-height:18px}
+.lab-page .workspace-title h1 {font-size:clamp(13px,1.23vw,22px);line-height:1.25;white-space:nowrap;letter-spacing:0;color:#101827}
+.lab-page .workspace-title h1 span {font-weight:400}
+.lab-page .workspace-title > span {display:flex;font-size:.85em;color:#4b6573}
+.lab-page .schematic-tabs {display:flex;gap:4px;align-items:center;padding:0;border-bottom:1px solid #e1edf3}
+.lab-page .schematic-tabs h2,.lab-page .schematic-tabs button,.lab-page .schematic-tabs summary {padding:5px 11px;font-size:.96em;min-height:24px;border-radius:3px;gap:6px;font-weight:600;box-shadow:0 1px 2px #47668315}
+.lab-page .schematic-tabs h2 {background:linear-gradient(#e4f5fc,#c9e9f9);display:flex;justify-content:flex-start}
+.lab-page .schematic-tabs button,.lab-page .schematic-tabs summary {color:#27384a;border:1px solid #e3e9ee;background:linear-gradient(#fff,#edf3f8);font-weight:400}
+.lab-page #operation-guide {padding:12px;background:#eaf6fa;border:1px solid #bcdce8;position:absolute;top:58px;z-index:2;box-shadow:0 4px 12px #26435622;font-size:1.1em}
+.lab-page #operation-guide[hidden] {display:none}
+.lab-page .schematic-stage {flex:1;min-height:0;padding:0 3px;display:grid;place-items:center;background:transparent;overflow:hidden}
+.lab-page .schematic-stage svg {width:100%;max-width:none;height:auto;max-height:none;overflow:visible}
+.circuit-legend rect {fill:#f2f7fc;stroke:#cbd8e6;stroke-width:1}
+.circuit-legend text {font:500 8.2px var(--lab-font);fill:#203442}
+.component-labels {font:italic 13px var(--lab-math)}
+.component-labels .component-value {font:11.7px var(--lab-math)}
+.supply-label rect {fill:#fff3d7}.supply-label text {font:italic 12px var(--lab-math);fill:#172b30}
+.node-badge rect {fill:#fce6f1;stroke:#dc91bb;stroke-width:.8}.node-badge text {font:italic bold 10.5px var(--lab-math);fill:#9a2567}
+.q-point rect {fill:#f4ebfe;stroke:#a37bc9;stroke-width:1.2;stroke-dasharray:3 2}
+.q-point text {font:500 9px var(--lab-font);fill:#533271}.q-point text:first-of-type {font-weight:700}
+.schematic-bias-badge rect {fill:#f0eaf9;stroke:#d9c9e9;stroke-width:1}
+.schematic-bias-badge {color:#5b417b}.schematic-bias-badge text {font:700 9.2px var(--lab-font);fill:#533c72}
+.current-label text {fill:#ab5900;stroke:none;font:italic bold 11px var(--lab-math)}
+.signal-label rect {stroke-width:1}.signal-label text {stroke:none;font:500 9.5px var(--lab-font);text-anchor:middle}.signal-label text:first-of-type {font-weight:700}.input-signal rect {fill:#e5f5ff;stroke:#94d6f4}.input-signal text {fill:#154f80}.output-signal rect {fill:#e7fbe9;stroke:#a6dcb0}.output-signal text {fill:#245b32}
+.ac-layer [data-signal-wave] {stroke-linecap:round;stroke-linejoin:round}
+.reference-circuit .schematic-variable {font-family:var(--lab-math);font-weight:700;font-style:italic}
+.reference-circuit .schematic-subscript {font-size:.67em;font-style:normal;baseline-shift:-.22em}
+.reference-circuit .component-labels {font:14px var(--lab-math)}
+.reference-circuit .component-value {font:600 12px var(--lab-math)}
+.reference-circuit .device-type {font:700 10.6px var(--lab-font)}
+.reference-circuit .device-model {font:600 11.2px var(--lab-math)}
+.reference-circuit .source-sine {stroke:#166fab;stroke-width:1.7}
+.reference-circuit .supply-label rect {fill:#fff1d0}
+.reference-circuit .supply-label text {font:600 12.1px var(--lab-math);fill:#263235}
+.reference-circuit .current-label text {font:700 10.7px var(--lab-font);fill:#a5570b}
+.reference-circuit .node-badge rect {fill:#fce8f1;stroke:#db8ab8;stroke-width:.85}
+.reference-circuit .node-badge text {font:700 10.75px var(--lab-font);fill:#91244f}
+.reference-circuit .q-point rect {fill:#f2e9fc;stroke:#9c72c9;stroke-width:1.25;stroke-dasharray:3 2}
+.reference-circuit .q-point text {font:600 9.5px var(--lab-font);fill:#493262}
+.reference-circuit .q-point text:first-of-type {font-size:10.25px;font-weight:700}
+.simulation-page .reference-circuit .q-point text:not(:first-of-type) {font-size:9px}
+.reference-circuit .signal-label text {font:600 9.6px var(--lab-font)}
+.reference-circuit .signal-label .signal-title {font-size:10.75px;font-weight:700}
+.reference-circuit .input-signal rect {fill:#e3f3ff;stroke:#9bcee9;stroke-width:1.15}
+.reference-circuit .input-signal text {fill:#263880}
+.reference-circuit .output-signal rect {fill:#e5f9eb;stroke:#a7daba;stroke-width:1.15}
+.reference-circuit .output-signal text {fill:#214c36}
+.reference-circuit .signal-blue {stroke:#078add}
+.reference-circuit .signal-green {stroke:#19b436}
+.reference-circuit .signal-wire {stroke-width:1.65;stroke-linecap:round}
+.reference-circuit .signal-wire-glow {opacity:.44}
+.reference-circuit [data-signal-wave] {stroke-width:2.15}
+.reference-circuit .wave-glow {opacity:.48}
+.reference-circuit .output-leader {stroke:#369b58;stroke-width:.95;stroke-linecap:round;stroke-linejoin:round}
+.reference-circuit .current-wire {stroke:#e4901d;stroke-width:1.45;stroke-opacity:.75}
+.reference-circuit .current-glow {opacity:.52}
+.lab-page .overlay-toolbar {display:flex;gap:7px;align-items:center;padding:5px 7px;background:linear-gradient(#f7fbfd,#edf6fb);border-top:1px solid #e2edf2;white-space:nowrap}
+.lab-page .overlay-toolbar label {display:flex;align-items:center;gap:5px;font-size:.81em;cursor:pointer;position:relative}
+.lab-page .overlay-toolbar label:nth-child(2) {padding-right:9px;border-right:1px solid #c9d8e1}
+.lab-page .overlay-toolbar input {position:absolute;opacity:0;width:24px;height:16px;left:0;padding:0}
+.lab-page .switch-track {width:24px;height:13px;border:1px solid #8faebc;background:#8fa6b2;border-radius:10px;position:relative;display:inline-block;flex:none;pointer-events:none}
+.lab-page .switch-track::after {content:'';position:absolute;width:9px;height:9px;left:2px;top:1px;border-radius:50%;background:white;box-shadow:0 1px 2px #34556533;transition:left .12s}
+.lab-page input:checked+.switch-track {background:linear-gradient(90deg,#119ab1,#41c0db);border-color:#40adc3}
+.lab-page input:checked+.switch-track::after {left:11px}
+.lab-page input:focus-visible+.switch-track {outline:2px solid #00768d;outline-offset:3px}
+.lab-page .overlay-toolbar button {border:1px solid #c9d9e2;background:linear-gradient(#fff,#edf4f8);padding:2px 4px;color:#3f5b69;height:20px;min-width:22px}
+.lab-page .card.config-panel > h2 {padding:7px 8px;min-height:29px;display:flex;justify-content:flex-start;gap:7px;font-size:1.05em;background:linear-gradient(#edf7fd,#dceef9);color:#152b3a}
+.lab-page .config-panel h2 .ui-icon {color:#137c83}
+.lab-page .config-panel form {display:flex;flex-direction:column;padding:7px 6px 8px;gap:3px}
+.lab-page .bias-type {display:grid;grid-template-columns:24% minmax(0,1fr);align-items:center;gap:4px;font-size:.94em;font-weight:700}
+.lab-page .bias-select {position:relative;min-width:0}
+.lab-page .bias-select .ui-icon {position:absolute;top:50%;transform:translateY(-50%);pointer-events:none;left:7px;color:#375968}
+.lab-page .bias-select .ui-icon:last-child {left:auto;right:6px;width:1em;height:1em}
+.lab-page .bias-type select {appearance:none;width:100%;height:23px;padding:1px 18px 1px 22px;border:1px solid #c1d1dc;border-radius:3px;background:linear-gradient(#fff,#edf6fb);color:#263a45;font:500 .98em var(--lab-font);text-align:center;text-overflow:ellipsis}
+.lab-page .config-fields {display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(5,auto);gap:3px 16px}
+.lab-page .field-vcc {grid-area:1/1}.lab-page .field-r1 {grid-area:2/1}.lab-page .field-r2 {grid-area:3/1}.lab-page .field-rc {grid-area:4/1}.lab-page .field-re {grid-area:5/1}
+.lab-page .field-beta {grid-area:1/2}.lab-page .field-vbe {grid-area:2/2}.lab-page .field-rl {grid-area:3/2}.lab-page .field-cin {grid-area:4/2}.lab-page .field-cout {grid-area:5/2}
+.lab-page .config-panel .input-row {grid-template-columns:minmax(0,1fr) 43px;gap:1px 4px;margin:0;min-height:0}
+.lab-page .config-panel .input-row label {grid-column:1/-1;font-size:.94em;line-height:1.15;color:#1c2c35;white-space:normal}
+.lab-page .config-panel label span {color:#223844;margin:0;font-size:.9em}
+.lab-page .config-panel input,.lab-page .config-panel .spice-unit {height:18px;padding:1px 5px;font-size:1.02em;border-radius:3px;border:1px solid #c9d7df;background:linear-gradient(#fff,#f7fafc);box-shadow:inset 0 1px 2px #314f6410;display:block}
+.lab-page .model-field input {grid-column:1/-1;color:#4b5e6b;background:#edf3f6;font-size:.9em;cursor:not-allowed}
+.lab-page .config-panel .analysis-row {margin:0;display:block}
+.lab-page .config-panel #analysis {height:23px;padding:2px 5px;font-size:.94em;border-radius:3px;color:#405969}
+.lab-page .config-actions {display:flex;gap:5px;border-top:1px solid #deebf2;padding-top:7px;margin-top:1px}
+.lab-page .config-actions button {padding:5px 6px;min-height:26px;border:1px solid #097b89;font-size:.91em;white-space:nowrap;font-weight:500;background:#007b8e linear-gradient(#007e91,#006f83);color:#fff}
+.lab-page .config-actions button[type=submit] {flex:1}
+.lab-page .config-actions button:disabled {background:#557581;cursor:wait}
+.lab-page .config-actions .secondary {background:linear-gradient(#fff,#eff6fb);border-color:#bccfdc;color:#29424f}
+.lab-page #validate-lab {border-color:#7fc8ce}.lab-page #validate-lab .ui-icon {color:#00a190}
+.lab-page .config-note {margin:0;text-align:center;font-size:.76em;color:#506571}
+.lab-page .results-card {grid-column:1/-1;padding:0;min-width:0}
+.lab-page .results-heading {display:flex;align-items:center;gap:13px;border-bottom:1px solid #e3edf4;background:linear-gradient(#f4f9fe,#edf5fc);min-height:28px}
+.lab-page .results-heading h2 {display:flex;gap:6px;justify-content:flex-start;background:none;min-height:0;padding:5px 7px;font-size:1.12em}
+.lab-page .results-heading h2 .ui-icon {color:#258b76}
+.lab-page .result-nav {display:flex;gap:3px}
+.lab-page .result-nav a {display:flex;align-items:center;gap:6px;padding:3px 12px;border:1px solid #e4eaf0;border-radius:3px;background:linear-gradient(#fff,#eef4fa);font-size:.85em;color:#263f4d;text-decoration:none}
+.lab-page .result-nav a.selected {color:#fff;background:#007b8e linear-gradient(#007e91,#006f83);border-color:#078392}
+.lab-page .retained-runs {display:grid;grid-template-columns:22% 29.5% 27.5% 21%;padding:0;gap:0;align-items:stretch}
+.lab-page .run-panel,.lab-page .validation-panel {border:0;border-right:1px solid #e0ebf2;border-radius:0;background:transparent;min-width:0}
+.lab-page .validation-panel {border-right:0}
+.lab-page .run-panel h3,.lab-page .validation-panel h3 {font-size:.98em;display:flex;align-items:center;gap:6px;margin:0;padding:6px 9px;min-height:27px;white-space:nowrap;background:linear-gradient(#f6fbfd,#edf5fa);color:#162b37;line-height:1.25}
+.lab-page .run-panel h3 .ui-icon,.lab-page .validation-panel h3 .ui-icon {color:#1e9e85}
+.lab-page #run-title-tran {white-space:normal}
+.lab-page #transient-frequency {font-weight:500;white-space:nowrap}
+.lab-page .run-state {font-size:.76em;color:#4a6473;margin:0;padding:2px 9px;border:0;line-height:1.2}
+.lab-page .run-panel[data-stale=true] .run-state {background:#fff0d8;color:#724412}
+.lab-page .run-panel table {width:calc(100% - 18px);max-width:none;margin:3px 9px;border:0;border-radius:0}
+.lab-page .run-panel th,.lab-page .run-panel td {background:transparent;border:0;border-bottom:1px solid #e1ebf0;padding:2px 5px;height:18px;font-size:1em;font-weight:400}
+.lab-page .run-panel th {font:italic 1.1em var(--lab-math);text-align:left}
+.lab-page .run-panel td {font-weight:500;white-space:nowrap}
+.lab-page .dc-region {display:flex;justify-content:space-between;align-items:center;margin:4px 9px;gap:5px;padding-top:3px;border-top:1px solid #dce8ee;font-size:.85em}
+.lab-page .dc-region strong {padding:3px 5px;background:#daf4df;color:#236133;border-radius:3px;white-space:nowrap}
+.lab-page .empty-message {font-size:.85em;color:#5a7180;margin:8px 10px}
+.lab-page .empty-plot {height:126px;margin:6px 18px 9px 28px;border:1px solid #adbec8;background:repeating-linear-gradient(0deg,transparent 0,transparent 23px,#e1eaf1 24px),repeating-linear-gradient(90deg,transparent 0,transparent 35px,#e1eaf1 36px);display:grid;place-items:center}
+.lab-page .empty-plot span {max-width:17ch;text-align:center;background:#f7fbfce8;color:#5c7280;font-size:.9em;padding:7px}
+.lab-page .run-panel .plots {padding:4px 3px 0;display:block;overflow:hidden}
+.lab-page .run-panel .plots figure {min-width:0;margin:0}
+.lab-page .plots svg {width:100%;min-width:0;min-height:0}
+.lab-page .plots figcaption {display:none}
+.lab-page .plots svg text {font:14px var(--lab-font);fill:#1f3544}
+.lab-page .plots svg .plot-axis-title {font-weight:700}
+.lab-page .plots svg .phase-axis {fill:#23833b}
+.lab-page .plot-legend {font-size:.82em;gap:10px;justify-content:center;margin:1px 2px;flex-wrap:wrap}
+.lab-page .plot-legend-entry {white-space:nowrap}
+.lab-page .bode-note {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.lab-page .run-panel details {margin:4px 9px;font-size:.78em;color:#496474}
+.lab-page .run-panel summary {padding:2px 0}
+.lab-page .mobile-scroll-hint {display:none}
+.lab-page .schematic-mobile-hint {display:none}
+.lab-page .run-panel {position:relative}
+.lab-page .run-panel details {position:absolute;top:28px;right:7px;margin:0;z-index:2}
+.lab-page .run-panel details:not([open]) summary {width:13px;height:13px;font-size:0;list-style:none;padding:0}
+.lab-page .run-panel details:not([open]) summary::after {content:'i';display:grid;place-items:center;border:1px solid #829eab;border-radius:50%;font:bold 9px Georgia,serif;color:#476474;width:11px;height:11px}
+.lab-page .run-panel details[open] {width:min(300px,80vw);padding:10px;background:#f8fcfe;border:1px solid #b7cedc;box-shadow:0 4px 16px #26435633;max-height:300px;overflow:auto}
+.lab-page .validation-panel .status {font-size:.87em;margin:5px 8px;padding:5px 7px;line-height:1.25;border-radius:3px}
+.lab-page .validation-panel .status strong {font-size:1.04em}
+.lab-page .validation-panel .status p {margin:3px 0}
+.lab-page .validation-panel .status-ok {background:linear-gradient(110deg,#e7faeb,#d7f6de);border-color:#c0e9cb;color:#185d34}
+.simulation-page .validation-panel .status-ok {display:flex;align-items:center;gap:6px;font-weight:700}
+.simulation-page .validation-panel .status-ok::before {content:'';width:11px;height:11px;flex:none;border-radius:50%;background:#14b55b url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m3 7 3 3 5-6' fill='none' stroke='white' stroke-width='1.7'/%3E%3C/svg%3E") center/contain}
+.lab-page .validation-check {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
+.lab-page .validation-facts {margin:5px 9px}
+.lab-page .validation-row {display:flex;gap:3px;flex-wrap:wrap;line-height:1.25;font-size:.78em;padding:3px 0;border-bottom:1px solid #e0eaf0}
+.lab-page .validation-row dt {font-weight:600;color:#294958}
+.lab-page .validation-row dd {margin:0;color:#496371}
+.lab-page .validation-footnote {margin:4px 9px 7px;font-size:.75em;color:#496371}
+.lab-page .solver-checks {list-style:none;padding:0;margin:3px 9px;font-size:.93em;line-height:1.3;display:grid;gap:4px}
+.lab-page .solver-checks li {display:flex;align-items:center;gap:6px}
+.lab-page .solver-detail {display:block;font-size:.91em;color:#405969;margin-top:1px}
+.lab-page .solver-checks li::before {content:'';width:11px;height:11px;flex:none;border:1px solid #9eb2bf;border-radius:50%;background:#eaf1f6}
+.lab-page .solver-checks li[data-state=passed]::before {background:#14b55b;border-color:#14b55b;mask:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m3 7 3 3 5-6' fill='none' stroke='white' stroke-width='1.7'/%3E%3C/svg%3E")}
+.lab-page .solver-checks li[data-state=failed]::before {background:#f7dfd9;border-color:#b0482c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='m4 4 6 6m0-6-6 6' fill='none' stroke='%23a53a24' stroke-width='1.7'/%3E%3C/svg%3E")}
+.lab-page .solver-checks li[data-state=stale]::before {background:#f9e6b2;border-color:#a57b22}
+.lab-page .model-provenance {margin:2px 9px;font-size:.86em;color:#456170}
+.lab-page .model-provenance summary {cursor:pointer;padding:1px 0}
+.lab-page .validation-panel {display:flex;flex-direction:column}
+.lab-page .validation-panel .status {order:4;margin-top:auto}
+.lab-page .validation-footnote {order:5}
+.lab-page #operation-guide {max-height:75vh;overflow:auto;line-height:1.5}
+.lab-page #operation-guide dt {font-weight:700;margin:10px 0 3px;color:#155c70}
+.lab-page #operation-guide dd {margin:0}
+.lab-page .plots svg [data-plot-tooltip] text {font:13px Arial,sans-serif;fill:#193746}
+.lab-page .measurement-note {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
+.reference-circuit :is(.flow-path,.node-pulse) {opacity:0}
+.reference-circuit .flow-path {stroke-width:2.85;stroke-linecap:round;stroke-dasharray:15 130;filter:drop-shadow(0 0 1.1px currentColor)}
+.reference-circuit .dc-motion .flow-path {color:#ffa329;stroke:#ffca66}
+.reference-circuit .ac-motion .signal-blue {color:#1597ed;stroke:#88dbff}
+.reference-circuit .ac-motion .signal-green {color:#25c040;stroke:#7df38d}
+.reference-circuit .node-pulse {stroke:#f0a129;stroke-width:1.4}
+.reference-circuit[data-dc-active=true] .dc-motion .flow-path {animation:schematic-travel 1.70s linear infinite}
+.reference-circuit[data-dc-active=true] .dc-motion [data-pulse=emitter] {animation-delay:.17s}
+.reference-circuit[data-dc-active=true] .node-pulse {animation:schematic-node 1.70s ease-out .94s infinite}
+.reference-circuit[data-dc-active=true] .emitter-pulse {animation-delay:1.10s}
+.reference-circuit[data-ac-active=true] .ac-motion .flow-path {animation:schematic-travel 1.16s linear infinite}
+.reference-circuit[data-ac-active=true] .ac-motion [data-pulse=output] {animation-delay:.22s}
+.lab-page[data-animation=off] .reference-circuit :is(.flow-path,.node-pulse),
+.lab-page[data-paused=true] .reference-circuit :is(.flow-path,.node-pulse) {animation-play-state:paused}
+.lab-page[data-dc=off] .dc-layer,.lab-page[data-ac=off] .ac-layer {display:none}
+.lab-page .circuit-expanded {position:fixed;inset:3vh 3vw;z-index:20;background:#f6fbfe;border:1px solid #a9c6d6;box-shadow:0 15px 70px #153e5766;padding:12px}
+.lab-page .circuit-expanded .schematic-stage {min-height:0}.lab-page .circuit-expanded svg {height:100%;max-height:75vh}
+@keyframes schematic-travel {
+  0% {stroke-dashoffset:15;opacity:0}
+  14%,72% {opacity:1}
+  100% {stroke-dashoffset:-100;opacity:0}
 }
-@media (max-width: 720px) {
-  .simulation-page .lab-layout { grid-template-columns: minmax(0,1fr); }
-  .simulation-page .lab-header { padding: 8px; }
-  .simulation-page .lab-header strong { font-size: 14px; }
-  .simulation-page .header-caption { display: none; }
-  .simulation-page .lab-sidebar { gap: 5px; }
-  .simulation-page .lab-sidebar nav { display: flex; flex-wrap: wrap; padding: 3px; gap: 2px; }
-  .simulation-page .nav-link { min-height: 44px; font-size: 11px; padding: 5px; }
-  .simulation-page .sidebar-section:has([data-bias-link]) { display: flex; flex-wrap: wrap; gap: 2px; }
-  .simulation-page .sidebar-section:has([data-bias-link]) h2 { flex-basis: 100%; }
-  .simulation-page .sidebar-section a { flex: 1 1 44%; min-height: 44px; padding: 5px; }
-  .simulation-page .sidebar-project { display: none; }
-  .simulation-page #source-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .simulation-page .signal-section input, .simulation-page .signal-section .unit { height: 44px; font-size: 16px; }
-  .simulation-page .signal-section > p:last-child { display: none; }
-  .simulation-page .spice-dashboard { grid-template-columns: minmax(0,1fr); }
-  .simulation-page .schematic-stage { padding: 12px 2px; overflow-x: auto; }
-  .simulation-page .schematic-stage svg { min-width: 520px; max-height: none; }
-  .simulation-page .schematic-foot { flex-direction: column; }
-  .simulation-page .config-panel input, .simulation-page .config-panel .unit { height: 44px; font-size: 16px; }
-  .simulation-page .config-panel #analysis { height: 44px; font-size: 16px; }
-  .simulation-page .config-panel button { height: 44px; font-size: 16px; }
-  .simulation-page .results-heading { flex-wrap: wrap; }
-  .simulation-page .result-nav { margin: 0 5px; width: 100%; }
-  .simulation-page .result-nav a { min-height: 44px; display: flex; align-items: center; flex: 1; justify-content: center; }
-  .simulation-page .retained-runs { grid-template-columns: minmax(0,1fr); }
-  .simulation-page .run-panel, .simulation-page .validation-panel { border-right: 0; border-bottom: 1px solid var(--lab-line); }
-  .simulation-page .run-panel h3, .simulation-page .validation-panel h3 { font-size: 14px; }
-  .simulation-page .run-panel .plots figure, .simulation-page .run-panel .plots svg { min-width: 400px; }
-  .simulation-page .run-panel summary { min-height: 44px; display: flex; align-items: center; }
-  .simulation-page .run-panel th, .simulation-page .run-panel td { font-size: 14px; }
-  .simulation-page .validation-row { grid-template-columns: minmax(120px,.8fr) minmax(0,1.2fr); font-size: 14px; padding: 9px 4px; }
-  .simulation-page .validation-footnote { font-size: 13px; }
-  .simulation-page .mobile-scroll-hint { display: block; font-size: 12px; color: #405e6f; margin: 4px 8px; }
+@keyframes schematic-node {
+  0%,100% {r:3;opacity:0}
+  14% {r:3.5;opacity:.68}
+  50%,99% {r:6.3;opacity:0}
+}
+@media(min-width:1250px){.lab-page .schematic-stage{padding:10px 7px}.lab-page .config-panel form{gap:clamp(8px,.9vw,16px);padding:10px}.lab-page .config-panel input,.lab-page .config-panel .spice-unit{height:clamp(25px,2.1vw,37px)}.lab-page .config-fields{gap:clamp(6px,.65vw,12px) 18px}.lab-page .config-panel #analysis,.lab-page .bias-type select{height:clamp(26px,2.2vw,39px)}.lab-page .config-actions button{min-height:clamp(32px,2.7vw,48px)}.lab-page .lab-header{padding:10px 15px}.lab-page .nav-link{padding:9px 6px}.lab-page .sidebar-section h2{padding:7px 5px}.lab-page .bias-section a,.lab-page .unsupported-bias{padding:6px}.lab-page .generator-value input,.lab-page .generator-value .unit{height:28px}.lab-page .overlay-toolbar{padding:8px}.lab-page .run-panel th,.lab-page .run-panel td{height:clamp(25px,2.3vw,40px)}.lab-page .run-panel h3,.lab-page .validation-panel h3{padding:9px}.lab-page .validation-row{padding:5px 0}}
+@media(max-width:1050px) and (min-width:761px){.lab-page .vision-tag{display:none}.lab-page .workspace-title h1{font-size:11px}.lab-page .config-actions{gap:3px}.lab-page .config-actions button{padding:5px 3px}.lab-page .overlay-toolbar{gap:4px;padding:5px 2px}.lab-page .overlay-toolbar label{font-size:8px}.lab-page .unsupported-bias{white-space:normal}}
+@media(min-width:1250px) {
+ .lab-page .config-panel form {gap:clamp(5px,.5vw,9px)}
+ .lab-page .config-fields {gap:clamp(4px,.45vw,8px) 18px}
+ .lab-page .config-panel input,.lab-page .config-panel .spice-unit {height:clamp(22px,1.7vw,32px)}
+ .lab-page .run-panel th,.lab-page .run-panel td {height:clamp(22px,1.6vw,30px)}
+ .lab-page .schematic-stage {padding:4px 7px}
+ .lab-page .config-panel .input-row {grid-template-columns:minmax(0,1fr) clamp(52px,4.3vw,76px)}
+}
+@media(max-width:760px){
+ .lab-page{margin:0;border-radius:0;--ui:14px}.lab-page .lab-header{flex-wrap:wrap;padding:10px;gap:8px}.lab-page .lab-header strong{font-size:17px}.lab-page .lab-header small{font-size:9px}.lab-page .vision-tag,.lab-page .header-caption,.lab-page .engine-tag,.lab-page .repository-link{display:none}.lab-page .course-tag{font-size:10px}.lab-page .save-project{margin-left:auto;min-height:34px}.lab-page .lab-layout{grid-template-columns:minmax(0,1fr);padding:8px;gap:9px}.lab-page .lab-sidebar{display:grid;grid-template-columns:1fr 1fr;gap:8px}.lab-page .lab-sidebar nav{grid-column:1/-1;display:flex;justify-content:space-between;border-bottom:1px solid #d0e2eb}.lab-page .nav-link{font-size:12px;min-height:44px;padding:5px;gap:4px}.lab-page .sidebar-section{padding:4px 6px}.lab-page .sidebar-section h2{font-size:11px;white-space:normal}.lab-page .bias-section a,.lab-page .unsupported-bias{font-size:10px;white-space:normal;min-height:30px;padding:5px 3px}.lab-page .bias-caption{font-size:10px;padding-left:3px}.lab-page .unsupported-bias{display:none}.lab-page .generator-name{gap:5px;font-size:11px;padding:4px 0}.lab-page .knob{width:52px;height:52px}.lab-page .generator-control label{font-size:10px}.lab-page .knob-range{font-size:8px}.lab-page .generator-value{flex-direction:column}.lab-page .generator-value input,.lab-page .generator-value .unit{width:100%;font-size:12px;height:26px}.lab-page .generator-value .unit{height:16px;font-size:9px}.lab-page .sidebar-project,.lab-page .source-note{display:none}.lab-page .lab-workspace{grid-template-columns:minmax(0,1fr);gap:10px}.lab-page .workspace-title h1{font-size:14px;white-space:normal;line-height:1.4}.lab-page .workspace-title{margin-bottom:7px}.lab-page .schematic-tabs h2,.lab-page .schematic-tabs button,.lab-page .schematic-tabs summary{font-size:12px;min-height:38px;padding:6px 8px}.lab-page .schematic-stage{padding:12px 0}.lab-page .schematic-stage svg{width:100%;min-width:0}.lab-page .overlay-toolbar{flex-wrap:wrap;gap:12px 8px;padding:10px 6px}.lab-page .overlay-toolbar label{font-size:10px;min-height:30px}.lab-page .overlay-toolbar button{width:36px;height:32px}.lab-page .config-panel form{padding:10px;gap:10px}.lab-page .card.config-panel>h2{font-size:13px;min-height:38px}.lab-page .bias-type{font-size:12px;grid-template-columns:22% 1fr}.lab-page .bias-type select{height:36px;font-size:12px}.lab-page .config-fields{gap:12px 10px}.lab-page .config-panel .input-row label{font-size:12px;min-height:25px}.lab-page .config-panel .input-row{grid-template-columns:minmax(0,1fr) 49px}.lab-page .config-panel input,.lab-page .config-panel .spice-unit{height:40px;font-size:16px;padding:4px}.lab-page .model-field input{font-size:12px}.lab-page .config-panel #analysis{height:40px;font-size:13px}.lab-page .config-actions{flex-wrap:wrap;gap:6px}.lab-page .config-actions button{font-size:12px;min-height:40px;padding:6px}.lab-page .config-actions button[type=submit]{flex-basis:100%}.lab-page .config-actions .secondary{flex:1}.lab-page .config-note{font-size:10px}.lab-page .results-heading{flex-wrap:wrap;gap:0;padding:5px}.lab-page .results-heading h2{font-size:15px}.lab-page .result-nav{flex:1}.lab-page .result-nav a{min-height:36px;padding:4px 6px;font-size:10px}.lab-page .retained-runs{grid-template-columns:minmax(0,1fr)}.lab-page .run-panel,.lab-page .validation-panel{border-right:0;border-bottom:1px solid #cedfe9}.lab-page .run-panel h3,.lab-page .validation-panel h3{font-size:14px;min-height:36px}.lab-page .run-state{font-size:11px;padding:4px 9px}.lab-page .run-panel th,.lab-page .run-panel td{font-size:14px;height:30px}.lab-page .run-panel details{font-size:12px}.lab-page .run-panel summary{min-height:36px;padding:8px 0}.lab-page .plots svg text{font-size:14px}.lab-page .plot-legend{font-size:12px}.lab-page .empty-plot{height:170px}.lab-page .validation-panel .status{font-size:13px}.lab-page .validation-row{font-size:12px;padding:7px 0}.lab-page .validation-check{font-size:12px}.lab-page .validation-footnote,.lab-page .measurement-note{font-size:10px}.lab-page .circuit-expanded{inset:5px;padding:8px}.lab-page .circuit-expanded .schematic-stage{overflow:auto}.lab-page .circuit-expanded svg{min-width:600px}
+}
+@media(prefers-reduced-motion:reduce){.reference-circuit[data-dc-active] .dc-motion :is(.flow-path,.node-pulse),.reference-circuit[data-ac-active] .ac-motion .flow-path{animation:none}.lab-page .switch-track::after{transition:none}}
+@media(min-width:1250px) and (max-height:800px) {
+ .lab-page .config-panel form {gap:4px}
+ .lab-page .config-fields {row-gap:4px}
+}
+@media(max-width:760px) {
+ .lab-page .schematic-stage {display:block;place-items:start;overflow-x:auto;overscroll-behavior-inline:contain}
+ .lab-page .schematic-stage svg {width:550px;min-width:550px}
+ .lab-page .schematic-mobile-hint {display:block;margin:0 6px 8px;font-size:10px;color:#456374}
+ .lab-page .solver-checks {font-size:12px;gap:10px}
+ .lab-page .model-provenance {font-size:12px}
+}
+@media(max-width:360px) {
+ .lab-page .lab-sidebar {grid-template-columns:minmax(0,1fr)}
+ .lab-page .lab-sidebar nav {flex-wrap:wrap;justify-content:flex-start}
+ .lab-page .lab-sidebar nav a {flex:1 1 42%;justify-content:flex-start}
+ .lab-page .config-fields {grid-template-columns:minmax(0,1fr);grid-template-rows:none}
+ .lab-page .config-fields .input-row {grid-area:auto}
+ .lab-page .result-nav {flex-wrap:wrap}
+ .lab-page .workspace-title h1 {min-width:0}
+}
+
+/* Analytical DC uses the same panels with its own supported fields and status. */
+.lab-page .config-panel .input-row[hidden] {display:none}
+.lab-page .config-panel .field-error {grid-column:1/-1;font:inherit;font-size:.92em}
+.lab-page .config-panel [aria-invalid=true] {border-color:#bd514d}
+.lab-page .config-panel .error {margin:0;padding:6px 8px;font-size:.95em}
+.lab-page .config-column {display:grid;align-content:start;row-gap:3px;min-width:0}
+.analytical-page .config-fields {grid-template-rows:auto}
+.lab-page .config-panel .config-column .unit {height:18px}
+.lab-page .config-column span.unit {display:grid;place-items:center}
+.lab-page .analytical-guide summary {display:flex;align-items:center;border-radius:3px;cursor:pointer;list-style:none}
+.lab-page .guide-content {position:absolute;inset:58px 6px auto;z-index:2;padding:12px;line-height:1.5;background:#eaf6fa;border:1px solid #bcdce8;box-shadow:0 4px 12px #26435622}
+.lab-page .guide-content p {margin:5px 0}
+.lab-page .guide-content ol {margin:0;padding-left:1.4em}
+.lab-page .analytical-stage svg {margin:0 auto}
+.lab-page .analytical-runs {grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start}
+.lab-page .analytical-runs .validation-panel .status {margin:8px 9px;font-size:1em}
+.lab-page .analytical-runs .validation-panel .status strong {font-size:1em}
+.lab-page .analytical-runs .validation-panel .status p:only-child {margin:0}
+.lab-page .analytical-runs table[hidden] {display:none}
+
+@media(min-width:1250px) {
+  .lab-page .config-column {row-gap:clamp(4px,.45vw,8px)}
+  .lab-page .config-panel .config-column .unit {height:clamp(22px,1.7vw,32px)}
+}
+@media(max-width:760px) {
+  .lab-page .sidebar-project {display:block;grid-column:1/-1}
+  .lab-page .sidebar-project h2 {margin-bottom:0}
+  .lab-page .sidebar-project p {margin:0}
+  .lab-page .config-column {row-gap:10px}
+  .lab-page .config-panel .config-column .unit {height:40px}
+  .lab-page .analytical-stage svg {width:100%;min-width:0}
+  .lab-page .analytical-runs {grid-template-columns:minmax(0,1fr)}
+}
+@media (min-width:761px) and (max-width:940px) {
+  .lab-page .config-actions {flex-wrap:wrap}
+  .lab-page .config-actions button[type=submit] {flex-basis:100%}
+  .lab-page .config-actions .secondary {flex:1}
+}
+@media (min-width:941px) and (max-height:800px) {
+  .simulation-page .solver-checks {gap:2px}
+  .simulation-page .solver-detail {margin-top:0;line-height:1.15}
+  .simulation-page .validation-panel .status {padding-block:4px;margin-bottom:3px}
+  .simulation-page .validation-footnote {margin-block:2px 4px}
+}
+@media (min-width:941px) and (max-height:680px) {
+  .lab-page {margin-bottom:3px}
+  .lab-page .lab-layout {padding-bottom:3px}
+  .lab-page .sidebar-project {padding-bottom:3px}
+  .lab-page .sidebar-project p {line-height:1.4}
 }

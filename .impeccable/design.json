@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-25T00:00:00Z",
+  "title": "Design System: Lab04 Reference UI",
+  "extensions": {
+    "colorMeta": {
+      "lab-action": { "role": "primary", "displayName": "Laboratory Teal" },
+      "lab-text": { "role": "neutral", "displayName": "Laboratory Ink" },
+      "lab-panel": { "role": "neutral", "displayName": "Ice Panel" },
+      "dc-current": { "role": "secondary", "displayName": "Conventional Current Orange" },
+      "ac-input-overlay": { "role": "secondary", "displayName": "Input Signal Blue" },
+      "ac-output-overlay": { "role": "secondary", "displayName": "Output Signal Green" },
+      "key-node": { "role": "secondary", "displayName": "Key Node Magenta" },
+      "q-point-text": { "role": "secondary", "displayName": "Operating Point Purple" }
+    },
+    "typographyMeta": {
+      "body": { "displayName": "Fluid UI", "purpose": "Simulation body; 14px at mobile widths. Tabular numerals." },
+      "title": { "displayName": "Workspace Title", "purpose": "Circuit title; trailing topology normal weight. Responsive overrides apply." },
+      "circuit-symbol": { "displayName": "Electrical Notation", "purpose": "Italic SVG component labels; sizes are SVG user units." },
+      "plot-label": { "displayName": "Chart Labels", "purpose": "SVG chart text; 14px mobile override in SVG coordinates." }
+    },
+    "shadows": [
+      { "name": "header", "value": "0 2px 5px #294f5910", "purpose": "Shared simulation header." },
+      { "name": "card", "value": "0 2px 5px #3459780b", "purpose": "Simulation cards." },
+      { "name": "sidebar", "value": "0 2px 3px #3e5e7210", "purpose": "Sidebar instrument panels." },
+      { "name": "rotary-dial", "value": "2px 3px 4px #293e5166,inset 1px 1px 2px #fff", "purpose": "Metallic rotary instrument dial." },
+      { "name": "guide", "value": "0 4px 12px #26435622", "purpose": "Opened operation guide." },
+      { "name": "provenance", "value": "0 4px 16px #26435633", "purpose": "Opened per-run provenance." },
+      { "name": "expanded-circuit", "value": "0 15px 70px #153e5766", "purpose": "Expanded schematic overlay." }
+    ],
+    "motion": [
+      { "name": "signal-flow", "value": "signal-flow 1.5s linear infinite", "purpose": "Dashed SVG paths animate dash offset to -28; pause/off stop playback; reduced motion removes animation." },
+      { "name": "switch-thumb", "value": "left .12s", "purpose": "Switch thumb moves from 2px to 11px; reduced motion removes transition." }
+    ],
+    "breakpoints": [
+      { "name": "narrow-mobile-max", "value": "360px" },
+      { "name": "mobile-max", "value": "760px" },
+      { "name": "compact-desktop-min", "value": "761px" },
+      { "name": "compact-desktop-max", "value": "1050px" },
+      { "name": "wide-desktop-min", "value": "1250px" },
+      { "name": "short-desktop-max-height-at-wide-desktop", "value": "800px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Run Simulation",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Compact desktop primary action; native hover/active behavior, no invented state styling. Responsive sizing is in DESIGN.md.",
+      "html": "<button class=\"ds-run\" type=\"button\">Run Simulation</button>",
+      "css": ".ds-run{display:inline-flex;align-items:center;justify-content:center;gap:.45em;font:500 .91em/1.35 Arial,Helvetica,sans-serif;color:#fff;background:linear-gradient(#02a5b5,#00869c);border:1px solid #098d9e;border-radius:4px;padding:5px 6px;min-height:26px;cursor:pointer;white-space:nowrap}.ds-run:focus-visible{outline:2px solid #00768d;outline-offset:3px}.ds-run:disabled{cursor:wait;background:#557581}"
+    },
+    {
+      "name": "Secondary Action",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Reset/Export pale secondary treatment. Native hover and active behavior are not overridden.",
+      "html": "<button class=\"ds-secondary\" type=\"button\">Reset</button>",
+      "css": ".ds-secondary{display:inline-flex;align-items:center;justify-content:center;font:500 .91em/1.35 Arial,Helvetica,sans-serif;color:#29424f;background:linear-gradient(#fff,#eff6fb);border:1px solid #bccfdc;border-radius:4px;padding:5px 6px;min-height:26px;cursor:pointer}.ds-secondary:focus-visible{outline:2px solid #00768d;outline-offset:3px}.ds-secondary:disabled{cursor:wait;background:#557581}"
+    },
+    {
+      "name": "Parameter Field",
+      "kind": "input",
+      "refersTo": "parameter-field",
+      "description": "Representative editable compact field, not a live solver. The wide/mobile height variants remain documented in DESIGN.md.",
+      "html": "<label class=\"ds-field\">Supply voltage<input aria-label=\"Supply voltage\" value=\"12\" inputmode=\"decimal\"></label>",
+      "css": ".ds-field{display:grid;gap:4px;color:#1c2c35;font:.94em/1.15 Arial,Helvetica,sans-serif}.ds-field input{min-width:0;height:18px;padding:1px 5px;font:1.02em Arial,sans-serif;color:#101010;border:1px solid #c9d7df;border-radius:3px;background:linear-gradient(#fff,#f7fafc);box-shadow:inset 0 1px 2px #314f6410;caret-color:#008a9d}.ds-field input:focus-visible{outline:2px solid #00768d;outline-offset:3px}"
+    },
+    {
+      "name": "Model-Controlled Field",
+      "kind": "input",
+      "description": "Actual disabled model value, never an editable beta approximation.",
+      "html": "<label class=\"ds-model\">β (Beta, hFE)<input aria-label=\"Model beta\" value=\"Device model\" disabled></label>",
+      "css": ".ds-model{display:grid;gap:4px;font:.94em/1.15 Arial,sans-serif;color:#1c2c35}.ds-model input{height:18px;padding:1px 5px;border:1px solid #c9d7df;border-radius:3px;background:#edf3f6;color:#4b5e6b;font:.9em Arial,sans-serif;box-shadow:inset 0 1px 2px #314f6410;cursor:not-allowed}"
+    },
+    {
+      "name": "Result Navigation",
+      "kind": "nav",
+      "refersTo": "result-link-selected",
+      "description": "Selected DC anchor with adjacent AC anchor; analyses remain simultaneously visible in the app.",
+      "html": "<nav class=\"ds-results\" aria-label=\"Analysis overview\"><a class=\"ds-selected\" href=\"#run-dc\">DC Bias</a><a href=\"#run-ac\">AC Response</a></nav>",
+      "css": ".ds-results{display:flex;gap:3px}.ds-results a{display:flex;align-items:center;gap:6px;padding:3px 12px;border:1px solid #e4eaf0;border-radius:3px;background:linear-gradient(#fff,#eef4fa);font:.85em/1.35 Arial,Helvetica,sans-serif;color:#263f4d;text-decoration:none}.ds-results a.ds-selected{color:#fff;background:linear-gradient(#059db0,#00859b);border-color:#068fa1}.ds-results a:focus-visible{outline:2px solid #00768d;outline-offset:3px}"
+    },
+    {
+      "name": "Simulation Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Configuration panel material and heading; no synthetic success data.",
+      "html": "<section class=\"ds-card\"><h2>Circuit Configuration – Common Emitter (BJT)</h2></section>",
+      "css": ".ds-card{overflow:hidden;border:1px solid #dce8ef;border-radius:4px;background:linear-gradient(110deg,#fafdff,#f2f8fc);box-shadow:0 2px 5px #3459780b;color:#152833;font:1em/1.35 Arial,Helvetica,sans-serif}.ds-card h2{margin:0;min-height:29px;padding:7px 8px;display:flex;gap:7px;font-size:1.05em;line-height:1.4;background:linear-gradient(#edf7fd,#dceef9);color:#152b3a}"
+    },
+    {
+      "name": "Overlay Switch",
+      "kind": "custom",
+      "description": "Native checkbox with visible instrument track; focus and reduced-motion states preserved.",
+      "html": "<label class=\"ds-switch\"><input type=\"checkbox\" role=\"switch\" checked><span class=\"ds-track\"></span>Show DC Bias Overlay</label>",
+      "css": ".ds-switch{display:inline-flex;align-items:center;gap:5px;position:relative;font:.81em/1.35 Arial,Helvetica,sans-serif;color:#152833;cursor:pointer}.ds-switch input{position:absolute;opacity:0;width:24px;height:16px;left:0;padding:0}.ds-track{width:24px;height:13px;border:1px solid #8faebc;background:#8fa6b2;border-radius:10px;position:relative;display:inline-block;flex:none;pointer-events:none}.ds-track::after{content:'';position:absolute;width:9px;height:9px;left:2px;top:1px;border-radius:50%;background:white;box-shadow:0 1px 2px #34556533;transition:left .12s}.ds-switch input:checked+.ds-track{background:linear-gradient(90deg,#119ab1,#41c0db);border-color:#40adc3}.ds-switch input:checked+.ds-track::after{left:11px}.ds-switch input:focus-visible+.ds-track{outline:2px solid #00768d;outline-offset:3px}@media(prefers-reduced-motion:reduce){.ds-track::after{transition:none}}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The reference laboratory workspace",
+    "overview": "This is a descriptive record of the implemented Lab04 simulation surface, not a new visual direction. The binding instruction is: “Treat final-project-reference.png as the primary visual source of truth”. Ice-blue surfaces, compact instrument controls and an editable electrical schematic reproduce that supplied workspace while retaining the real application's identity and results.\n\nThe system is code-led: Flask/Jinja, native form controls, vanilla JavaScript and SVG. The source comp is read-only evidence, never a rendered background. Qualitative language here describes the artifact under the delegated brief; no new visual-world interview or creative approval is implied.",
+    "keyCharacteristics": [
+      "Circuit-first, dense laboratory workspace.",
+      "Ice-blue tonal layering and teal actions.",
+      "Electrical color semantics, not decorative chart colors.",
+      "Real, independently retained analyses with explicit freshness."
+    ],
+    "rules": [
+      { "name": "The Electrical Meaning Rule", "body": "Preserve color roles and accompanying labels, line styles and statuses; a green solver result does not mean instructor approval.", "section": "colors" },
+      { "name": "The Solver Truth Rule", "body": "Validate reports finite/current input and solver checks only. Keep “Simulation ≠ instructor validation”, unverified external-model provenance and Not run benchmark/instructor states truthful.", "section": "colors" }
+    ],
+    "dos": [
+      "**Do** preserve Lab04 identity and the supplied comp's laboratory visual hierarchy.",
+      "**Do** preserve electrical colors, units, editable SVG and real solver provenance.",
+      "**Do** retain analytical Lab03 links and clearly distinguish model-controlled fields.",
+      "**Do** apply responsive rules through the scoped final cascade, not whole-page scaling."
+    ],
+    "donts": [
+      "**Don't** use the reference screenshot as a UI background or generate replacement imagery.",
+      "**Don't** fabricate results, instructor approval, benchmark passes or unsupported circuit features.",
+      "**Don't** treat reference-specific tiny labels as a universal legibility standard.",
+      "**Don't** spread compact simulation overrides into analytical pages without checking their existing styles."
+    ]
+  }
+}

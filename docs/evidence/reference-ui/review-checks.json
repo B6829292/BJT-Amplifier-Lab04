@@ -1,0 +1,20 @@
+{
+  "passed": 14,
+  "checks": [
+    "shared analytical icons remain UI-sized",
+    "analytical badge retains Lab03 identity",
+    "emitter resistor reaches ground lead with no electrical gap",
+    "Validate rejects converted resistor values above engine bounds",
+    "Validate rejects conversion overflow",
+    "Validate rejects conversion underflow",
+    "pending input edit cannot produce a current success banner",
+    "pending edit retains only explicitly stale historical runs",
+    "DC switch remains off across redraw",
+    "AC switch remains off across redraw",
+    "native POST reproducer contains submitted current values",
+    "POST-origin Reset restores canonical RE",
+    "POST-origin Reset restores canonical amplitude",
+    "POST-origin Reset restores canonical frequency"
+  ],
+  "failures": []
+}

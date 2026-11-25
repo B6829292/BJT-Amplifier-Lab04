@@ -5,8 +5,8 @@ async (page) => {
   const states = () => page.locator('.run-state').allTextContents();
   async function run(mode) {
     await page.locator('#analysis').selectOption(mode);
-    await page.locator('#spice-form button').click();
-    await page.waitForFunction(() => !document.querySelector('#spice-form button').disabled);
+    await page.locator('#spice-form button[type=submit]').click();
+    await page.waitForFunction(() => !document.querySelector('#spice-form button[type=submit]').disabled);
   }
   for (const width of [1280,390]) {
     await page.setViewportSize({width,height:900});
@@ -19,7 +19,7 @@ async (page) => {
     assert((await page.locator('#dc-annotation').innerText()).includes('available after'), 'Invalid input left live DC annotation');
     await run('dc');
     assert((await page.locator('#spice-status').innerText()).includes('R1: enter a finite positive number.'), 'Server did not reject radix input');
-    assert(await page.locator('#run-dc table').count()===0 && await page.locator('#run-ac svg').count()===1, 'Failure isolation broken');
+    assert(await page.locator('#run-dc table').count()===0 && await page.locator('#run-ac .plots svg').count()===1, 'Failure isolation broken');
     await page.locator('#spice-r1').fill('1_00');
     assert((await states())[1].startsWith('Current'), 'Server-accepted separators falsely stale AC');
     await run('dc');

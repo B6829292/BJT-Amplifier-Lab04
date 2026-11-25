@@ -1,0 +1,166 @@
+[
+  {
+    "width": 1085,
+    "height": 613,
+    "scrollWidth": 1085,
+    "scrollHeight": 613,
+    "devicePixelRatio": 1,
+    "regions": {
+      ".lab-header": {
+        "x": 7,
+        "y": 11,
+        "width": 1061,
+        "height": 42.109375
+      },
+      ".lab-sidebar": {
+        "x": 13,
+        "y": 60.109375,
+        "width": 152.09375,
+        "height": 533.953125
+      },
+      ".schematic-panel": {
+        "x": 175.09375,
+        "y": 60.109375,
+        "width": 555.140625,
+        "height": 315.703125
+      },
+      ".config-panel": {
+        "x": 739.234375,
+        "y": 60.109375,
+        "width": 322.765625,
+        "height": 315.703125
+      },
+      ".results-card": {
+        "x": 175.09375,
+        "y": 381.8125,
+        "width": 886.90625,
+        "height": 214.1875
+      }
+    }
+  },
+  {
+    "width": 1920,
+    "height": 1080,
+    "scrollWidth": 1920,
+    "scrollHeight": 1080,
+    "devicePixelRatio": 1,
+    "regions": {
+      ".lab-header": {
+        "x": 7,
+        "y": 11,
+        "width": 1896,
+        "height": 69.984375
+      },
+      ".lab-sidebar": {
+        "x": 13,
+        "y": 87.984375,
+        "width": 273.171875,
+        "height": 760.5
+      },
+      ".schematic-panel": {
+        "x": 296.171875,
+        "y": 87.984375,
+        "width": 1006.59375,
+        "height": 539
+      },
+      ".config-panel": {
+        "x": 1311.765625,
+        "y": 87.984375,
+        "width": 585.21875,
+        "height": 539
+      },
+      ".results-card": {
+        "x": 296.171875,
+        "y": 632.984375,
+        "width": 1600.8125,
+        "height": 351.0625
+      }
+    }
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "scrollWidth": 1440,
+    "scrollHeight": 900,
+    "devicePixelRatio": 1,
+    "regions": {
+      ".lab-header": {
+        "x": 7,
+        "y": 11,
+        "width": 1416,
+        "height": 61.625
+      },
+      ".lab-sidebar": {
+        "x": 13,
+        "y": 79.625,
+        "width": 203.578125,
+        "height": 676.140625
+      },
+      ".schematic-panel": {
+        "x": 226.578125,
+        "y": 79.625,
+        "width": 747.0625,
+        "height": 440.984375
+      },
+      ".config-panel": {
+        "x": 982.640625,
+        "y": 79.625,
+        "width": 434.359375,
+        "height": 440.984375
+      },
+      ".results-card": {
+        "x": 226.578125,
+        "y": 526.609375,
+        "width": 1190.421875,
+        "height": 277.15625
+      }
+    }
+  },
+  {
+    "width": 1366,
+    "height": 768,
+    "scrollWidth": 1366,
+    "scrollHeight": 768,
+    "devicePixelRatio": 1,
+    "regions": {
+      ".lab-header": {
+        "x": 7,
+        "y": 11,
+        "width": 1342,
+        "height": 59.640625
+      },
+      ".lab-sidebar": {
+        "x": 13,
+        "y": 77.640625,
+        "width": 192.84375,
+        "height": 656.46875
+      },
+      ".schematic-panel": {
+        "x": 215.84375,
+        "y": 77.640625,
+        "width": 707.0625,
+        "height": 401.109375
+      },
+      ".config-panel": {
+        "x": 931.90625,
+        "y": 77.640625,
+        "width": 411.09375,
+        "height": 401.109375
+      },
+      ".results-card": {
+        "x": 215.84375,
+        "y": 484.75,
+        "width": 1127.15625,
+        "height": 264.53125
+      }
+    }
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "scrollWidth": 390,
+    "scrollHeight": 2619,
+    "devicePixelRatio": 1,
+    "mobileEmulation": true
+  }
+]

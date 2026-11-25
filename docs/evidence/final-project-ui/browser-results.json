@@ -1,0 +1,618 @@
+{
+  "tests/bias_navigation_browser.js": {
+    "assertions": 733,
+    "browserErrors": []
+  },
+  "tests/final_project_browser.js": {
+    "checks": [
+      "ngspice completed DC, AC, and transient",
+      "Current solver data reached the UI",
+      "Input validation runs on the current values",
+      "Benchmark provenance stays truthful",
+      "Both orange current arrows are continuous",
+      "Current glow uses the SVG filter",
+      "Both voltage dividers use the engineering icon",
+      "Transient output is green and solid",
+      "Bode phase stays dashed",
+      "1085px Lab04 has no page overflow",
+      "Solved results and validation fit the reference viewport",
+      "The full Lab04 shell fits the reference viewport",
+      "1920px Lab04 has no page overflow",
+      "1440px Lab04 has no page overflow",
+      "1366px Lab04 has no page overflow",
+      "820px Lab04 has no page overflow",
+      "390px Lab04 has no page overflow",
+      "Lab04 Validation navigation targets solver checks",
+      "Lab04 Reports navigation targets current results",
+      "Bode result selection follows the hash",
+      "Result selection follows browser history",
+      "Reduced motion preserves a stable real waveform",
+      "Blue input moves across the frame sequence",
+      "Green output moves across the frame sequence",
+      "Pause freezes both traces",
+      "Resume advances from the paused time",
+      "Restart restores the exact initial phase",
+      "Stale transient cannot animate or retain paths",
+      "Source changes preserve current DC",
+      "Browser errors: "
+    ],
+    "solver": {
+      "vb": 2.003674,
+      "vce": 7.7543359999999995,
+      "ic": 0.001324035,
+      "frequencies": 321,
+      "transientSamples": 508
+    },
+    "layouts": [
+      {
+        "width": 1085,
+        "height": 613,
+        "pageWidth": 1085,
+        "pageHeight": 613,
+        "header": [
+          7,
+          11,
+          1061,
+          42
+        ],
+        "sidebar": [
+          13,
+          60,
+          152,
+          540
+        ],
+        "circuit": [
+          176,
+          109,
+          553,
+          240
+        ],
+        "config": [
+          739,
+          60,
+          323,
+          321
+        ],
+        "results": [
+          175,
+          387,
+          887,
+          216
+        ]
+      },
+      {
+        "width": 1920,
+        "height": 1080,
+        "pageWidth": 1920,
+        "pageHeight": 1080,
+        "header": [
+          7,
+          11,
+          1896,
+          68
+        ],
+        "sidebar": [
+          13,
+          86,
+          273,
+          788
+        ],
+        "circuit": [
+          297,
+          153,
+          1005,
+          436
+        ],
+        "config": [
+          1312,
+          86,
+          585,
+          540
+        ],
+        "results": [
+          296,
+          633,
+          1601,
+          351
+        ]
+      },
+      {
+        "width": 1440,
+        "height": 900,
+        "pageWidth": 1440,
+        "pageHeight": 900,
+        "header": [
+          7,
+          11,
+          1416,
+          61
+        ],
+        "sidebar": [
+          13,
+          79,
+          204,
+          726
+        ],
+        "circuit": [
+          228,
+          137,
+          745,
+          350
+        ],
+        "config": [
+          983,
+          79,
+          434,
+          446
+        ],
+        "results": [
+          227,
+          531,
+          1190,
+          283
+        ]
+      },
+      {
+        "width": 1366,
+        "height": 768,
+        "pageWidth": 1366,
+        "pageHeight": 793,
+        "header": [
+          7,
+          11,
+          1342,
+          59
+        ],
+        "sidebar": [
+          13,
+          77,
+          193,
+          704
+        ],
+        "circuit": [
+          217,
+          133,
+          705,
+          313
+        ],
+        "config": [
+          932,
+          77,
+          411,
+          406
+        ],
+        "results": [
+          216,
+          490,
+          1127,
+          266
+        ]
+      },
+      {
+        "width": 820,
+        "height": 900,
+        "pageWidth": 820,
+        "pageHeight": 900,
+        "header": [
+          7,
+          11,
+          796,
+          41
+        ],
+        "sidebar": [
+          13,
+          59,
+          146,
+          604
+        ],
+        "circuit": [
+          170,
+          108,
+          389,
+          289
+        ],
+        "config": [
+          569,
+          59,
+          228,
+          370
+        ],
+        "results": [
+          169,
+          435,
+          628,
+          289
+        ]
+      },
+      {
+        "width": 390,
+        "height": 844,
+        "pageWidth": 390,
+        "pageHeight": 2773,
+        "header": [
+          1,
+          1,
+          388,
+          95
+        ],
+        "sidebar": [
+          9,
+          104,
+          372,
+          386
+        ],
+        "circuit": [
+          10,
+          585,
+          370,
+          259
+        ],
+        "config": [
+          9,
+          971,
+          372,
+          663
+        ],
+        "results": [
+          9,
+          1644,
+          372,
+          1120
+        ]
+      }
+    ],
+    "frames": [
+      {
+        "index": 0,
+        "timeMs": 6,
+        "vin": "176.00,121.92 176.09,121.67 17",
+        "vout": "475.00,106.65 475.12,107.09 47",
+        "filename": "animation/frame-00.png"
+      },
+      {
+        "index": 1,
+        "timeMs": 309,
+        "vin": "176.00,114.16 176.24,114.51 17",
+        "vout": "475.00,120.21 475.31,119.60 47",
+        "filename": "animation/frame-01.png"
+      },
+      {
+        "index": 2,
+        "timeMs": 602,
+        "vin": "176.00,132.04 176.20,132.42 17",
+        "vout": "475.00,88.81 475.26,88.14 475.",
+        "filename": "animation/frame-02.png"
+      },
+      {
+        "index": 3,
+        "timeMs": 900,
+        "vin": "176.00,129.15 176.19,128.66 17",
+        "vout": "475.00,93.96 475.25,94.82 475.",
+        "filename": "animation/frame-03.png"
+      },
+      {
+        "index": 4,
+        "timeMs": 1212,
+        "vin": "176.00,112.69 176.24,112.64 17",
+        "vout": "475.00,122.82 475.31,122.90 47",
+        "filename": "animation/frame-04.png"
+      },
+      {
+        "index": 5,
+        "timeMs": 1528,
+        "vin": "176.00,127.53 176.07,127.70 17",
+        "vout": "475.00,96.72 475.08,96.41 475.",
+        "filename": "animation/frame-05.png"
+      },
+      {
+        "index": 6,
+        "timeMs": 1828,
+        "vin": "176.00,133.19 176.07,133.08 17",
+        "vout": "475.00,86.85 475.09,87.04 475.",
+        "filename": "animation/frame-06.png"
+      },
+      {
+        "index": 7,
+        "timeMs": 2119,
+        "vin": "176.00,115.16 176.03,115.11 17",
+        "vout": "475.00,118.51 475.03,118.59 47",
+        "filename": "animation/frame-07.png"
+      },
+      {
+        "index": 8,
+        "timeMs": 2426,
+        "vin": "176.00,120.21 176.18,120.68 17",
+        "vout": "475.00,109.57 475.23,108.75 47",
+        "filename": "animation/frame-08.png"
+      },
+      {
+        "index": 9,
+        "timeMs": 2721,
+        "vin": "176.00,135.35 176.02,135.36 17",
+        "vout": "475.00,83.02 475.02,83.02 475.",
+        "filename": "animation/frame-09.png"
+      },
+      {
+        "index": 10,
+        "timeMs": 2994,
+        "vin": "176.00,122.81 176.15,122.38 17",
+        "vout": "475.00,105.10 475.20,105.85 47",
+        "filename": "animation/frame-10.png"
+      },
+      {
+        "index": 11,
+        "timeMs": 3269,
+        "vin": "176.00,113.03 176.02,113.04 17",
+        "vout": "475.00,122.22 475.03,122.19 47",
+        "filename": "animation/frame-11.png"
+      }
+    ],
+    "recording": [
+      {
+        "filename": "motion-00.jpg",
+        "timestamp": 1795607455.135045
+      },
+      {
+        "filename": "motion-01.jpg",
+        "timestamp": 1795607455.151473
+      },
+      {
+        "filename": "motion-02.jpg",
+        "timestamp": 1795607455.172312
+      },
+      {
+        "filename": "motion-03.jpg",
+        "timestamp": 1795607455.193045
+      },
+      {
+        "filename": "motion-04.jpg",
+        "timestamp": 1795607455.213848
+      },
+      {
+        "filename": "motion-05.jpg",
+        "timestamp": 1795607455.234774
+      },
+      {
+        "filename": "motion-06.jpg",
+        "timestamp": 1795607455.25143
+      },
+      {
+        "filename": "motion-07.jpg",
+        "timestamp": 1795607455.272287
+      },
+      {
+        "filename": "motion-08.jpg",
+        "timestamp": 1795607455.29305
+      },
+      {
+        "filename": "motion-09.jpg",
+        "timestamp": 1795607455.313903
+      },
+      {
+        "filename": "motion-10.jpg",
+        "timestamp": 1795607455.334759
+      },
+      {
+        "filename": "motion-11.jpg",
+        "timestamp": 1795607455.351438
+      },
+      {
+        "filename": "motion-12.jpg",
+        "timestamp": 1795607455.372265
+      },
+      {
+        "filename": "motion-13.jpg",
+        "timestamp": 1795607455.393071
+      },
+      {
+        "filename": "motion-14.jpg",
+        "timestamp": 1795607455.426471
+      },
+      {
+        "filename": "motion-15.jpg",
+        "timestamp": 1795607455.443059
+      },
+      {
+        "filename": "motion-16.jpg",
+        "timestamp": 1795607455.463943
+      },
+      {
+        "filename": "motion-17.jpg",
+        "timestamp": 1795607455.484844
+      },
+      {
+        "filename": "motion-18.jpg",
+        "timestamp": 1795607455.505545
+      },
+      {
+        "filename": "motion-19.jpg",
+        "timestamp": 1795607455.526478
+      },
+      {
+        "filename": "motion-20.jpg",
+        "timestamp": 1795607455.543043
+      },
+      {
+        "filename": "motion-21.jpg",
+        "timestamp": 1795607455.563892
+      },
+      {
+        "filename": "motion-22.jpg",
+        "timestamp": 1795607455.584763
+      },
+      {
+        "filename": "motion-23.jpg",
+        "timestamp": 1795607455.605635
+      },
+      {
+        "filename": "motion-24.jpg",
+        "timestamp": 1795607455.62644
+      },
+      {
+        "filename": "motion-25.jpg",
+        "timestamp": 1795607455.647199
+      },
+      {
+        "filename": "motion-26.jpg",
+        "timestamp": 1795607455.663868
+      },
+      {
+        "filename": "motion-27.jpg",
+        "timestamp": 1795607455.684796
+      },
+      {
+        "filename": "motion-28.jpg",
+        "timestamp": 1795607455.705542
+      },
+      {
+        "filename": "motion-29.jpg",
+        "timestamp": 1795607455.726489
+      },
+      {
+        "filename": "motion-30.jpg",
+        "timestamp": 1795607455.743039
+      },
+      {
+        "filename": "motion-31.jpg",
+        "timestamp": 1795607455.763873
+      },
+      {
+        "filename": "motion-32.jpg",
+        "timestamp": 1795607455.784754
+      },
+      {
+        "filename": "motion-33.jpg",
+        "timestamp": 1795607455.805549
+      },
+      {
+        "filename": "motion-34.jpg",
+        "timestamp": 1795607455.826384
+      },
+      {
+        "filename": "motion-35.jpg",
+        "timestamp": 1795607455.843037
+      },
+      {
+        "filename": "motion-36.jpg",
+        "timestamp": 1795607455.863884
+      },
+      {
+        "filename": "motion-37.jpg",
+        "timestamp": 1795607455.884737
+      },
+      {
+        "filename": "motion-38.jpg",
+        "timestamp": 1795607455.905588
+      },
+      {
+        "filename": "motion-39.jpg",
+        "timestamp": 1795607455.926382
+      },
+      {
+        "filename": "motion-40.jpg",
+        "timestamp": 1795607455.943062
+      },
+      {
+        "filename": "motion-41.jpg",
+        "timestamp": 1795607455.963925
+      },
+      {
+        "filename": "motion-42.jpg",
+        "timestamp": 1795607455.984781
+      }
+    ],
+    "stage": {
+      "x": 179.09375,
+      "y": 112.09375,
+      "width": 547.140625,
+      "height": 233.765625
+    },
+    "browserErrors": []
+  },
+  "tests/reference_ui_browser.js": {
+    "passed": 59,
+    "checks": [
+      "enhanced default runs all analyses",
+      "initial state has no fabricated run",
+      "empty circuit has no invented signal waveform",
+      "validation never claims unrun results passed",
+      "all three real analyses complete",
+      "AC trace rendered from results",
+      "transient trace rendered from results",
+      "DC operating region is derived from actual node voltages",
+      "overlay output uses actual transient samples",
+      "Bode pointer tooltip shows real samples",
+      "Bode keyboard tooltip reads gain and phase",
+      "DC annotation has visible solver data",
+      "DC overlay switch hides annotations",
+      "AC overlay switch hides illustration",
+      "pause animation exposes state",
+      "restart resumes animation",
+      "animation reset restarts the presentation timeline",
+      "source edit stales transient",
+      "source edit hides stale signal overlays",
+      "source edit preserves DC freshness",
+      "source edit preserves AC freshness",
+      "rotary keyboard changes submitted frequency",
+      "rotary pointer drag changes submitted frequency",
+      "emulated touch drag synchronizes rotary input",
+      "circuit edit stales all retained analyses",
+      "stale DC annotations are hidden",
+      "reset restores circuit defaults",
+      "reset restores external form-associated amplitude",
+      "reset restores knob frequency",
+      "reset restores all-analysis mode",
+      "validate checks real current results",
+      "validate does not claim instructor validation",
+      "DC check represents current solver completion",
+      "export downloads results JSON",
+      "downloaded JSON contains actual transient samples",
+      "export snapshot contains current actual samples",
+      "operation guide opens",
+      "Save Project downloads actual configuration and data",
+      "circuit expand works",
+      "escape collapses circuit",
+      "invalid simulation reports failure",
+      "failed reruns never retain successful states",
+      "no document overflow at 1920\u00d71080",
+      "configuration remains accessible at 1920",
+      "populated results fit desktop viewport at 1920",
+      "no document overflow at 1440\u00d7900",
+      "configuration remains accessible at 1440",
+      "populated results fit desktop viewport at 1440",
+      "no document overflow at 1366\u00d7768",
+      "configuration remains accessible at 1366",
+      "populated results fit desktop viewport at 1366",
+      "no document overflow at 1085\u00d7613",
+      "configuration remains accessible at 1085",
+      "populated results fit desktop viewport at 1085",
+      "no document overflow at 390\u00d7844",
+      "configuration remains accessible at 390",
+      "mobile circuit starts at its left edge",
+      "mobile circuit can pan to the output node",
+      "native form submits supported DC without JavaScript"
+    ],
+    "environment": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/158.0.0.0 Safari/537.36",
+    "physicalTouchDevice": false
+  },
+  "tests/reference_ui_review_browser.js": {
+    "passed": 14,
+    "checks": [
+      "shared analytical icons remain UI-sized",
+      "analytical badge retains Lab03 identity",
+      "emitter resistor reaches ground lead with no electrical gap",
+      "Validate rejects converted resistor values above engine bounds",
+      "Validate rejects conversion overflow",
+      "Validate rejects conversion underflow",
+      "pending input edit cannot produce a current success banner",
+      "pending edit retains only explicitly stale historical runs",
+      "DC switch remains off across redraw",
+      "AC switch remains off across redraw",
+      "native POST reproducer contains submitted current values",
+      "POST-origin Reset restores canonical RE",
+      "POST-origin Reset restores canonical amplitude",
+      "POST-origin Reset restores canonical frequency"
+    ],
+    "failures": []
+  }
+}

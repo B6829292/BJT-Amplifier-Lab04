@@ -7,9 +7,9 @@ async (page) => {
   async function run(mode) {
     await page.locator('#analysis').selectOption(mode);
     const response = page.waitForResponse(r => r.url() === base + '/simulation' && r.request().method() === 'POST');
-    await page.locator('#spice-form button').click();
+    await page.locator('#spice-form button[type=submit]').click();
     const payload = await (await response).json();
-    await page.waitForFunction(() => !document.querySelector('#spice-form button').disabled);
+    await page.waitForFunction(() => !document.querySelector('#spice-form button[type=submit]').disabled);
     return payload;
   }
   for (const width of [1280, 390]) {
@@ -33,8 +33,10 @@ async (page) => {
     const ac = await run('ac');
     const tran = await run('tran');
     assert(dc.result && ac.result && tran.result, 'Real engine run failed');
-    assert(await page.locator('#run-dc td').first().innerText() === dc.result.vb.toFixed(4) + ' V', 'DC differs from solver');
-    assert(await page.locator('.run-panel svg').count() === 2, 'Retained plots missing');
+    const vb = page.locator('#run-dc td').first();
+    assert(await vb.innerText() === dc.result.vb.toFixed(2) + ' V', 'DC display differs from solver');
+    assert(await vb.getAttribute('title') === dc.result.vb.toFixed(4) + ' V', 'DC precision differs from solver');
+    assert(await page.locator('.run-panel .plots svg').count() === 2, 'Retained plots missing');
     assert((await page.locator('.run-state').allTextContents()).every(s => s.startsWith('Current')), 'Runs not simultaneously current');
     assert(!(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), 'Simulation overflow');
     results.push({width, mode:'ngspice', dc:dc.result.vce, acPoints:ac.result.frequency_hz.length,
@@ -48,8 +50,8 @@ async (page) => {
     await page.locator('#spice-re').fill('0');
     const failed = await run('tran');
     assert(failed.error && !failed.result, 'Invalid input succeeded');
-    assert(await page.locator('#run-tran svg').count() === 0, 'Failed analysis kept graph');
-    assert(await page.locator('#run-ac svg').count() === 1, 'Failure discarded other analysis');
+    assert(await page.locator('#run-tran .plots svg').count() === 0, 'Failed analysis kept graph');
+    assert(await page.locator('#run-ac .plots svg').count() === 1, 'Failure discarded other analysis');
     await page.locator('#spice-re').fill('1');
     await page.locator('#spice-amplitude').fill('20');
     const changed = await run('tran');
@@ -61,11 +63,11 @@ async (page) => {
   let release;
   const gate = new Promise(resolve => { release = resolve; });
   await page.route('**/simulation', async route => { await gate; await route.continue(); });
-  await page.locator('#spice-form button').click();
+  await page.locator('#spice-form button[type=submit]').click();
   await page.locator('#analysis').selectOption('ac');
   const pending = await page.locator('#run-dc .run-state').innerText();
   release();
-  await page.waitForFunction(() => !document.querySelector('#spice-form button').disabled);
+  await page.waitForFunction(() => !document.querySelector('#spice-form button[type=submit]').disabled);
   await page.unroute('**/simulation');
   assert(pending.startsWith('Running'), 'Pending run falsely became current');
   await page.evaluate(() => {

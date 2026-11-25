@@ -1,103 +1,83 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CE ngspice Simulator</title>
-  <link rel="icon" href="{{ url_for('favicon') }}" type="image/svg+xml">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='lab-compact.css') }}">
-</head>
-<body class="lab-page simulation-page">
-{% set analytical = false %}
-{% include 'lab-header.html' %}
-<div class="lab-layout">
-{% include 'lab-sidebar.html' %}
-<main class="lab-main" id="workspace">
-  <div class="workspace-title"><h1>BJT Common Emitter Amplifier <span>– Voltage Divider Bias</span></h1><span>REFERENCE CIRCUIT</span></div>
-  <div class="spice-dashboard">
-    <section class="card schematic-panel"><h2>Circuit Schematic <span>Common Emitter · NPN</span></h2>
-      <div class="schematic-stage" tabindex="0" role="region" aria-label="Circuit schematic; scroll horizontally on narrow screens"><svg viewBox="0 0 570 275" role="img" aria-labelledby="circuit-title circuit-description"><title id="circuit-title">Voltage-divider common-emitter circuit</title><desc id="circuit-description">Unbypassed NPN circuit with R1, R2, RC, RE, Cin, Cout, RL, source and common ground.</desc>
-      <g fill="none" stroke="#1c3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M180 24H360 M180 24V55 M180 99V164 M360 24V55 M360 99V131"/>
-        <path d="M180 55l-6 4 12 7-12 7 12 7-12 7 12 7-6 5 M360 55l-6 4 12 7-12 7 12 7-12 7 12 7-6 5"/>
-        <circle cx="320" cy="164" r="34" fill="#e7f5fb"/><path d="M180 164H297 M297 147V182 M297 154L345 131H360 M297 174L345 200H360V219"/>
-        <path d="M327 190L345 200 M333 199L338 190L347 202Z" fill="#1c3545"/>
-        <path d="M360 219l-6 4 12 6-12 6 12 6-6 7 M360 248V258 M180 164V190 M180 190l-6 4 12 6-12 6 12 6-12 6 12 6-6 8 M180 232V258"/>
-        <path d="M42 164H100 M110 164H180 M42 164V190 M42 220V258 M100 151V177 M110 151V177"/>
-        <circle cx="42" cy="205" r="15" fill="#fff"/><path d="M32 206Q37 199 42 206T52 206 M360 131H440 M450 131H524V181 M440 117V145 M450 117V145"/>
-        <path d="M524 181l-6 5 12 7-12 7 12 7-12 7 6 8 M524 222V258 M42 258H524 M270 258V264 M259 264H281 M263 269H277 M267 274H273"/>
-      </g>
-      <g fill="#203849" font-size="14" font-family="Arial, sans-serif"><text x="237" y="16">VCC = <tspan data-spice-value="vcc">{{ values.vcc }}</tspan> V</text><text x="195" y="68">R1</text><text x="375" y="68">RC</text><text x="195" y="202">R2</text><text x="375" y="232">RE</text><text x="285" y="225">Q1 NPN</text><text x="95" y="135">Cin</text><text x="430" y="97">Cout</text><text x="540" y="194">RL</text><text x="510" y="116">Vout</text><text x="10" y="236">Vin</text><text x="285" y="249">GND</text></g>
-      <g fill="#365568" font-size="12" font-family="Arial, sans-serif">
-        <text x="195" y="85"><tspan data-spice-value="r1">{{ values.r1 }}</tspan> kΩ</text><text x="375" y="85"><tspan data-spice-value="rc">{{ values.rc }}</tspan> kΩ</text>
-        <text x="195" y="220"><tspan data-spice-value="r2">{{ values.r2 }}</tspan> kΩ</text><text x="375" y="248"><tspan data-spice-value="re">{{ values.re }}</tspan> kΩ</text>
-        <text x="92" y="148"><tspan data-spice-value="cin">{{ values.cin }}</tspan> µF</text><text x="430" y="112"><tspan data-spice-value="cout">{{ values.cout }}</tspan> µF</text><text x="540" y="211"><tspan data-spice-value="rl">{{ values.rl }}</tspan> kΩ</text>
-      </g><g fill="#82265e" font-size="11" font-family="Arial, sans-serif">
-        <g data-dc-badge visibility="hidden"><rect x="208" y="137" width="84" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="212" y="152" data-dc-node="vb"></text></g>
-        <g data-dc-badge visibility="hidden"><rect x="318" y="106" width="98" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="322" y="121" data-dc-node="vc"></text></g>
-        <g data-dc-badge visibility="hidden"><rect x="375" y="181" width="98" height="21" rx="3" fill="#fcebf6" stroke="#d8a4c6"/><text x="379" y="196" data-dc-node="ve"></text></g>
-      </g>
-      <g fill="#00867f"><circle cx="180" cy="164" r="4"/><circle cx="360" cy="131" r="4"/></g></svg></div>
-      <div class="schematic-foot"><span id="dc-annotation">DC node annotations available after a current DC run.</span><span>Unbypassed emitter</span><span class="mobile-scroll-hint">Scroll circuit horizontally for all components.</span></div>
+{% extends 'lab-shell.html' %}
+{% from 'icons.html' import icon %}
+{% from 'lab-components.html' import bias_picker, configuration_title, results_heading %}
+
+{% block workspace %}
+    <section class="card schematic-panel">
+      <div class="workspace-title"><h1>BJT Common Emitter Amplifier <span>– Voltage Divider Bias (Common Emitter)</span></h1><span title="Real ngspice · unbypassed emitter">{{ icon('info') }}</span></div>
+      <div class="schematic-tabs"><h2>{{ icon('circuit') }} Circuit Schematic</h2><button type="button" id="guide-toggle" aria-expanded="false" aria-controls="operation-guide">{{ icon('book') }} Operation Guide</button></div>
+      <div id="operation-guide" hidden>
+        <strong>Operation Guide · Lab04</strong>
+        <dl><dt>Supported circuit</dt><dd>Voltage-divider biased 2N3904 NPN common-emitter amplifier. R<sub>E</sub> is unbypassed. C<sub>in</sub> and C<sub>out</sub> provide AC coupling; R<sub>L</sub> loads the output.</dd>
+        <dt>Configure</dt><dd>VCC is in V, resistances in kΩ and coupling capacitors in µF. Sine-source amplitude is mV peak; frequency is Hz. All values must be finite and positive. β and VBE are determined by the external device model, not editable approximations.</dd>
+        <dt>Run analyses</dt><dd>Run Simulation performs all three analyses, or select DC (.op), AC (.ac) or transient (.tran) individually. DC finds the operating point. AC sweeps gain and wrapped phase. Transient plots the real input and output over time.</dd>
+        <dt>Read overlays</dt><dd>Orange arrows and moving highlights show conventional collector and emitter current direction. The pink voltages and purple Q-point use current DC results. Blue and green traces use the same time window and voltage scale from the actual transient samples, preserving amplitude ratio and phase. The display slows the waveforms for inspection. Wire pulses indicate direction at an illustrative speed.</dd>
+        <dt>Read results</dt><dd>IE is calculated from simulated VE / RE. Active Region means VC &gt; VB &gt; VE with positive IC; this is a bias-region check, not independent validation. Hover or focus a Bode/transient chart and use arrow keys to inspect samples. Phase curves intentionally break at ±180° wraps. Source and load voltages are measured relative to ground.</dd>
+        <dt>Freshness and validation</dt><dd>Changing circuit inputs marks affected runs stale; source edits affect transient only. Validate checks finite inputs and current solver outputs. Instructor validation and reference benchmarks remain Not run. No automated check substitutes for them.</dd>
+        <dt>Save / Export / Reset</dt><dd>Export downloads retained solver data, provenance, inputs and freshness as JSON. Save Project also records overlay preferences; file import is not supported. Reset restores default inputs and overlays without fabricating new runs.</dd>
+        <dt>Limitations</dt><dd>Emitter bypass CE is not supported. Other bias modes link to the existing analytical Lab03 calculations, not new SPICE topologies. The external 2N3904 model is not instructor-verified. Run history is memory-only and clears on reload.</dd></dl>
+      </div>
+      <div class="schematic-stage" tabindex="0" role="region" aria-label="Editable circuit schematic">{% include 'reference-schematic.html' %}</div>
+      <p class="schematic-mobile-hint">Swipe the circuit to inspect all nodes, or use Expand.</p>
+      <div class="overlay-toolbar">
+        <label><input type="checkbox" id="overlay-dc" checked role="switch"><span class="switch-track"></span>Show DC Bias Overlay</label>
+        <label><input type="checkbox" id="overlay-ac" checked role="switch"><span class="switch-track"></span>Show AC Amplification Overlay</label>
+        <label><input type="checkbox" id="overlay-animation" checked role="switch"><span class="switch-track"></span>Animate Overlay</label>
+        <button id="pause-animation" type="button" aria-label="Pause overlay animation" aria-pressed="false">{{ icon('pause') }}</button>
+        <button id="restart-animation" type="button" aria-label="Restart overlay animation">{{ icon('reset') }}</button>
+        <button id="expand-circuit" type="button" aria-label="Expand circuit schematic" aria-pressed="false">{{ icon('expand') }}</button>
+      </div>
+      <span id="dc-annotation" class="sr-only">DC node annotations available after a current DC run.</span>
     </section>
-    <section class="card config-panel"><h2>Circuit Configuration <span>Common Emitter</span></h2>
-      <p class="spice-note">Voltage Divider Bias · NPN · unbypassed RE</p>
+    <section class="card config-panel">{{ configuration_title() }}
       <form id="spice-form" method="post" novalidate>
-        <div class="input-row analysis-row"><label for="analysis">Analysis</label><select id="analysis" name="analysis" class="unit mode-select">
-          <option value="dc" {% if analysis == 'dc' %}selected{% endif %}>DC Operating Point</option>
-          <option value="ac" {% if analysis == 'ac' %}selected{% endif %}>AC Frequency Response</option>
-          <option value="tran" {% if analysis == 'tran' %}selected{% endif %}>Transient Analysis</option>
-        </select></div>
+        {{ bias_picker('bias-type', mode, mode_labels, analytical) }}
+        <div class="config-fields">
         {% for key, label, unit, default, factor in fields %}
-        <div class="input-row"><label for="spice-{{ key }}">{{ label }} <span>{{ {'vcc':'Supply','r1':'Upper divider','r2':'Lower divider','rc':'Collector','re':'Emitter','rl':'Load','cin':'Input coupling','cout':'Output coupling'}[key] }}</span></label>
+        <div class="input-row field-{{ key }}"><label for="spice-{{ key }}"><i>{{ {'vcc':'V','r1':'R','r2':'R','rc':'R','re':'R','rl':'R','cin':'C','cout':'C'}[key] }}<sub>{{ {'vcc':'CC','r1':'1','r2':'2','rc':'C','re':'E','rl':'L','cin':'in','cout':'out'}[key] }}</sub></i> <span>{{ {'vcc':'(Supply Voltage)','rl':'(Load)','cin':'(Input Coupling)','cout':'(Output Coupling)'}.get(key,'') }}</span></label>
           <input id="spice-{{ key }}" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" required aria-describedby="unit-{{ key }}">
-          <span id="unit-{{ key }}" class="unit spice-unit">{{ unit }}</span></div>
+          <select id="unit-{{ key }}" class="unit spice-unit" aria-label="{{ label }} unit (fixed)"><option>{{ unit }}</option></select></div>
         {% endfor %}
-        <button type="submit">Run Simulation</button>
+        <div class="input-row model-field field-beta"><label for="model-beta"><i>β</i> <span>(Beta, h<sub>FE</sub>)</span></label><input id="model-beta" value="Device model" disabled title="Beta is determined by the configured 2N3904 model"></div>
+        <div class="input-row model-field field-vbe"><label for="model-vbe"><i>V<sub>BE</sub></i> <span>(Base–Emitter Voltage)</span></label><input id="model-vbe" value="Calculated by SPICE" disabled></div>
+        </div>
+        <div class="analysis-row"><label class="sr-only" for="analysis">Analysis</label><select id="analysis" name="analysis" class="unit"><option id="all-analyses" value="all" hidden disabled>All analyses · DC / AC / Transient</option><option value="dc" {% if analysis == 'dc' %}selected{% endif %}>DC Operating Point</option><option value="ac" {% if analysis == 'ac' %}selected{% endif %}>AC Frequency Response</option><option value="tran" {% if analysis == 'tran' %}selected{% endif %}>Transient Analysis</option></select></div>
+        <div class="config-actions"><button type="submit">{{ icon('play') }} Run Simulation</button><button type="button" id="validate-lab" class="secondary">{{ icon('check') }} Validate</button><button type="button" id="reset-lab" class="secondary">{{ icon('reset') }} Reset</button><button type="button" id="export-results" class="secondary">{{ icon('download') }} Export</button></div>
+        <p class="config-note">2N3904 external model · unbypassed R<sub>E</sub></p>
       </form>
     </section>
-    <section class="card results-card" id="results"><div class="results-heading"><h2>Analysis Dashboard</h2><nav class="result-nav" aria-label="Analysis and validation overview"><a href="#run-dc">DC</a><a href="#run-ac">AC</a><a href="#run-tran">Transient</a><a href="#run-validation">Validation</a></nav></div>
+    <section class="card results-card" id="results">
+      {{ results_heading([('run-dc', 'DC Bias', 'wave'), ('run-ac', 'AC Response', 'wave'), ('run-tran', 'Transient', 'bars')]) }}
       <div id="retained-runs" class="retained-runs">
-        {% for value, title in [('dc','DC Operating Point'),('ac','AC Response'),('tran','Transient Response')] %}
-        <section class="run-panel" id="run-{{ value }}" aria-labelledby="run-title-{{ value }}"><h3 id="run-title-{{ value }}">{{ title }}</h3><p class="run-state" data-run-status="{{ value }}">Not run</p><div class="run-content"></div></section>
+        {% for value, title, symbol in [('dc','DC Operating Point','file'),('ac','AC Response (Bode Plot)','wave'),('tran','Transient Response','wave')] %}
+        <section class="run-panel" id="run-{{ value }}" aria-labelledby="run-title-{{ value }}"><h3 id="run-title-{{ value }}">{{ icon(symbol) }} <span>{{ title }}{% if value == 'tran' %}<span id="transient-frequency"></span>{% endif %}</span></h3><p class="run-state" data-run-status="{{ value }}">Not run</p><div class="run-content">
+        {% if value == 'dc' %}<table class="empty-table"><tbody>{% for label in ['V_B','V_E','V_C','V_CE','I_C'] %}<tr><th>{{ label }}</th><td>—</td></tr>{% endfor %}</tbody></table><p class="empty-message">Run to calculate operating point.</p>
+        {% else %}<div class="empty-plot"><span>Run Simulation to plot {{ 'frequency response' if value == 'ac' else 'input / output waveforms' }}.</span></div>{% endif %}
+        </div></section>
         {% endfor %}
-        <section class="validation-panel" id="run-validation" aria-labelledby="validation-title"><h3 id="validation-title">Validation</h3>
-      <div id="spice-status" class="status {% if error %}status-warning{% elif result %}status-ok{% else %}status-pending{% endif %}" role="status" aria-live="polite">
-        {% if error %}<strong>Error: Simulation failed</strong><p>{{ error }}</p>
-        {% elif result %}<strong>Simulation successful · ngspice</strong>{% if analysis == 'dc' %}<p>Q1 collector current is positive into the collector.</p>{% endif %}
-        {% else %}<strong>Ready</strong><p>Run a simulation to see the operating point.</p>{% endif %}
-      </div>
-        <dl class="validation-facts" aria-label="Model and validation provenance">
-          <div class="validation-row"><dt>Device model</dt><dd>2N3904 · configured external file</dd></div>
-          <div class="validation-row"><dt>Model status</dt><dd>Not independently verified; not instructor-verified</dd></div>
-          <div class="validation-row"><dt>Instructor validation</dt><dd><span class="validation-indicator validation-unverified" aria-hidden="true"></span>Not run</dd></div>
-          <div class="validation-row"><dt>Reference benchmark</dt><dd><span class="validation-indicator validation-unverified" aria-hidden="true"></span>Not run</dd></div>
-        </dl>
-        <p class="validation-footnote">Simulations are not instructor validation. Run history clears on reload.</p>
+        <section class="validation-panel" id="run-validation" aria-labelledby="validation-title"><h3 id="validation-title">{{ icon('check') }} Test / Validation</h3>
+          <div id="spice-status" class="status {% if error %}status-warning{% elif result %}status-ok{% else %}status-pending{% endif %}" role="status" aria-live="polite">
+          {% if error %}<strong>Error: Simulation failed</strong><p>{{ error }}</p>{% elif result %}<strong>Simulation successful · ngspice</strong>{% else %}<strong>Ready to simulate</strong><p>No analyses run yet.</p>{% endif %}
+          </div>
+          <p id="validation-check" class="validation-check" role="status" aria-live="polite">Input / result checks: Not run</p>
+          <ul class="solver-checks" aria-label="Supported solver checks"><li data-check="input" data-state="pending">Input validation: Not run</li><li data-check="dc" data-state="pending">DC bias: Not run</li><li data-check="ac" data-state="pending">AC response: Not run</li><li data-check="tran" data-state="pending">Transient response: Not run</li><li data-state="pending">Reference benchmark: Not run</li></ul>
+          <details class="model-provenance"><summary>2N3904 · Model &amp; validation</summary><dl class="validation-facts" aria-label="Model and validation provenance"><div class="validation-row"><dt>Device model</dt><dd>2N3904 · external file</dd></div><div class="validation-row"><dt>Model status</dt><dd>not instructor-verified</dd></div><div class="validation-row"><dt>Instructor validation</dt><dd>Not run</dd></div><div class="validation-row"><dt>Reference benchmark</dt><dd>Not run</dd></div></dl></details>
+          <p class="validation-footnote">Simulation ≠ instructor validation.</p>
         </section>
       </div>
       <p class="measurement-note">Vin: source side of Cin (node in). Vout: load side of Cout (node out), relative to ground. Gain = Vout/Vin.</p>
-      {% if result %}
-      <div id="spice-results">
-      {% if analysis == 'dc' %}<table><tbody>
-        {% for key, label, scale, unit in [('vb','VB',1,'V'),('ve','VE',1,'V'),('vc','VC',1,'V'),('vce','VCE',1,'V'),('ic','IC',1000,'mA')] %}
-        <tr><th>{{ label }}</th><td>{{ '%.4f'|format(result[key] * scale) }} {{ unit }}</td></tr>
-        {% endfor %}
-      </tbody></table>{% else %}
-      <p class="plot-scroll-hint">On narrow screens, scroll the plots horizontally to see the full axes.</p>
-      <div id="plots" class="plots" aria-label="ngspice simulation plots"></div>
-      <script id="plot-data" type="application/json">{{ plot_data|tojson }}</script>
-      {% endif %}
-      </div>
-      <details class="spice-note"><summary>Run provenance: netlist and ngspice output</summary><h3>Netlist</h3><pre>{{ result.netlist }}</pre><h3>ngspice output</h3><pre>{{ result.log }}</pre></details>
-      {% endif %}
+      {% if result %}<div id="spice-results">{% if analysis == 'dc' %}<table><tbody>{% for key, label, scale, unit in [('vb','VB',1,'V'),('ve','VE',1,'V'),('vc','VC',1,'V'),('vce','VCE',1,'V'),('ic','IC',1000,'mA')] %}<tr><th>{{ label }}</th><td>{{ '%.4f'|format(result[key] * scale) }} {{ unit }}</td></tr>{% endfor %}</tbody></table>{% else %}<div id="plots" class="plots" aria-label="ngspice simulation plots"></div><script id="plot-data" type="application/json">{{ plot_data|tojson }}</script>{% endif %}</div><details class="spice-note"><summary>Run provenance: netlist and ngspice output</summary><pre>{{ result.netlist }}</pre><pre>{{ result.log }}</pre></details>{% endif %}
     </section>
-  </div>
-</main>
-</div>
+{% endblock %}
+
+{% block scripts %}
 <script id="initial-run" type="application/json">{{ {'mode': analysis, 'inputs': values, 'result': result, 'error': error}|tojson }}</script>
+{% set canonical_defaults = dict() %}{% for key, label, unit, default, factor in fields + source_fields %}{% set _ = canonical_defaults.update({key:default}) %}{% endfor %}
+<script id="lab-defaults" type="application/json">{{ canonical_defaults|tojson }}</script>
 <script src="{{ url_for('static', filename='plots.js') }}" defer></script>
 <script src="{{ url_for('static', filename='run-history.js') }}" defer></script>
+<script src="{{ url_for('static', filename='lab-parameters.js') }}" defer></script>
+<script src="{{ url_for('static', filename='schematic-motion.js') }}" defer></script>
 <script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>
-</body>
-</html>
+<script src="{{ url_for('static', filename='lab-controls.js') }}" defer></script>
+{% endblock %}

@@ -1,0 +1,620 @@
+{
+  "tests/phase51_browser_check.js": {
+    "results": [
+      {
+        "width": 1280,
+        "mode": "fixed",
+        "collectorCurrent": "IC\t1.1300 mA"
+      },
+      {
+        "width": 1280,
+        "mode": "emitter",
+        "collectorCurrent": "IC\t1.0263 mA"
+      },
+      {
+        "width": 1280,
+        "mode": "divider",
+        "collectorCurrent": "IC\t1.2299 mA"
+      },
+      {
+        "width": 1280,
+        "mode": "ngspice",
+        "dc": 7.7543359999999995,
+        "acPoints": 321,
+        "gain1k": 4.889590822432803,
+        "transientPoints": 508
+      },
+      {
+        "width": 390,
+        "mode": "fixed",
+        "collectorCurrent": "IC\t1.1300 mA"
+      },
+      {
+        "width": 390,
+        "mode": "emitter",
+        "collectorCurrent": "IC\t1.0263 mA"
+      },
+      {
+        "width": 390,
+        "mode": "divider",
+        "collectorCurrent": "IC\t1.2299 mA"
+      },
+      {
+        "width": 390,
+        "mode": "ngspice",
+        "dc": 7.7543359999999995,
+        "acPoints": 321,
+        "gain1k": 4.889590822432803,
+        "transientPoints": 508
+      }
+    ],
+    "errors": []
+  },
+  "tests/phase6_browser_check.js": {
+    "browser": "158.0.8127.37",
+    "cases": [
+      {
+        "id": "B1",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B2",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B3",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B4",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B5",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B6",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B7",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B8",
+        "width": 1280,
+        "status": "PASS"
+      },
+      {
+        "id": "B1",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B2",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B3",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B4",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B5",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B6",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B7",
+        "width": 390,
+        "status": "PASS"
+      },
+      {
+        "id": "B8",
+        "width": 390,
+        "status": "PASS"
+      }
+    ],
+    "savedRuns": 20,
+    "errors": []
+  },
+  "tests/phase61_browser_check.js": {
+    "checks": [
+      {
+        "width": 1280,
+        "hexadecimal": [
+          "Stale \u00b7 recorded inputs differ",
+          "Stale \u00b7 recorded inputs differ",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "separators": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed"
+        ],
+        "source": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "dc": "VB\t2.00 V\nVE\t1.33 V\nVC\t9.09 V\nVCE\t7.75 V\nIC\t1.32 mA\nIE\t1.33 mA"
+      },
+      {
+        "width": 390,
+        "hexadecimal": [
+          "Stale \u00b7 recorded inputs differ",
+          "Stale \u00b7 recorded inputs differ",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "separators": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed"
+        ],
+        "source": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "dc": "VB\t2.00 V\nVE\t1.33 V\nVC\t9.09 V\nVCE\t7.75 V\nIC\t1.32 mA\nIE\t1.33 mA"
+      }
+    ],
+    "errors": []
+  },
+  "tests/phase62_browser_check.js": {
+    "checks": [
+      {
+        "width": 1085,
+        "analytical": [
+          {
+            "mode": "fixed",
+            "ic": "IC\t1.1300 mA"
+          },
+          {
+            "mode": "emitter",
+            "ic": "IC\t1.0263 mA"
+          },
+          {
+            "mode": "divider",
+            "ic": "IC\t1.2299 mA"
+          }
+        ],
+        "differences": {
+          "dc": {
+            "vb": 4.96296638008431e-07,
+            "ve": 2.5622618005094466e-07,
+            "vc": 2.551576958609303e-07,
+            "vce": 5.113838765780088e-07,
+            "ic": 2.3044912918039617e-10
+          },
+          "ac": {
+            "frequency_hz": 0.049688827246427536,
+            "gain_db": 3.0101339199006816e-08,
+            "phase_deg": 1.5499313121836167e-07
+          },
+          "tran": {
+            "time_s": 3.469446951953614e-17,
+            "vin_v": 4.962672633945786e-12,
+            "vout_v": 4.9963269632691265e-11
+          }
+        },
+        "acGeometry": {
+          "points": 642,
+          "maxError": 0.005000000000052296
+        },
+        "tranGeometry": {
+          "points": 1016,
+          "maxError": 0.004987113954868505
+        },
+        "layout": {
+          "height": 620,
+          "overflow": false,
+          "resultsTop": 386.859375,
+          "sourceForm": "spice-form"
+        },
+        "sourceStates": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "invalid": "RE: enter a finite positive number.",
+        "missing": "2N3904 model not found; set BJT_MODEL_PATH."
+      },
+      {
+        "width": 1280,
+        "analytical": [
+          {
+            "mode": "fixed",
+            "ic": "IC\t1.1300 mA"
+          },
+          {
+            "mode": "emitter",
+            "ic": "IC\t1.0263 mA"
+          },
+          {
+            "mode": "divider",
+            "ic": "IC\t1.2299 mA"
+          }
+        ],
+        "differences": {
+          "dc": {
+            "vb": 4.96296638008431e-07,
+            "ve": 2.5622618005094466e-07,
+            "vc": 2.551576958609303e-07,
+            "vce": 5.113838765780088e-07,
+            "ic": 2.3044912918039617e-10
+          },
+          "ac": {
+            "frequency_hz": 0.049688827246427536,
+            "gain_db": 3.0101339199006816e-08,
+            "phase_deg": 1.5499313121836167e-07
+          },
+          "tran": {
+            "time_s": 3.469446951953614e-17,
+            "vin_v": 4.962672633945786e-12,
+            "vout_v": 4.9963269632691265e-11
+          }
+        },
+        "acGeometry": {
+          "points": 642,
+          "maxError": 0.005000000000052296
+        },
+        "tranGeometry": {
+          "points": 1016,
+          "maxError": 0.004987113954868505
+        },
+        "layout": {
+          "height": 900,
+          "overflow": false,
+          "resultsTop": 481.96875,
+          "sourceForm": "spice-form"
+        },
+        "sourceStates": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "invalid": "RE: enter a finite positive number.",
+        "missing": "2N3904 model not found; set BJT_MODEL_PATH."
+      },
+      {
+        "width": 390,
+        "analytical": [
+          {
+            "mode": "fixed",
+            "ic": "IC\t1.1300 mA"
+          },
+          {
+            "mode": "emitter",
+            "ic": "IC\t1.0263 mA"
+          },
+          {
+            "mode": "divider",
+            "ic": "IC\t1.2299 mA"
+          }
+        ],
+        "differences": {
+          "dc": {
+            "vb": 4.96296638008431e-07,
+            "ve": 2.5622618005094466e-07,
+            "vc": 2.551576958609303e-07,
+            "vce": 5.113838765780088e-07,
+            "ic": 2.3044912918039617e-10
+          },
+          "ac": {
+            "frequency_hz": 0.049688827246427536,
+            "gain_db": 3.0101339199006816e-08,
+            "phase_deg": 1.5499313121836167e-07
+          },
+          "tran": {
+            "time_s": 3.469446951953614e-17,
+            "vin_v": 4.962672633945786e-12,
+            "vout_v": 4.9963269632691265e-11
+          }
+        },
+        "acGeometry": {
+          "points": 642,
+          "maxError": 0.005000000000052296
+        },
+        "tranGeometry": {
+          "points": 1016,
+          "maxError": 0.004987113954868505
+        },
+        "layout": {
+          "height": 2773,
+          "overflow": false,
+          "resultsTop": 1643.890625,
+          "sourceForm": "spice-form"
+        },
+        "sourceStates": [
+          "Current \u00b7 ngspice completed",
+          "Current \u00b7 ngspice completed",
+          "Stale \u00b7 recorded inputs differ"
+        ],
+        "invalid": "RE: enter a finite positive number.",
+        "missing": "2N3904 model not found; set BJT_MODEL_PATH."
+      }
+    ],
+    "runs": 27,
+    "errors": []
+  },
+  "tests/phase6_accessibility_check.js": [
+    {
+      "width": 1085,
+      "route": "/simulation",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1085,
+      "route": "/simulation",
+      "state": "completed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "chart": {
+        "role": "region",
+        "label": "AC gain and phase plots; scroll horizontally if needed",
+        "outline": "2px",
+        "scrollLeft": 0
+      },
+      "leavesChart": true
+    },
+    {
+      "width": 1085,
+      "route": "/simulation",
+      "state": "stale",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 1085,
+      "route": "/simulation",
+      "state": "failed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 1085,
+      "route": "/?mode=fixed",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1085,
+      "route": "/?mode=emitter",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1085,
+      "route": "/?mode=divider",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1280,
+      "route": "/simulation",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1280,
+      "route": "/simulation",
+      "state": "completed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "chart": {
+        "role": "region",
+        "label": "AC gain and phase plots; scroll horizontally if needed",
+        "outline": "2px",
+        "scrollLeft": 0
+      },
+      "leavesChart": true
+    },
+    {
+      "width": 1280,
+      "route": "/simulation",
+      "state": "stale",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 1280,
+      "route": "/simulation",
+      "state": "failed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 1280,
+      "route": "/?mode=fixed",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1280,
+      "route": "/?mode=emitter",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 1280,
+      "route": "/?mode=divider",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 390,
+      "route": "/simulation",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 390,
+      "route": "/simulation",
+      "state": "completed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "chart": {
+        "role": "region",
+        "label": "AC gain and phase plots; scroll horizontally if needed",
+        "outline": "2px",
+        "scrollLeft": 0
+      },
+      "leavesChart": true
+    },
+    {
+      "width": 390,
+      "route": "/simulation",
+      "state": "stale",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 390,
+      "route": "/simulation",
+      "state": "failed",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": []
+    },
+    {
+      "width": 390,
+      "route": "/?mode=fixed",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 390,
+      "route": "/?mode=emitter",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    },
+    {
+      "width": 390,
+      "route": "/?mode=divider",
+      "state": "ready",
+      "lowContrast": [],
+      "unlabelled": [],
+      "overflow": false,
+      "outsideViewport": [],
+      "skip": {
+        "text": "Skip to workspace",
+        "outline": "3px"
+      }
+    }
+  ]
+}

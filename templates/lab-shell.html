@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Transistor Circuit Virtual Lab · Common Emitter{% endblock %}</title>
+  <link rel="icon" href="{{ url_for('favicon') }}" type="image/svg+xml">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='lab-compact.css') }}">
+</head>
+<body class="lab-page {{ 'analytical-page' if analytical else 'simulation-page' }}">
+{% set lab_id = 'Lab03' if analytical else 'Lab04' %}
+{% include 'lab-header.html' %}
+<div class="lab-layout">
+  {% include 'lab-sidebar.html' %}
+  <main class="lab-main" id="workspace" tabindex="-1">
+    <div class="lab-workspace{% if not analytical %} spice-dashboard{% endif %}">
+      {% block workspace %}{% endblock %}
+    </div>
+  </main>
+</div>
+<script src="{{ url_for('static', filename='lab-navigation.js') }}" defer></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

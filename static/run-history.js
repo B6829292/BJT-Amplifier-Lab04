@@ -23,5 +23,5 @@
       fail(mode, error) { pending.delete(mode); records[mode] = {mode, error}; }
     };
   }
-  return {isCurrent, create};
+  return {isCurrent, create, decimalNumber};
 });

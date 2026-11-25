@@ -1,165 +1,111 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Lab 03: BJT DC Bias Web App</title>
-  <link rel="icon" href="{{ url_for('favicon') }}" type="image/svg+xml">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body class="lab-page analytical-page">
-{% set analytical = true %}
-{% include 'lab-header.html' %}
-<div class="lab-layout">
-{% include 'lab-sidebar.html' %}
-<main class="lab-main" id="workspace">
-  <div class="workspace-title"><h1>Lab 03: BJT DC Bias Web App <span>— <span id="workspace-mode">{{ mode_labels.get(mode, 'Unknown mode') }}</span></span></h1><span>ANALYTICAL</span></div>
-  <div class="dashboard">
-    <section class="card inputs-card">
-      <h2>Circuit Configuration <span>Input Parameters</span></h2>
-      <form method="post" id="bias-form" novalidate>
-        <div class="input-row"><label for="mode">Bias mode</label><select id="mode" name="mode" class="unit mode-select">{% if mode not in mode_labels %}<option value="" selected>Choose a valid mode</option>{% endif %}{% for value, label in mode_labels.items() %}<option value="{{ value }}" {% if mode == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
-        {% for key, symbol, sub, description, unit in [('vcc','V','CC','Supply Voltage','V'), ('r1','R','1','Upper Divider','kΩ'), ('r2','R','2','Lower Divider','kΩ'), ('rb','R','B','Base Resistor','kΩ'), ('rc','R','C','Collector Resistor','kΩ'), ('re','R','E','Emitter Resistor','kΩ'), ('beta','β','','Current Gain','–'), ('vbe','V','BE','Base–Emitter Voltage','V')] %}
-        {% set active = (key not in ['r1', 'r2', 'rb', 're']) or (key in ['r1', 'r2'] and mode == 'divider') or (key == 'rb' and mode in ['fixed', 'emitter']) or (key == 're' and mode in ['divider', 'emitter']) %}
-        <div class="input-row" data-input-row="{{ key }}" {% if not active %}hidden{% endif %}><label for="{{ key }}"><i>{{ symbol }}{% if sub %}<sub>{{ sub }}</sub>{% endif %}</i> <span>({{ description }})</span></label><input id="{{ key }}" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" required {% if not active %}disabled{% endif %} aria-describedby="{{ key }}-error" aria-invalid="{{ 'true' if errors.get(key) else 'false' }}">{% if key == 'beta' %}<span class="unit">–</span>{% else %}<select class="unit" name="{{ key }}_unit" aria-label="{{ symbol }}{{ sub }} unit" data-field="{{ key }}" data-previous="{{ units[key] }}" {% if not active %}disabled{% endif %}>{% set options = [('V','V'),('mV','mV')] if key in ('vcc','vbe') else [('ohm','Ω'),('kohm','kΩ'),('Mohm','MΩ')] %}{% if units[key] not in options|map(attribute=0)|list %}<option value="" selected>Choose</option>{% endif %}{% for option, display in options %}<option value="{{ option }}" {% if units[key] == option %}selected{% endif %}>{{ display }}</option>{% endfor %}</select>{% endif %}<span id="{{ key }}-error" class="field-error" aria-live="polite">{{ errors.get(key, '') }}</span></div>
-        {% endfor %}
-        <button type="submit"><svg class="button-icon" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="2" width="22" height="28" rx="3"/><path d="M9 7h14v6H9zM10 18h1m5 0h1m5 0h1m-13 5h1m5 0h1m5 0h1"/></svg> Calculate DC Bias</button>
-      </form>
-      {% if error %}<p class="error" role="alert">{{ mode_labels.get(mode, 'Unknown mode') }}: {{ error }}</p>{% endif %}
-    </section>
-    <section class="card circuit-card">
-      <h2><svg class="icon network" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="5" r="3"/><circle cx="5" cy="25" r="3"/><circle cx="27" cy="25" r="3"/><path d="M16 8v9M8 23l8-6 8 6"/></svg> Circuit: Common-Emitter Amplifier</h2>
-      <svg class="circuit" viewBox="0 0 500 470" role="img" aria-label="NPN {{ mode_labels.get(mode, 'unknown') }} circuit">
-        <g fill="none" stroke="#111" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-          <path d="M320 48v25H145v49 M145 188v72 M320 73v49 M320 188v40 M320 308v9 M320 383v35 M145 260h118"/>
-          <path d="M145 122l-10 8 20 8-20 8 20 8-20 8 20 8-10 9v9 M320 122l-10 8 20 8-20 8 20 8-20 8 20 8-10 9v9"/>
-          <g data-circuit-mode="divider" {% if mode != 'divider' %}style="display:none"{% endif %}><path d="M145 260v57 M145 383v35 M145 317l-10 8 20 8-20 8 20 8-20 8 20 8-10 9v9 M128 418h34 M134 425h22 M140 432h10"/></g>
-          <g data-circuit-mode="emitter-resistor" {% if mode not in ['divider', 'emitter'] %}style="display:none"{% endif %}><path d="M320 317l-10 8 20 8-20 8 20 8-20 8 20 8-10 9v9"/></g>
-          <path data-circuit-mode="fixed" {% if mode != 'fixed' %}style="display:none"{% endif %} d="M320 317v66"/>
-          <circle cx="300" cy="260" r="40" fill="#dbf0fd"/><path d="M263 260h23 M286 237v46 M286 247l34-19 M286 273l34 22 M320 295v13 M303 418h34 M309 425h22 M315 432h10"/>
-        </g>
-        <path d="M305 277l12 15-19-5z" fill="#111"/><circle cx="145" cy="260" r="5"/><circle cx="320" cy="48" r="7"/>
-        {% set unit_labels = {'V':'V', 'mV':'mV', 'ohm':'Ω', 'kohm':'kΩ', 'Mohm':'MΩ'} %}
-        <g class="circuit-text" fill="#111"><text x="302" y="33"><tspan font-style="italic">V<tspan baseline-shift="sub" font-size="16">CC</tspan></tspan> = <tspan data-circuit="vcc">{{ values.vcc }}</tspan> <tspan data-circuit-unit="vcc">{{ unit_labels.get(units.vcc, '?') }}</tspan></text>
-          <g data-circuit-mode="divider" {% if mode != 'divider' %}style="display:none"{% endif %}><text x="110" y="145" text-anchor="end" font-style="italic">R₁</text><text x="125" y="172" text-anchor="end"><tspan data-circuit="r1">{{ values.r1 }}</tspan> <tspan data-circuit-unit="r1">{{ unit_labels.get(units.r1, '?') }}</tspan></text><text x="110" y="337" text-anchor="end" font-style="italic">R₂</text><text x="125" y="364" text-anchor="end"><tspan data-circuit="r2">{{ values.r2 }}</tspan> <tspan data-circuit-unit="r2">{{ unit_labels.get(units.r2, '?') }}</tspan></text></g>
-          <g data-circuit-mode="base-resistor" {% if mode not in ['fixed', 'emitter'] %}style="display:none"{% endif %}><text x="110" y="145" text-anchor="end" font-style="italic">R<tspan baseline-shift="sub" font-size="16">B</tspan></text><text x="125" y="172" text-anchor="end"><tspan data-circuit="rb">{{ values.rb }}</tspan> <tspan data-circuit-unit="rb">{{ unit_labels.get(units.rb, '?') }}</tspan></text></g>
-          <text x="355" y="145" font-style="italic">R<tspan baseline-shift="sub" font-size="16">C</tspan></text><text x="345" y="172"><tspan data-circuit="rc">{{ values.rc }}</tspan> <tspan data-circuit-unit="rc">{{ unit_labels.get(units.rc, '?') }}</tspan></text>
-          <g data-circuit-mode="emitter-resistor" {% if mode not in ['divider', 'emitter'] %}style="display:none"{% endif %}><text x="355" y="337" font-style="italic">R<tspan baseline-shift="sub" font-size="16">E</tspan></text><text x="345" y="364"><tspan data-circuit="re">{{ values.re }}</tspan> <tspan data-circuit-unit="re">{{ unit_labels.get(units.re, '?') }}</tspan></text></g>
-          <text x="365" y="244" font-style="italic">Q₁</text><text x="365" y="270">NPN</text><text x="365" y="296">(β = <tspan data-circuit="beta">{{ values.beta }}</tspan>)</text>
-        </g>
-      </svg>
-    </section>
-    <div class="results-column" id="results">
-      <section class="card results-card"><h2><svg class="icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M3 28h26M5 27v-9h5v9M13 27V11h5v16M21 27V4h5v23"/></svg> DC Bias Results</h2><p id="result-mode">{{ mode_labels.get(mode, 'Unknown mode') }}</p>
-        <table><tbody>{% for key, symbol, sub, scale, unit in [('vb','V','B',1,'V'),('ve','V','E',1,'V'),('vc','V','C',1,'V'),('vce','V','CE',1,'V'),('ib','I','B',1000,'mA'),('ic','I','C',1000,'mA'),('ie','I','E',1000,'mA')] %}
-          <tr><th><i>{{ symbol }}<sub>{{ sub }}</sub></i></th><td>{% if result %}{{ '%.4f'|format(result[key] * scale) }} {{ unit }}{% else %}—{% endif %}</td></tr>
-        {% endfor %}</tbody></table>
-      </section>
-      <section class="status {% if result and not result.warnings %}status-ok{% elif result and result.warnings or error %}status-warning{% else %}status-pending{% endif %}" id="result-status" aria-live="polite">
-        {% if result and not result.warnings %}<strong><span class="status-icon">✓</span> Active region approximation OK</strong><p><i>V<sub>CE</sub></i> = {{ '%.4f'|format(result.vce) }} V &gt; 0.2 V (approximate threshold)</p>
-        {% elif result and result.warnings %}<strong>⚠ Operating region warning</strong>{% for warning in result.warnings %}<p>{{ warning }}</p>{% endfor %}
-        {% elif error %}<strong>⚠ Check input parameters</strong><p>Correct the values and calculate again.</p>
-        {% else %}<strong>Operating region</strong><p>Calculate DC bias to see the operating-region assessment.</p>{% endif %}
-      </section>
-    </div>
+{% extends 'lab-shell.html' %}
+{% from 'icons.html' import icon %}
+{% from 'lab-components.html' import bias_picker, configuration_title, results_heading %}
+
+{% block title %}Transistor Circuit Virtual Lab · Lab03 Analytical Bias{% endblock %}
+
+{% block workspace %}
+{% set circuit_name = mode_labels.get(mode, 'Unknown mode') %}
+<section class="card schematic-panel">
+  <div class="workspace-title">
+    <h1>BJT Common Emitter Amplifier <span>– <span id="workspace-mode">{{ circuit_name }}</span></span></h1>
+    <span title="Lab03 analytical DC model">{{ icon('info') }}</span>
   </div>
-  <aside class="goal"><strong><span>◎</span> Lab 03 Goal</strong><p>Extend the existing DC bias calculator to Fixed Bias, Emitter Bias, and Voltage Divider Bias.</p></aside>
-</main>
-</div>
-<script>
-  const form = document.getElementById('bias-form');
-  const factors = {V: 1, mV: 0.001, ohm: 1, kohm: 1000, Mohm: 1000000};
-  const minNormal = 2.2250738585072014e-308;
-  const modeSelect = document.getElementById('mode');
-  function markStale() {
-    const status = document.getElementById('result-status');
-    status.dataset.stale = 'true';
-    status.className = 'status status-pending';
-    status.textContent = 'Inputs changed. Calculate again to update results and operating region.';
-    document.querySelector('.results-card table').hidden = true;
-    document.getElementById('result-mode').textContent = modeSelect.selectedOptions[0].textContent;
-  }
-  function updateMode() {
-    const mode = modeSelect.value;
-    document.getElementById('workspace-mode').textContent = modeSelect.selectedOptions[0].textContent;
-    document.querySelectorAll('[data-bias-link]').forEach(link => {
-      link.classList.toggle('chosen', link.dataset.biasLink === mode);
-      if (link.dataset.biasLink === mode) link.setAttribute('aria-current', 'page');
-      else link.removeAttribute('aria-current');
-    });
-    form.querySelectorAll('[data-input-row]').forEach((row) => {
-      const key = row.dataset.inputRow;
-      const active = !['r1', 'r2', 'rb', 're'].includes(key) ||
-        (['r1', 'r2'].includes(key) && mode === 'divider') ||
-        (key === 'rb' && ['fixed', 'emitter'].includes(mode)) ||
-        (key === 're' && ['divider', 'emitter'].includes(mode));
-      row.hidden = !active;
-      row.querySelectorAll('input, select').forEach(control => { control.disabled = !active; });
-    });
-    document.querySelectorAll('[data-circuit-mode]').forEach((part) => {
-      const kind = part.dataset.circuitMode;
-      part.style.display = (kind === mode || (kind === 'base-resistor' && ['fixed', 'emitter'].includes(mode)) ||
-        (kind === 'emitter-resistor' && ['divider', 'emitter'].includes(mode))) ? '' : 'none';
-    });
-    document.querySelector('.circuit').setAttribute('aria-label', 'NPN ' + modeSelect.selectedOptions[0].textContent + ' circuit');
-  }
-  modeSelect.addEventListener('change', () => { updateMode(); markStale(); });
-  function showError(input, message) {
-    input.setAttribute('aria-invalid', message ? 'true' : 'false');
-    document.getElementById(input.id + '-error').textContent = message;
-    return !message;
-  }
-  function validateField(input) {
-    const text = input.value.trim();
-    const select = form.querySelector('select[data-field="' + input.id + '"]');
-    const number = Number(text);
-    let message = '';
-    if (!text) message = 'This field is required.';
-    else if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:e[+-]?\d+)?$/i.test(text) || !Number.isFinite(number)) message = 'Enter a finite number.';
-    else if (number === 0 && /[1-9]/.test(text.split(/[eE]/)[0])) message = 'Value is too small for reliable calculation.';
-    else if (input.id === 'vbe' ? number < 0 : number <= 0) message = input.id === 'vbe' ? 'Enter zero or greater.' : 'Enter a value greater than zero.';
-    else if (select && !(select.value in factors)) message = 'Choose a valid unit.';
-    else {
-      const converted = number * (select ? factors[select.value] : 1);
-      if (!Number.isFinite(converted)) message = 'Value is too large after unit conversion.';
-      else if ((number !== 0 && converted === 0) || (number !== 0 && Math.abs(number) < minNormal) || (converted !== 0 && Math.abs(converted) < minNormal)) message = 'Value is too small for reliable calculation.';
-    }
-    return showError(input, message);
-  }
-  form.querySelectorAll('input').forEach((input) => {
-    input.addEventListener('blur', () => validateField(input));
-    input.addEventListener('input', () => { if (input.getAttribute('aria-invalid') === 'true') validateField(input); });
-  });
-  form.addEventListener('submit', (event) => {
-    const invalid = Array.from(form.querySelectorAll('input:not(:disabled)')).filter(input => !validateField(input));
-    if (invalid.length) { event.preventDefault(); invalid[0].focus(); }
-  });
-  form.querySelectorAll('select[data-field]').forEach((select) => {
-    select.addEventListener('change', () => {
-      const input = document.getElementById(select.dataset.field);
-      if (input.value.trim() && Number.isFinite(Number(input.value)) && factors[select.dataset.previous] !== undefined) {
-        const converted = Number(input.value) * (factors[select.dataset.previous] / factors[select.value]);
-        if (!Number.isFinite(converted) || (converted === 0 && Number(input.value) !== 0) || (converted !== 0 && Math.abs(converted) < minNormal)) {
-          select.value = select.dataset.previous;
-          showError(input, 'This value cannot be represented in the selected unit.');
-          return;
-        }
-        input.setCustomValidity('');
-        input.value = String(Number(converted.toPrecision(15)));
-      }
-      select.dataset.previous = select.value;
-      const label = document.querySelector('[data-circuit="' + input.name + '"]');
-      const unitLabel = document.querySelector('[data-circuit-unit="' + input.name + '"]');
-      if (label) label.textContent = input.value || '—';
-      if (unitLabel) unitLabel.textContent = select.options[select.selectedIndex].text;
-      validateField(input);
-      markStale();
-    });
-  });
-  form.addEventListener('input', (event) => {
-    if (event.target.tagName === 'INPUT') event.target.setCustomValidity('');
-    const label = document.querySelector('[data-circuit="' + event.target.name + '"]');
-    if (label) label.textContent = event.target.value || '—';
-    markStale();
-  });
-</script>
-</body></html>
+  <div class="schematic-tabs">
+    <h2>{{ icon('circuit') }} Circuit Schematic</h2>
+    <details class="analytical-guide">
+      <summary>{{ icon('book') }} Operation Guide</summary>
+      <div class="guide-content">
+        <strong>Lab 03 Goal</strong>
+        <p>Compare the DC operating points of Fixed Bias, Emitter Bias and Voltage Divider Bias.</p>
+        <ol>
+          <li>Choose a bias type and enter its component values.</li>
+          <li>Calculate DC Bias using the constant β and base–emitter voltage model.</li>
+          <li>Check the DC operating point and read the operating-region assessment.</li>
+        </ol>
+      </div>
+    </details>
+  </div>
+  <div class="schematic-stage analytical-stage" role="region" aria-label="Circuit: Common-Emitter Amplifier">
+    {% include 'analytical-schematic.html' %}
+  </div>
+</section>
+
+<section class="card config-panel">
+  {{ configuration_title() }}
+  <form method="post" id="bias-form" aria-label="Input Parameters" data-mode-fields='{{ mode_fields|tojson }}' novalidate>
+    {{ bias_picker('mode', mode, mode_labels, analytical) }}
+    {% set columns = [
+      [('vcc', 'V', 'CC', 'Supply Voltage'), ('r1', 'R', '1', 'Upper Divider'),
+       ('r2', 'R', '2', 'Lower Divider'), ('rb', 'R', 'B', 'Base Resistor'),
+       ('rc', 'R', 'C', 'Collector Resistor'), ('re', 'R', 'E', 'Emitter Resistor')],
+      [('beta', 'β', '', 'Current Gain'), ('vbe', 'V', 'BE', 'Base–Emitter Voltage')]
+    ] %}
+    <div class="config-fields">
+      {% for column in columns %}
+      <div class="config-column">
+        {% for key, symbol, sub, description in column %}
+        {% set active = key in mode_fields.get(mode, mode_fields.divider) %}
+        <div class="input-row" data-input-row="{{ key }}"{% if not active %} hidden{% endif %}>
+          <label for="{{ key }}"><i>{{ symbol }}{% if sub %}<sub>{{ sub }}</sub>{% endif %}</i> <span>({{ description }})</span></label>
+          <input id="{{ key }}" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" required{% if not active %} disabled{% endif %} aria-describedby="{{ key }}-error" aria-invalid="{{ 'true' if errors.get(key) else 'false' }}">
+          {% if key == 'beta' %}
+          <span class="unit spice-unit">–</span>
+          {% else %}
+          {% set options = [('V', 'V'), ('mV', 'mV')] if key in ('vcc', 'vbe') else [('ohm', 'Ω'), ('kohm', 'kΩ'), ('Mohm', 'MΩ')] %}
+          <select class="unit spice-unit" name="{{ key }}_unit" aria-label="{{ symbol }}{{ sub }} unit" data-field="{{ key }}" data-previous="{{ units[key] }}"{% if not active %} disabled{% endif %}>
+            {% if units[key] not in options|map(attribute=0)|list %}<option value="" selected>Choose</option>{% endif %}
+            {% for option, display in options %}
+            <option value="{{ option }}"{% if units[key] == option %} selected{% endif %}>{{ display }}</option>
+            {% endfor %}
+          </select>
+          {% endif %}
+          <span id="{{ key }}-error" class="field-error" aria-live="polite">{{ errors.get(key, '') }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="config-actions"><button type="submit">{{ icon('calculator') }} Calculate DC Bias</button></div>
+    <p class="config-note">Lab03 analytical model · DC operating point</p>
+    {% if error %}<p class="error" role="alert">{{ circuit_name }}: {{ error }}</p>{% endif %}
+  </form>
+</section>
+
+<section class="card results-card" id="results" aria-label="DC Bias Results">
+  {{ results_heading([('run-dc', 'DC Bias', 'wave')]) }}
+  <div class="retained-runs analytical-runs">
+    <section class="run-panel" id="run-dc" aria-labelledby="run-title-dc">
+      <h3 id="run-title-dc">{{ icon('file') }} DC Operating Point</h3>
+      <p class="run-state"><span id="result-mode">{{ circuit_name }}</span> · <span id="result-freshness">{{ 'Analytical calculation' if result else 'Awaiting calculation' }}</span></p>
+      <table>
+        <tbody>
+          {% for key, symbol, sub, scale, unit in [('vb','V','B',1,'V'),('ve','V','E',1,'V'),('vc','V','C',1,'V'),('vce','V','CE',1,'V'),('ib','I','B',1000,'mA'),('ic','I','C',1000,'mA'),('ie','I','E',1000,'mA')] %}
+          <tr><th scope="row"><i>{{ symbol }}<sub>{{ sub }}</sub></i></th><td>{% if result %}{{ '%.4f'|format(result[key] * scale) }} {{ unit }}{% else %}—{% endif %}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    <section class="validation-panel" aria-labelledby="analytical-validation-title">
+      <h3 id="analytical-validation-title">{{ icon('check') }} Operating Region</h3>
+      <div class="status {{ 'status-ok' if result and not result.warnings else 'status-warning' if error or (result and result.warnings) else 'status-pending' }}" id="result-status" role="status" aria-live="polite">
+        {% if result and not result.warnings %}
+        <strong>{{ icon('check') }} Active region approximation OK</strong>
+        <p><i>V<sub>CE</sub></i> = {{ '%.4f'|format(result.vce) }} V &gt; 0.2 V (approximate threshold)</p>
+        {% elif result and result.warnings %}
+        <strong>Operating region warning</strong>
+        {% for warning in result.warnings %}<p>{{ warning }}</p>{% endfor %}
+        {% elif error %}
+        <strong>Check input parameters</strong><p>Correct the values and calculate again.</p>
+        {% else %}
+        <p>Calculate DC bias to see the operating-region assessment.</p>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='bias-form.js') }}" defer></script>
+{% endblock %}

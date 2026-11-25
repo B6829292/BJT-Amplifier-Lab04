@@ -1,2 +1,11 @@
+{% from 'icons.html' import icon %}
 <a class="skip-link" href="#workspace">Skip to workspace</a>
-<header class="lab-header"><div class="lab-mark" aria-hidden="true"><img src="{{ url_for('favicon') }}" alt=""></div><div><strong>Transistor Circuit Virtual Lab</strong><small>Computer Programming for Electrical Engineers</small></div><span class="course-tag">ENG29 2121</span><span class="header-caption">Common Emitter Lab</span><span class="engine-tag">{{ 'Analytical · Lab 03' if analytical else 'ngspice · Lab 04' }}</span></header>
+<header class="lab-header">
+  <div class="lab-mark" aria-hidden="true">{{ icon('chip') }}</div>
+  <div class="brand-name"><strong>Transistor Circuit Virtual Lab</strong><small>Computer Programming for Electrical Engineers</small></div>
+  <span class="course-tag">ENG29 2121</span><span class="vision-tag">{{ 'Lab03 · Analytical Bias' if analytical else 'Lab04 · SPICE Simulation' }}</span>
+  <span class="header-caption">{{ icon('academic') }} Common Emitter Lab ({{ lab_id }})</span>
+  <span class="engine-tag">v1.0.0</span>
+  <a class="repository-link" href="https://github.com/B6829292/BJT-Amplifier-Lab04" aria-label="Project repository">{{ icon('github') }}</a>
+  {% if not analytical %}<button type="button" id="save-project" class="save-project">{{ icon('file') }} Save Project {{ icon('chevron') }}</button>{% endif %}
+</header>

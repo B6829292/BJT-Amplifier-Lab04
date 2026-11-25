@@ -1,0 +1,33 @@
+{% from 'icons.html' import icon %}
+
+{% macro bias_picker(id, mode, mode_labels, analytical) -%}
+<div class="bias-type">
+  <label for="{{ id }}">Bias Type</label>
+  <div class="bias-select">
+  {{ icon('network') }}
+  <select id="{{ id }}"{% if analytical %} name="mode"{% endif %} data-active-bias="{{ mode if not analytical or mode in mode_labels else '' }}">
+    {% if analytical and mode not in mode_labels %}<option value="" selected>Choose a valid mode</option>{% endif %}
+    {% for value, label in mode_labels.items() %}
+    <option value="{{ value }}"{% if value == mode %} selected{% endif %}{% if not analytical %} data-navigate="{{ url_for('index', mode=value) }}"{% endif %} data-label="{{ label }}">{{ label }}{% if value == 'divider' %} · Lab03{% endif %}</option>
+    {% endfor %}
+    <option value="simulation"{% if not analytical %} selected{% else %} data-navigate="{{ url_for('simulation') }}"{% endif %}>Voltage Divider Bias · Lab04</option>
+  </select>
+  {{ icon('chevron') }}
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro configuration_title() -%}
+<h2>{{ icon('gear') }} Circuit Configuration – Common Emitter (BJT)</h2>
+{%- endmacro %}
+
+{% macro results_heading(items) -%}
+<div class="results-heading">
+  <h2>{{ icon('bars') }} Results</h2>
+  <nav class="result-nav" aria-label="Analysis and validation overview">
+    {% for target, label, symbol in items %}
+    <a{% if loop.first %} class="selected"{% endif %} href="#{{ target }}">{{ icon(symbol) }} {{ label }}</a>
+    {% endfor %}
+  </nav>
+</div>
+{%- endmacro %}

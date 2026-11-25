@@ -1,0 +1,14 @@
+const assert=require('assert');
+const motion=require('../static/schematic-motion.js');
+const time=Array.from({length:501},(_,i)=>i*.00001);
+const data={time_s:time,vin_v:time.map(t=>.01*Math.sin(2*Math.PI*1000*t)),vout_v:time.map(t=>-.02*Math.sin(2*Math.PI*1000*t))};
+const original=JSON.stringify(data);
+const a=motion.frame(data,1000,0),b=motion.frame(data,1000,.25);
+assert.notStrictEqual(a.vin,b.vin,'sequential frames must move');
+assert.notStrictEqual(a.vout,b.vout,'both traces share the running time');
+for(let i=0;i<a.inputValues.length;i++) assert.ok(Math.abs(a.outputValues[i]+2*a.inputValues[i])<1e-10,'actual inversion and amplitude ratio must remain');
+assert.ok(a.displayCyclesPerSecond>0&&a.displayCyclesPerSecond<1000,'physical frequency is deliberately time-scaled');
+assert.ok(motion.frame(data,2000,0).displayCyclesPerSecond>a.displayCyclesPerSecond,'display time responds to actual frequency');
+assert.strictEqual(motion.frame(data,1000,0).vin,a.vin,'reset returns to initial phase');
+assert.strictEqual(JSON.stringify(data),original,'motion must not modify numerical results');
+assert.throws(()=>motion.frame(data,0,0),/frequency/i);

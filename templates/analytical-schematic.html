@@ -1,0 +1,73 @@
+{% from 'schematic-symbols.html' import diagram_definitions, schematic_legend, bias_chip, math_symbol, vertical_resistor, npn_symbol %}
+{% set unit_labels = {'V':'V', 'mV':'mV', 'ohm':'Ω', 'kohm':'kΩ', 'Mohm':'MΩ'} %}
+{% macro parameter(key) -%}
+<tspan data-circuit="{{ key }}">{{ values[key] }}</tspan> <tspan data-circuit-unit="{{ key }}">{{ unit_labels.get(units[key], '?') }}</tspan>
+{%- endmacro %}
+<svg class="circuit reference-circuit" viewBox="0 0 550 235" role="img" aria-label="NPN {{ circuit_name }} circuit">
+  {{ diagram_definitions() }}
+  {{ schematic_legend(false) }}
+  <g fill="none" stroke="#263238" stroke-width="1.62" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M206 44V21H330V4M330 21V44M206 83V124H302M330 83V104M330 154V172"/>
+    {{ vertical_resistor('base-feed-resistor', 206, 44, 83) }}
+    {{ vertical_resistor('collector-resistor', 330, 44, 83) }}
+    <g data-circuit-mode="divider"{% if mode != 'divider' %} style="display:none"{% endif %}>
+      <path d="M206 124V154M206 187V216"/>
+      {{ vertical_resistor('divider-lower', 206, 154, 187) }}
+      <use href="#ground" x="206" y="216"/>
+    </g>
+    <g data-circuit-mode="emitter-resistor"{% if mode not in ('divider', 'emitter') %} style="display:none"{% endif %}>
+      {{ vertical_resistor('emitter-resistor', 330, 172, 202) }}
+    </g>
+    <path data-circuit-mode="fixed"{% if mode != 'fixed' %} style="display:none"{% endif %} d="M330 172V202"/>
+    <path d="M330 202V216"/>
+    {{ npn_symbol() }}
+    <circle cx="330" cy="4" r="2.15" fill="#fff"/>
+    <use href="#ground" x="330" y="216"/>
+  </g>
+
+  <g class="component-labels" fill="#192c34">
+    <g data-circuit-mode="divider"{% if mode != 'divider' %} style="display:none"{% endif %} text-anchor="end">
+      <text x="193" y="55">{{ math_symbol('R', '1') }}</text>
+      <text class="component-value" x="193" y="71">{{ parameter('r1') }}</text>
+      <text x="193" y="172">{{ math_symbol('R', '2') }}</text>
+      <text class="component-value" x="193" y="187">{{ parameter('r2') }}</text>
+    </g>
+    <g data-circuit-mode="base-resistor"{% if mode not in ('fixed', 'emitter') %} style="display:none"{% endif %} text-anchor="end">
+      <text x="193" y="55">{{ math_symbol('R', 'B') }}</text>
+      <text class="component-value" x="193" y="71">{{ parameter('rb') }}</text>
+    </g>
+    <text x="315" y="55" text-anchor="end">{{ math_symbol('R', 'C') }}</text>
+    <text class="component-value" x="315" y="70" text-anchor="end">{{ parameter('rc') }}</text>
+    <g data-circuit-mode="emitter-resistor"{% if mode not in ('divider', 'emitter') %} style="display:none"{% endif %}>
+      <text x="315" y="183" text-anchor="end">{{ math_symbol('R', 'E') }}</text>
+      <text class="component-value" x="315" y="197" text-anchor="end">{{ parameter('re') }}</text>
+    </g>
+    <g text-anchor="middle">
+      <text x="359" y="119">{{ math_symbol('Q', '1') }}</text>
+      <text class="device-type" x="359" y="132">NPN</text>
+      <text class="device-model" x="359" y="145">(<tspan class="schematic-variable">β</tspan> = <tspan data-circuit="beta">{{ values.beta }}</tspan>)</text>
+    </g>
+  </g>
+
+  <g class="supply-label">
+    <rect x="342" y="0.5" width="97" height="18.5" rx="2.7"/>
+    <text x="349" y="13.2">{{ math_symbol('V', 'CC') }} = {{ parameter('vcc') }}</text>
+  </g>
+  {% if result %}
+  <g data-analytical-result>
+    {% if result.ic > 0 %}
+    <path d="M340 29V94" fill="none" stroke="#ed9116" stroke-width="1.85" marker-end="url(#arrow-orange)"/>
+    <g class="current-label"><text x="348" y="40">{{ math_symbol('I', 'C') }} = {{ '%.2f'|format(result.ic * 1000) }} mA</text></g>
+    {% endif %}
+    <g class="voltage-leaders" fill="none" stroke="#bf629b" stroke-width=".85"><path d="M206 124l16-17M330 104l18-31m-18 81-9 3"/></g>
+    {% for key, subscript, x, y in [('vb', 'B', 218, 92), ('vc', 'C', 343, 57), ('ve', 'E', 256, 148)] %}
+    <g class="node-badge"><rect x="{{ x }}" y="{{ y }}" width="66" height="16" rx="3"/><text x="{{ x+5 }}" y="{{ y+11.7 }}">{{ math_symbol('V', subscript) }} = {{ '%.2f'|format(result[key]) }} V</text></g>
+    {% endfor %}
+    <g class="q-point"><rect x="399" y="131" width="73" height="42" rx="4.8"/><text x="407" y="144">Q-Point:</text><text x="406" y="156">{{ math_symbol('I', 'C') }} = {{ '%.2f'|format(result.ic * 1000) }} mA</text><text x="406" y="167">{{ math_symbol('V', 'CE') }} = {{ '%.2f'|format(result.vce) }} V</text></g>
+  </g>
+  {% endif %}
+  <g class="key-nodes" fill="white" stroke="#c947a2" stroke-width="1.6">
+    <circle cx="206" cy="124" r="2.6"/><circle cx="330" cy="104" r="2.6"/><circle cx="330" cy="154" r="2.6"/><circle cx="330" cy="21" r="2.4" stroke="#dc6559"/>
+  </g>
+  {{ bias_chip(circuit_name, '(Analytical DC)', 172, true) }}
+</svg>

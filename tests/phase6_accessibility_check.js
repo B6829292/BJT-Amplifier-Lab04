@@ -44,8 +44,8 @@ async (page) => {
       if(route==='/simulation') {
         for(const mode of ['dc','ac','tran']) {
           await page.locator('#analysis').selectOption(mode);
-          await page.locator('#spice-form button').focus();await page.keyboard.press('Space');
-          await page.waitForFunction(()=>!document.querySelector('#spice-form button').disabled);
+          await page.locator('#spice-form button[type=submit]').focus();await page.keyboard.press('Space');
+          await page.waitForFunction(()=>!document.querySelector('#spice-form button[type=submit]').disabled);
         }
         const region=page.locator('#run-ac .plots');await region.focus();
         const needsScroll=await region.evaluate(n=>n.scrollWidth>n.clientWidth);
@@ -56,7 +56,7 @@ async (page) => {
         result.checks.push({width,route,state:'completed',chart,leavesChart,scan:await scan()});
         await page.locator('#spice-re').fill('0');
         result.checks.push({width,route,state:'stale',scan:await scan()});
-        await page.locator('#spice-form button').click();await page.waitForFunction(()=>!document.querySelector('#spice-form button').disabled);
+        await page.locator('#spice-form button[type=submit]').click();await page.waitForFunction(()=>!document.querySelector('#spice-form button[type=submit]').disabled);
         result.checks.push({width,route,state:'failed',scan:await scan()});
       }
     }

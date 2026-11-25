@@ -1,0 +1,85 @@
+{
+  "reference_dimensions": [
+    1085,
+    613
+  ],
+  "method": "Mean absolute RGB channel error (0\u2013255), fixed matching coordinates; lower is closer. No rescaling or registration. Not a perceptual similarity score.",
+  "exclusions": "Electrical values, waveform/chart data, unsupported engineering controls, validation states, Lab04 identity badge and project text.",
+  "regions": [
+    {
+      "region": "branding",
+      "box": [
+        15,
+        14,
+        280,
+        48
+      ],
+      "mean_absolute_rgb_error": 40.75175730669627,
+      "channels": [
+        43.14661487236404,
+        40.897891231964486,
+        38.21076581576027
+      ]
+    },
+    {
+      "region": "navigation",
+      "box": [
+        18,
+        62,
+        156,
+        163
+      ],
+      "mean_absolute_rgb_error": 11.63213277849524,
+      "channels": [
+        12.189625484287559,
+        11.032788061414838,
+        11.673984789783326
+      ]
+    },
+    {
+      "region": "schematic_tabs",
+      "box": [
+        176,
+        89,
+        417,
+        116
+      ],
+      "mean_absolute_rgb_error": 32.163055171353925,
+      "channels": [
+        36.48347932995236,
+        31.817734747195328,
+        28.187951436914094
+      ]
+    },
+    {
+      "region": "configuration_heading",
+      "box": [
+        739,
+        60,
+        1060,
+        90
+      ],
+      "mean_absolute_rgb_error": 29.69833852544133,
+      "channels": [
+        33.71100726895119,
+        28.97767393561786,
+        26.406334371754934
+      ]
+    },
+    {
+      "region": "results_heading",
+      "box": [
+        176,
+        386,
+        504,
+        413
+      ],
+      "mean_absolute_rgb_error": 30.517238783498943,
+      "channels": [
+        37.09936766034327,
+        28.105126467931346,
+        26.34722222222222
+      ]
+    }
+  ]
+}

@@ -7,9 +7,9 @@ async (page) => {
   async function run(mode) {
     await page.locator('#analysis').selectOption(mode);
     const pending=page.waitForResponse(r=>r.url()==='http://127.0.0.1:5157/simulation'&&r.request().method()==='POST');
-    await page.locator('#spice-form button').click();
+    await page.locator('#spice-form button[type=submit]').click();
     const payload=await(await pending).json();
-    await page.waitForFunction(()=>!document.querySelector('#spice-form button').disabled);
+    await page.waitForFunction(()=>!document.querySelector('#spice-form button[type=submit]').disabled);
     report.runs.push({width:page.viewportSize().width,...payload});return payload;
   }
   function compare(actual,expected) {
@@ -23,11 +23,13 @@ async (page) => {
     }return diffs;
   }
   async function geometry(mode,data) {
-    const result=await page.locator('#run-'+mode+' svg').evaluate((svg,{mode,data})=>{
+    const result=await page.locator('#run-'+mode+' .plots svg').evaluate((svg,{mode,data})=>{
       const x=mode==='ac'?data.frequency_hz:data.time_s;
       const ys=mode==='ac'?[data.gain_db,data.phase_deg]:[data.vin_v,data.vout_v];
       const names=mode==='ac'?['Gain','Phase']:['Vin','Vout'];
       const fx=mode==='ac'?Math.log10:v=>v;
+      const frame=svg.querySelector('[data-plot-frame]');
+      const [left,top,width,height]=['x','y','width','height'].map(key=>Number(frame.getAttribute(key)));
       let points=0,maxError=0;
       for(let series=0;series<2;series++) {
         const samples=mode==='ac'?ys[series]:ys.flat();
@@ -39,8 +41,8 @@ async (page) => {
         const vertices=lines.flatMap(n=>n.getAttribute('points').trim().split(/\s+/).map(s=>s.split(',').map(Number)));
         if(vertices.length!==x.length)throw new Error('Rendered sample count mismatch');
         vertices.forEach(([px,py],i)=>{
-          const xx=82+(fx(x[i])-fx(x[0]))/(fx(x.at(-1))-fx(x[0]))*236;
-          const yy=16+(high-ys[series][i])/(high-low)*184;
+          const xx=left+(fx(x[i])-fx(x[0]))/(fx(x.at(-1))-fx(x[0]))*width;
+          const yy=top+(high-ys[series][i])/(high-low)*height;
           maxError=Math.max(maxError,Math.abs(px-xx),Math.abs(py-yy));points++;
         });
       }return {points,maxError};
@@ -60,9 +62,9 @@ async (page) => {
     await page.goto('http://127.0.0.1:5157/simulation');
     const dc=await run('dc'),ac=await run('ac'),tran=await run('tran');
     const differences={dc:compare(dc.result,reference.dc),ac:compare(ac.result,reference.ac),tran:compare(tran.result,reference.tran)};
-    assert(await page.locator('#run-ac svg').count()===1&&await page.locator('#run-tran svg').count()===1,'Expected two charts');
+    assert(await page.locator('#run-ac .plots svg').count()===1&&await page.locator('#run-tran .plots svg').count()===1,'Expected two charts');
     const acGeometry=await geometry('ac',reference.ac),tranGeometry=await geometry('tran',reference.tran);
-    const labels=await page.locator('#run-ac svg').textContent();
+    const labels=await page.locator('#run-ac .plots svg').textContent();
     assert(labels.includes('Gain (dB)')&&labels.includes('Phase (degrees)'), 'Dual-axis units missing');
     assert((await states()).every(s=>s.startsWith('Current')),'Retained states wrong');
     const layout=await page.evaluate(()=>({height:document.documentElement.scrollHeight,overflow:document.documentElement.scrollWidth>innerWidth,
@@ -79,11 +81,11 @@ async (page) => {
     const re2=await run('dc');compare(re2.result,reference.dc_re2);
     await page.locator('#spice-re').fill('0');const invalid=await run('dc');
     assert(invalid.error&&!invalid.result&&await page.locator('#run-dc table').count()===0,'Validation retained failed result');
-    assert(await page.locator('#run-ac svg').count()===1,'Failure discarded unrelated graph');
+    assert(await page.locator('#run-ac .plots svg').count()===1,'Failure discarded unrelated graph');
     await page.locator('#spice-re').fill('1');await run('dc');
     await page.route('**/simulation',async route=>{const response=await route.fetch({url:'http://127.0.0.1:5158/simulation'});await route.fulfill({response});});
     const missing=await run('ac');await page.unroute('**/simulation');
-    assert(missing.error?.includes('model not found')&&await page.locator('#run-ac svg').count()===0,'Missing model showed graph');
+    assert(missing.error?.includes('model not found')&&await page.locator('#run-ac .plots svg').count()===0,'Missing model showed graph');
     await run('ac');
     report.checks.push({width,analytical,differences,acGeometry,tranGeometry,layout,sourceStates,invalid:invalid.error,missing:missing.error});
   }

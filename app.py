@@ -20,7 +20,8 @@ DEFAULTS['rb'] = '1000'
 ALL_FIELDS = (*FIELDS, 'rb')
 MODE_FIELDS = {'divider': FIELDS, 'fixed': ('vcc', 'rb', 'rc', 'beta', 'vbe'),
                'emitter': ('vcc', 'rb', 'rc', 're', 'beta', 'vbe')}
-MODE_LABELS = {'divider': 'Voltage Divider Bias', 'fixed': 'Fixed Bias', 'emitter': 'Emitter Bias'}
+MODE_LABELS = {'fixed': 'Fixed Bias', 'emitter': 'Emitter Bias (Unbypassed)',
+               'divider': 'Voltage Divider Bias'}
 UNIT_FACTORS = {'vcc': {'V': 1, 'mV': 0.001}, 'vbe': {'V': 1, 'mV': 0.001},
                 **{key: {'ohm': 1, 'kohm': 1000, 'Mohm': 1000000} for key in ('r1', 'r2', 'rb', 'rc', 're')}}
 DEFAULT_UNITS = {key: ('V' if key in ('vcc', 'vbe') else 'kohm') for key in UNIT_FACTORS}
@@ -80,7 +81,7 @@ def index():
                 error = ('Error: Values are too small for reliable calculation.' if 'too small' in str(exc)
                          else 'Error: The combination of values is too large for reliable calculation.')
     return render_template('index.html', values=values, units=units, result=result, error=error, errors=errors,
-                           mode=mode, mode_labels=MODE_LABELS)
+                           analytical=True, mode=mode, mode_labels=MODE_LABELS, mode_fields=MODE_FIELDS)
 
 
 SPICE_FIELDS = (
@@ -130,4 +131,4 @@ def simulation():
         plot_data = {key: result[key] for key in ('time_s', 'vin_v', 'vout_v')}
     return render_template('simulation.html', fields=SPICE_FIELDS, source_fields=source_fields,
                            values=values, analysis=analysis, plot_data=plot_data,
-                           result=result, error=error)
+                           result=result, error=error, analytical=False, mode='simulation', mode_labels=MODE_LABELS)
