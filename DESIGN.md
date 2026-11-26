@@ -119,9 +119,9 @@ Electrical overlays use orange for conventional DC current, bright blue for AC i
 
 Pale blue-white panel gradients, blue-gray dividers, dark laboratory ink and muted annotations establish hierarchy. Green success, amber warning/stale and red failure treatments are meaningful states, not decorative badges. `lab-*` entries preserve declared custom properties; some declarations are palette inventory rather than universally consumed aliases. Literal gradients and local colors still exist in the CSS.
 
-**The Electrical Meaning Rule.** Preserve color roles and accompanying labels, line styles and statuses; a green solver result does not mean instructor approval.
+**The Electrical Meaning Rule.** Use color, labels and line styles consistently. The green solver state identifies results that completed with the current inputs and model.
 
-**The Solver Truth Rule.** Validate reports finite/current input and solver checks only. Keep “Simulation ≠ instructor validation”, unverified external-model provenance and Not run benchmark/instructor states truthful.
+**The Solver Truth Rule.** Show actual input checks, run freshness, model file availability, solver load status and eligible reference benchmark results.
 
 ## Typography
 
@@ -154,7 +154,7 @@ Desktop frame has margins (10px 16px 6px 6px), a thin border and rounded corners
 
 On mobile, navigation targets are at least (44px) high, schematic tabs (38px), overlay labels (30px), icon buttons (36×32px), parameter fields (40px) with (16px) editable values, analysis (40px), bias selector (36px), and run/secondary actions at least (40px). The primary run action spans its row. These are heterogeneous actual target sizes, not a claim that every control meets 44px. Source readouts remain (26px) with (12px) values and (16px) unit rows; rotary controls are (52×52px).
 
-The final mobile schematic rule retains a (550px) SVG inside a focusable horizontal scroller, with a swipe/Expand hint; it overrides the earlier mobile `width:100%` rule. Expanded mobile SVG has a (600px) minimum. Wide electrical content is contained, not shrunk to illegibility. The scoped simulation plot rules override legacy figure/SVG minimum widths so the numerical charts fit the stacked mobile result panels.
+Lab04 defaults to Fit on mobile, with the entire SVG scaled to the stage. Turning Fit off restores the 550px diagram inside a focusable horizontal scroller. Expand uses a 600px minimum for close inspection. Numerical plots fit the stacked mobile result panels.
 
 ## Elevation & Depth
 
@@ -174,17 +174,17 @@ Focus is a visible (2px) teal outline offset (3px); custom switch focus is on it
 
 ### Configuration and source controls
 
-Two-column labeled parameter rows pair numeric fields with fixed single-option unit selects. β and VBE are visibly disabled and model-controlled, not editable estimates. Labels and units are programmatically associated. Native inputs use decimal input hints. Source controls combine accessible rotary sliders and editable values; knob appearance is tactile but does not replace keyboard/form access.
+Two-column labeled parameter rows pair numeric fields with units. The Lab04 bypass setting controls whether the capacitance field is active. Short desktop viewports place the bypass controls beside the analysis selector. β and VBE show model-controlled values. Source controls combine accessible rotary sliders, editable values and unit selectors that preserve the physical signal on conversion.
 
 ### Schematic and overlays
 
-Native SVG carries live parameter text, named nodes, legend and separately controlled DC/AC layers. DC current/voltage and purple Q-point data require a current DC run. Signal waves use current transient samples with a common scale/window; arrows indicate paths, not electron motion. Overlay switches, pause/restart and expansion affect presentation, not solver topology. Flow uses dashed strokes with a (1.5s linear infinite) animation; animation-off and pause stop it, and reduced-motion removes it. Switch thumb transition is (left .12s), also removed for reduced motion.
+Native SVG carries live parameter text, named nodes, a legend and separately controlled overlays. Each mode uses the same four solid orange arrows and staggered highlights for its current DC results. Lab03 shows current flow for active-region calculations. Lab04 determines each branch's arrow direction from the simulated current and uses a common time window and scale for the transient traces. Pause, Restart and the animation switch share the same behavior across modes. Reduced motion retains the static arrows and circuit annotations.
 
 ### Results, freshness and validation
 
-DC values, AC gain/wrapped phase and transient input/output retain independent result panels. Initial panels say Not run, use em dashes or empty plot grids, and do not invent data. Stale runs receive amber freshness treatment. Charts support focus/hover sample inspection; wrapped phase breaks at discontinuities. Provenance details disclose solver netlist/logs. State checks use pending circles, green checks, red failures and amber stale indicators with text.
+DC values, AC gain and wrapped phase, and transient input/output retain independent result panels. Stale runs receive amber freshness treatment. A current Bode plot pins the measured or interpolated response at the generator frequency and restores that marker after pointer or keyboard inspection. Provenance details disclose the solver netlist, log and eligible reference measurements.
 
-Supported topology is the voltage-divider biased 2N3904 common emitter with unbypassed RE, AC coupling capacitors and load. No emitter bypass CE or editable model β/VBE is supported. Other bias links go to existing analytical Lab03 calculations, not alternate SPICE circuits. Save/Export download actual data; import is unsupported and run retention is memory-only. Reports/Validation are in-page anchors, not additional reporting or instructor-verification systems.
+Lab04 uses a voltage-divider biased 2N3904 common emitter with coupling capacitors, a load and an optional CE across RE. The other bias links open the analytical Lab03 calculations. Save and Export download the actual configuration and solver results. The reference benchmark applies to the documented default unbypassed circuit and matching 2N3904 model.
 
 ## Do's and Don'ts
 
@@ -196,6 +196,6 @@ Supported topology is the voltage-divider biased 2N3904 common emitter with unby
 
 ### Don't:
 - **Don't** use the reference screenshot as a UI background or generate replacement imagery.
-- **Don't** fabricate results, instructor approval, benchmark passes or unsupported circuit features.
+- **Don't** fabricate solver results, benchmark passes or circuit capabilities.
 - **Don't** treat reference-specific tiny labels as a universal legibility standard.
 - **Don't** spread compact simulation overrides into analytical pages without checking their existing styles.

@@ -1,7 +1,7 @@
 {% macro diagram_definitions() -%}
 <defs>
   {% for id, color, size in [('orange', '#ef7c1c', 7.5), ('blue', '#008edc', 9), ('green', '#19bd36', 9)] %}
-  <marker id="arrow-{{ id }}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="{{ size }}" markerHeight="{{ size }}" markerUnits="userSpaceOnUse" orient="auto">
+  <marker id="arrow-{{ id }}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="{{ size }}" markerHeight="{{ size }}" markerUnits="userSpaceOnUse" orient="{{ 'auto-start-reverse' if id == 'orange' else 'auto' }}">
     <path d="m0 0 10 5-10 5 2-5Z" fill="{{ color }}"/>
   </marker>
   {% endfor %}
@@ -22,6 +22,31 @@
 
 {% macro math_symbol(main, subscript) -%}
 <tspan class="schematic-variable">{{ main }}<tspan class="schematic-subscript">{{ subscript }}</tspan></tspan>
+{%- endmacro %}
+
+{% macro dc_flow(active=false) -%}
+{% set tracks = [
+  ('collector', ['M339 31V51', 'M330 83V93'], 'M330 22V43M330 84V103', 104),
+  ('emitter', ['M338 162V178', 'M318 201V215'], 'M330 155V171', 154)
+] %}
+{% set visibility = 'visible' if active else 'hidden' %}
+<g class="current-glow" data-dc-badge visibility="{{ visibility }}" filter="url(#current-glow)" fill="none" stroke="#ffac32" stroke-width="4">
+  {% for branch, routes, wire, node_y in tracks %}<path data-current-flow="{{ branch }}" d="{{ routes|join(' ') }} {{ wire }}"/>{% endfor %}
+</g>
+<g class="current-wire" data-dc-badge visibility="{{ visibility }}" fill="none">
+  {% for branch, routes, wire, node_y in tracks %}<path data-current-flow="{{ branch }}" d="{{ wire }}"/>{% endfor %}
+</g>
+<g class="dc-current" data-dc-badge visibility="{{ visibility }}" fill="none" stroke="#ef7c1c" stroke-width="1.9" stroke-linecap="round">
+  {% for branch, routes, wire, node_y in tracks %}
+    {% for route in routes %}<path data-current-arrow="{{ branch }}" data-current-flow="{{ branch }}" d="{{ route }}" marker-end="url(#arrow-orange)"/>{% endfor %}
+  {% endfor %}
+</g>
+<g class="dc-motion" data-dc-badge visibility="{{ visibility }}" aria-hidden="true" fill="none">
+  {% for branch, routes, wire, node_y in tracks %}
+    {% for route in routes %}<path class="flow-path" data-pulse="{{ branch }}" data-current-flow="{{ branch }}" data-current-step="{{ loop.index }}" d="{{ route }}" pathLength="100"/>{% endfor %}
+    <circle class="node-pulse" data-current-flow="{{ branch }}" cx="330" cy="{{ node_y }}" r="3"/>
+  {% endfor %}
+</g>
 {%- endmacro %}
 
 {% macro vertical_resistor(id, x, top, bottom, half_width=4.8) -%}

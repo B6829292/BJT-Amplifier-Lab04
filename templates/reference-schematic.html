@@ -1,12 +1,8 @@
-{% from 'schematic-symbols.html' import diagram_definitions, schematic_legend, bias_chip, math_symbol, vertical_resistor, coupling_capacitor, npn_symbol %}
-{% set dc_tracks = [
-  ('collector', ['M339 31V51', 'M330 83V93']),
-  ('emitter', ['M338 162V178', 'M318 201V215'])
-] %}
+{% from 'schematic-symbols.html' import diagram_definitions, schematic_legend, bias_chip, math_symbol, vertical_resistor, coupling_capacitor, npn_symbol, dc_flow %}
 {% set ac_tracks = [('input', 'M123 124H161', 'blue'), ('output', 'M414 104H455', 'green')] %}
 <svg id="circuit-svg" class="reference-circuit" viewBox="0 0 550 235" role="img" aria-labelledby="circuit-title circuit-description">
   <title id="circuit-title">Voltage-divider common-emitter circuit</title>
-  <desc id="circuit-description">2N3904 NPN with voltage-divider bias, unbypassed emitter resistor, input and output coupling capacitors, and load. Moving highlights indicate path direction. The blue and green waveforms share a time window from the actual transient results.</desc>
+  <desc id="circuit-description">2N3904 NPN with voltage-divider bias, optional emitter bypass capacitor, input and output coupling capacitors, and load. The blue and green waveforms share a time window from the transient results.</desc>
   {{ diagram_definitions() }}
   {{ schematic_legend(true) }}
 
@@ -40,6 +36,19 @@
     <use href="#ground" x="461" y="183"/>
   </g>
 
+  <g data-emitter-bypass visibility="{{ 'visible' if bypass_enabled else 'hidden' }}">
+    <title>Emitter bypass capacitor across RE</title>
+    <g class="circuit-wire" fill="none" stroke="#263238" stroke-width="1.62" stroke-linecap="round" stroke-linejoin="round">
+      <path id="emitter-bypass-route" d="M330 154H366V184M366 191V216"/>
+      <path id="emitter-bypass-capacitor" d="M357 184H375M357 191H375"/>
+      <use href="#ground" x="366" y="216"/>
+    </g>
+    <g class="component-labels" fill="#202b31">
+      <text x="378" y="185">{{ math_symbol('C', 'E') }}</text>
+      <text class="component-value" x="378" y="200"><tspan data-bypass-value>{{ '%.4g'|format(values.ce|float) }}</tspan> µF</text>
+    </g>
+  </g>
+
   <g class="component-labels" fill="#202b31">
     {% for key, symbol, subscript, x, y, anchor, unit in [
       ('r1', 'R', '1', 224, 55, 'end', 'kΩ'),
@@ -69,21 +78,7 @@
   </g>
 
   <g class="dc-layer">
-    <g class="current-glow" data-dc-badge visibility="hidden" filter="url(#current-glow)" fill="none" stroke="#ffac32" stroke-width="4">
-      {% for branch, routes in dc_tracks %}<path d="{{ routes|join(' ') }}"/>{% endfor %}
-      <path d="M330 22V43M330 84V103M330 155V171"/>
-    </g>
-    <g class="current-wire" data-dc-badge visibility="hidden" fill="none"><path d="M330 22V43M330 84V101M330 155V171"/></g>
-    <g class="dc-current" data-dc-badge visibility="hidden" fill="none" stroke="#ef7c1c" stroke-width="1.9" stroke-linecap="round">
-      {% for branch, routes in dc_tracks %}
-        {% for route in routes %}<path data-current-arrow="{{ branch }}" d="{{ route }}" marker-end="url(#arrow-orange)"/>{% endfor %}
-      {% endfor %}
-    </g>
-    <g class="dc-motion" data-dc-badge visibility="hidden" aria-hidden="true" fill="none">
-      {% for branch, routes in dc_tracks %}<path class="flow-path" data-pulse="{{ branch }}" d="{{ routes|join(' ') }}" pathLength="100"/>{% endfor %}
-      <circle class="node-pulse" cx="330" cy="104" r="3"/>
-      <circle class="node-pulse emitter-pulse" cx="330" cy="154" r="3"/>
-    </g>
+    {{ dc_flow() }}
     <g class="current-label" data-dc-badge visibility="hidden">
       <text x="348" y="40">{{ math_symbol('I', 'C') }}<tspan data-current-ic></tspan></text>
       <text x="244" y="209">{{ math_symbol('I', 'E') }}<tspan data-current-ie></tspan></text>
@@ -128,8 +123,9 @@
     <g class="signal-label input-signal">
       <rect x="23" y="87" width="85" height="44" rx="5"/>
       <text class="signal-title" x="65.5" y="101">Input Signal</text>
-      <text x="65.5" y="113">{{ math_symbol('v', 'in') }} (<tspan data-source-amplitude></tspan> mV<tspan class="schematic-subscript">peak</tspan>)</text>
-      <text x="65.5" y="124"><tspan class="schematic-variable">f</tspan><tspan data-source-frequency></tspan></text>
+      {% set input_unit = source_units.amplitude.get(values.amplitude_unit, source_units.amplitude.mV)[0] %}
+      <text x="65.5" y="113">{{ math_symbol('v', 'in') }} (<tspan data-source-amplitude>{{ '%.4g'|format(values.amplitude|float) }}</tspan> <tspan data-source-amplitude-unit>{{ input_unit|replace(' peak', '') }}</tspan><tspan class="schematic-subscript">peak</tspan>)</text>
+      <text x="65.5" y="124"><tspan class="schematic-variable">f</tspan><tspan data-source-frequency> = {{ '%.4g'|format(values.frequency|float) }} {{ values.frequency_unit if values.frequency_unit in source_units.frequency else 'Hz' }}</tspan></text>
     </g>
     <g class="signal-label output-signal">
       <rect x="452" y="36" width="89" height="43" rx="5"/>

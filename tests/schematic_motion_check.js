@@ -12,3 +12,19 @@ assert.ok(motion.frame(data,2000,0).displayCyclesPerSecond>a.displayCyclesPerSec
 assert.strictEqual(motion.frame(data,1000,0).vin,a.vin,'reset returns to initial phase');
 assert.strictEqual(JSON.stringify(data),original,'motion must not modify numerical results');
 assert.throws(()=>motion.frame(data,0,0),/frequency/i);
+
+const markers = new Map();
+const svg = {
+  dataset:{},
+  querySelectorAll:() => [{setAttribute:(key,value) => markers.set(key,value),removeAttribute:key => markers.delete(key)}]
+};
+motion.setCurrentFlow(svg, 'collector', .001);
+assert.strictEqual(svg.dataset.collectorFlow, 'forward');
+assert.strictEqual(markers.get('marker-end'), 'url(#arrow-orange)');
+motion.setCurrentFlow(svg, 'collector', -.001);
+assert.strictEqual(svg.dataset.collectorFlow, 'reverse');
+assert.strictEqual(markers.get('marker-start'), 'url(#arrow-orange)');
+assert.ok(!markers.has('marker-end'));
+motion.setCurrentFlow(svg, 'collector', 1e-7);
+assert.strictEqual(svg.dataset.collectorFlow, 'idle');
+assert.strictEqual(markers.size, 0);

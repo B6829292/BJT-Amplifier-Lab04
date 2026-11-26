@@ -1,6 +1,6 @@
 {% extends 'lab-shell.html' %}
 {% from 'icons.html' import icon %}
-{% from 'lab-components.html' import bias_picker, configuration_title, results_heading %}
+{% from 'lab-components.html' import bias_picker, configuration_title, results_heading, overlay_controls %}
 
 {% block title %}Transistor Circuit Virtual Lab · Lab03 Analytical Bias{% endblock %}
 
@@ -21,7 +21,7 @@
         <ol>
           <li>Choose a bias type and enter its component values.</li>
           <li>Calculate DC Bias using the constant β and base–emitter voltage model.</li>
-          <li>Check the DC operating point and read the operating-region assessment.</li>
+          <li>Check the DC operating point and read the operating-region assessment. The orange current overlay appears for a current active-region calculation.</li>
         </ol>
       </div>
     </details>
@@ -29,6 +29,7 @@
   <div class="schematic-stage analytical-stage" role="region" aria-label="Circuit: Common-Emitter Amplifier">
     {% include 'analytical-schematic.html' %}
   </div>
+  {{ overlay_controls() }}
 </section>
 
 <section class="card config-panel">
@@ -107,5 +108,6 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{{ url_for('static', filename='schematic-motion.js') }}" defer></script>
 <script src="{{ url_for('static', filename='bias-form.js') }}" defer></script>
 {% endblock %}

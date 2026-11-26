@@ -322,3 +322,11 @@ Reference benchmarks and instructor validation remain **NOT RUN**. No visual sim
 The shared layout covers Lab03 Fixed, Emitter, and Voltage Divider Bias and the Lab04 ngspice simulator. The Lab04 workspace shows animated circuit overlays and supports local JSON downloads from Save Project and Export. The supplied README records the earlier Phase 7 workspace.
 
 All 65 automated tests passed with the local ngspice configuration. Playwright checked navigation and calculation behavior, real DC/AC/transient data, overlay controls and reduced motion, and the final current arrows and Q-Point placement. [Shared UI verification](evidence/final-project-ui/README.md) · [Schematic verification](evidence/schematic-fidelity/README.md) · [Final current arrows and Q-Point comparison](evidence/schematic-fidelity/current-q-point-comparison.png)
+
+## Lab 04 reference benchmark and emitter bypass
+
+The dashboard benchmark uses the independent unbypassed ngspice fixture above. It checks VCE, IC, linear gain at 1 kHz and peak Vout within ±5% of the recorded values. The check applies once DC, AC and transient results are current and all three runs use the documented defaults and exact OPEL 2N3904 model file. Equivalent generator units qualify. Model & Validation shows the measured and expected values along with model source and load status.
+
+The bypass option places CE from emitter to ground in parallel with RE. The tests compare the default unbypassed circuit with 100 µF bypass enabled, checking the netlists, DC operating point, AC gain and transient output. A bypassed run has its own current results and displays the unbypassed reference benchmark as **Not applicable**.
+
+Lab03 Fixed Bias, Emitter Bias and Voltage Divider Bias use the same DC arrow renderer and playback controls as Lab04. Lab03 shows the current motion for current active-region calculations. Lab04 uses the direction of the simulated collector and emitter currents. With reduced motion enabled, all four pages retain their static arrows.

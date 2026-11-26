@@ -1,32 +1,29 @@
 {% extends 'lab-shell.html' %}
 {% from 'icons.html' import icon %}
-{% from 'lab-components.html' import bias_picker, configuration_title, results_heading %}
+{% from 'lab-components.html' import bias_picker, configuration_title, results_heading, overlay_controls %}
 
 {% block workspace %}
-    <section class="card schematic-panel">
-      <div class="workspace-title"><h1>BJT Common Emitter Amplifier <span>– Voltage Divider Bias (Common Emitter)</span></h1><span title="Real ngspice · unbypassed emitter">{{ icon('info') }}</span></div>
+    <section class="card schematic-panel" data-fit="true">
+      <div class="workspace-title"><h1>BJT Common Emitter Amplifier <span>– Voltage Divider Bias (Common Emitter)</span></h1><span title="Real ngspice · optional emitter bypass">{{ icon('info') }}</span></div>
       <div class="schematic-tabs"><h2>{{ icon('circuit') }} Circuit Schematic</h2><button type="button" id="guide-toggle" aria-expanded="false" aria-controls="operation-guide">{{ icon('book') }} Operation Guide</button></div>
       <div id="operation-guide" hidden>
         <strong>Operation Guide · Lab04</strong>
-        <dl><dt>Supported circuit</dt><dd>Voltage-divider biased 2N3904 NPN common-emitter amplifier. R<sub>E</sub> is unbypassed. C<sub>in</sub> and C<sub>out</sub> provide AC coupling; R<sub>L</sub> loads the output.</dd>
-        <dt>Configure</dt><dd>VCC is in V, resistances in kΩ and coupling capacitors in µF. Sine-source amplitude is mV peak; frequency is Hz. All values must be finite and positive. β and VBE are determined by the external device model, not editable approximations.</dd>
+        <dl><dt>Supported circuit</dt><dd>Voltage-divider biased 2N3904 NPN common-emitter amplifier. Emitter Bypass connects C<sub>E</sub> across R<sub>E</sub>. C<sub>in</sub> and C<sub>out</sub> couple the source and load.</dd>
+        <dt>Configure</dt><dd>VCC is in V, resistances in kΩ and capacitances in µF. Choose amplitude and frequency units in the Function Generator. The readouts convert to the selected units while preserving the signal. The external 2N3904 model determines β and VBE.</dd>
         <dt>Run analyses</dt><dd>Run Simulation performs all three analyses, or select DC (.op), AC (.ac) or transient (.tran) individually. DC finds the operating point. AC sweeps gain and wrapped phase. Transient plots the real input and output over time.</dd>
-        <dt>Read overlays</dt><dd>Orange arrows and moving highlights show conventional collector and emitter current direction. The pink voltages and purple Q-point use current DC results. Blue and green traces use the same time window and voltage scale from the actual transient samples, preserving amplitude ratio and phase. The display slows the waveforms for inspection. Wire pulses indicate direction at an illustrative speed.</dd>
-        <dt>Read results</dt><dd>IE is calculated from simulated VE / RE. Active Region means VC &gt; VB &gt; VE with positive IC; this is a bias-region check, not independent validation. Hover or focus a Bode/transient chart and use arrow keys to inspect samples. Phase curves intentionally break at ±180° wraps. Source and load voltages are measured relative to ground.</dd>
-        <dt>Freshness and validation</dt><dd>Changing circuit inputs marks affected runs stale; source edits affect transient only. Validate checks finite inputs and current solver outputs. Instructor validation and reference benchmarks remain Not run. No automated check substitutes for them.</dd>
+        <dt>Read overlays</dt><dd>The orange arrows follow the sign of the simulated collector and emitter currents. A traveling highlight shows direction at an illustrative speed. The pink voltages and purple Q-point use current DC results. Blue and green traces share a time window and voltage scale from the transient results.</dd>
+        <dt>Read results</dt><dd>IE is calculated from simulated VE / RE. The active-region check uses VC &gt; VB &gt; VE with positive IC. The Bode marker reads the gain and phase at the generator frequency using the surrounding AC samples. Hover or focus a chart and use the arrow keys to inspect other samples.</dd>
+        <dt>Freshness and validation</dt><dd>Changing the circuit or bypass setting marks retained results stale. Source edits make the transient result stale and move the marker on a current Bode curve. The project automatically checks inputs and current results. The reference benchmark applies to the default unbypassed circuit with the documented 2N3904 model.</dd>
         <dt>Save / Export / Reset</dt><dd>Export downloads retained solver data, provenance, inputs and freshness as JSON. Save Project also records overlay preferences; file import is not supported. Reset restores default inputs and overlays without fabricating new runs.</dd>
-        <dt>Limitations</dt><dd>Emitter bypass CE is not supported. Other bias modes link to the existing analytical Lab03 calculations, not new SPICE topologies. The external 2N3904 model is not instructor-verified. Run history is memory-only and clears on reload.</dd></dl>
+        <dt>Lab03 and run history</dt><dd>The other bias modes use Lab03 analytical DC calculations. Run history stays in memory until the page reloads.</dd></dl>
       </div>
       <div class="schematic-stage" tabindex="0" role="region" aria-label="Editable circuit schematic">{% include 'reference-schematic.html' %}</div>
-      <p class="schematic-mobile-hint">Swipe the circuit to inspect all nodes, or use Expand.</p>
-      <div class="overlay-toolbar">
-        <label><input type="checkbox" id="overlay-dc" checked role="switch"><span class="switch-track"></span>Show DC Bias Overlay</label>
-        <label><input type="checkbox" id="overlay-ac" checked role="switch"><span class="switch-track"></span>Show AC Amplification Overlay</label>
-        <label><input type="checkbox" id="overlay-animation" checked role="switch"><span class="switch-track"></span>Animate Overlay</label>
-        <button id="pause-animation" type="button" aria-label="Pause overlay animation" aria-pressed="false">{{ icon('pause') }}</button>
-        <button id="restart-animation" type="button" aria-label="Restart overlay animation">{{ icon('reset') }}</button>
-        <button id="expand-circuit" type="button" aria-label="Expand circuit schematic" aria-pressed="false">{{ icon('expand') }}</button>
+      <div class="schematic-mobile-tools" hidden>
+        <button id="fit-circuit" type="button" aria-label="Fit circuit to screen" aria-controls="circuit-svg" aria-pressed="true">{{ icon('expand') }} Fit</button>
+        <p class="schematic-fit-hint">Use Expand to inspect circuit details.</p>
+        <p class="schematic-pan-hint">Swipe to inspect all nodes.</p>
       </div>
+      {{ overlay_controls(true) }}
       <span id="dc-annotation" class="sr-only">DC node annotations available after a current DC run.</span>
     </section>
     <section class="card config-panel">{{ configuration_title() }}
@@ -41,9 +38,20 @@
         <div class="input-row model-field field-beta"><label for="model-beta"><i>β</i> <span>(Beta, h<sub>FE</sub>)</span></label><input id="model-beta" value="Device model" disabled title="Beta is determined by the configured 2N3904 model"></div>
         <div class="input-row model-field field-vbe"><label for="model-vbe"><i>V<sub>BE</sub></i> <span>(Base–Emitter Voltage)</span></label><input id="model-vbe" value="Calculated by SPICE" disabled></div>
         </div>
-        <div class="analysis-row"><label class="sr-only" for="analysis">Analysis</label><select id="analysis" name="analysis" class="unit"><option id="all-analyses" value="all" hidden disabled>All analyses · DC / AC / Transient</option><option value="dc" {% if analysis == 'dc' %}selected{% endif %}>DC Operating Point</option><option value="ac" {% if analysis == 'ac' %}selected{% endif %}>AC Frequency Response</option><option value="tran" {% if analysis == 'tran' %}selected{% endif %}>Transient Analysis</option></select></div>
+        <div class="simulation-run-settings">
+        <div class="bypass-controls">
+          <div class="input-row bypass-mode"><label for="spice-emitter-bypass">Emitter Bypass</label>
+            <select id="spice-emitter-bypass" name="emitter_bypass" class="spice-unit"><option value="off"{% if not bypass_enabled %} selected{% endif %}>Off</option><option value="on"{% if bypass_enabled %} selected{% endif %}>On</option></select>
+          </div>
+          <div class="input-row bypass-value"><label for="spice-ce"><i>C<sub>E</sub></i> <span>(Emitter Bypass)</span></label>
+            <input id="spice-ce" name="ce" value="{{ values.ce }}" inputmode="decimal" aria-describedby="unit-ce"{% if bypass_enabled %} required{% endif %}>
+            <span id="unit-ce" class="unit spice-unit">{{ bypass_field[2] }}</span>
+          </div>
+        </div>
+        <div class="analysis-row"><label class="sr-only" for="analysis">Analysis</label><select id="analysis" name="analysis" class="unit"><option id="all-analyses" value="all" hidden disabled>All analyses</option><option value="dc" {% if analysis == 'dc' %}selected{% endif %}>DC Operating Point</option><option value="ac" {% if analysis == 'ac' %}selected{% endif %}>AC Frequency Response</option><option value="tran" {% if analysis == 'tran' %}selected{% endif %}>Transient Analysis</option></select></div>
+        </div>
         <div class="config-actions"><button type="submit">{{ icon('play') }} Run Simulation</button><button type="button" id="validate-lab" class="secondary">{{ icon('check') }} Validate</button><button type="button" id="reset-lab" class="secondary">{{ icon('reset') }} Reset</button><button type="button" id="export-results" class="secondary">{{ icon('download') }} Export</button></div>
-        <p class="config-note">2N3904 external model · unbypassed R<sub>E</sub></p>
+        <p class="config-note">2N3904 external model · <span data-bypass-state>{{ 'bypassed' if bypass_enabled else 'unbypassed' }}</span> R<sub>E</sub></p>
       </form>
     </section>
     <section class="card results-card" id="results">
@@ -57,12 +65,20 @@
         {% endfor %}
         <section class="validation-panel" id="run-validation" aria-labelledby="validation-title"><h3 id="validation-title">{{ icon('check') }} Test / Validation</h3>
           <div id="spice-status" class="status {% if error %}status-warning{% elif result %}status-ok{% else %}status-pending{% endif %}" role="status" aria-live="polite">
-          {% if error %}<strong>Error: Simulation failed</strong><p>{{ error }}</p>{% elif result %}<strong>Simulation successful · ngspice</strong>{% else %}<strong>Ready to simulate</strong><p>No analyses run yet.</p>{% endif %}
+          {% if error %}<strong>Error: Simulation failed</strong><p>{{ error }}</p>{% elif result %}<strong>Simulation successful · ngspice</strong>{% elif model_info.status == 'unavailable' %}<strong>Model unavailable</strong><p>{{ model_info.detail }}</p>{% else %}<strong>Ready to simulate</strong><p>No analyses run yet.</p>{% endif %}
           </div>
           <p id="validation-check" class="validation-check" role="status" aria-live="polite">Input / result checks: Not run</p>
-          <ul class="solver-checks" aria-label="Supported solver checks"><li data-check="input" data-state="pending">Input validation: Not run</li><li data-check="dc" data-state="pending">DC bias: Not run</li><li data-check="ac" data-state="pending">AC response: Not run</li><li data-check="tran" data-state="pending">Transient response: Not run</li><li data-state="pending">Reference benchmark: Not run</li></ul>
-          <details class="model-provenance"><summary>2N3904 · Model &amp; validation</summary><dl class="validation-facts" aria-label="Model and validation provenance"><div class="validation-row"><dt>Device model</dt><dd>2N3904 · external file</dd></div><div class="validation-row"><dt>Model status</dt><dd>not instructor-verified</dd></div><div class="validation-row"><dt>Instructor validation</dt><dd>Not run</dd></div><div class="validation-row"><dt>Reference benchmark</dt><dd>Not run</dd></div></dl></details>
-          <p class="validation-footnote">Simulation ≠ instructor validation.</p>
+          <ul class="solver-checks" aria-label="Supported solver checks"><li data-check="input" data-state="pending">Input validation: Not run</li><li data-check="dc" data-state="pending">DC bias: Not run</li><li data-check="ac" data-state="pending">AC response: Not run</li><li data-check="tran" data-state="pending">Transient response: Not run</li><li data-check="reference" data-state="pending">Reference benchmark: Not run</li></ul>
+          <details class="model-provenance">
+            <summary>{{ model_info.device }} · Model &amp; validation</summary>
+            <dl class="validation-facts" aria-label="Model and validation provenance">
+              <div class="validation-row"><dt>Device model</dt><dd>{{ model_info.device }}</dd></div>
+              <div class="validation-row"><dt>Model source</dt><dd id="device-model-source">{{ model_info.source }}</dd></div>
+              <div class="validation-row"><dt>Model status</dt><dd id="device-model-status" data-state="{{ model_info.status }}">{{ model_info.detail }}</dd></div>
+              <div class="validation-row"><dt>Reference benchmark</dt><dd id="benchmark-provenance">Not run</dd></div>
+            </dl>
+            <ul id="benchmark-measurements" hidden></ul>
+          </details>
         </section>
       </div>
       <p class="measurement-note">Vin: source side of Cin (node in). Vout: load side of Cout (node out), relative to ground. Gain = Vout/Vin.</p>
@@ -71,8 +87,8 @@
 {% endblock %}
 
 {% block scripts %}
-<script id="initial-run" type="application/json">{{ {'mode': analysis, 'inputs': values, 'result': result, 'error': error}|tojson }}</script>
-{% set canonical_defaults = dict() %}{% for key, label, unit, default, factor in fields + source_fields %}{% set _ = canonical_defaults.update({key:default}) %}{% endfor %}
+<script id="initial-run" type="application/json">{{ {'mode': analysis, 'inputs': values, 'result': result, 'error': error, 'model_info': model_info}|tojson }}</script>
+{% set canonical_defaults = dict(emitter_bypass='off') %}{% set _ = canonical_defaults.update(source_unit_defaults) %}{% for key, label, unit, default, factor in fields + source_fields + (bypass_field,) %}{% set _ = canonical_defaults.update({key:default}) %}{% endfor %}
 <script id="lab-defaults" type="application/json">{{ canonical_defaults|tojson }}</script>
 <script src="{{ url_for('static', filename='plots.js') }}" defer></script>
 <script src="{{ url_for('static', filename='run-history.js') }}" defer></script>

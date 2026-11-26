@@ -10,7 +10,7 @@
     <span class="sr-only">Bias Selection</span>
     {% for value, label in mode_labels.items() %}
     <a data-bias-link="{{ value }}" class="{{ 'chosen' if mode == value else '' }}" {% if mode == value %}aria-current="page"{% endif %} href="{{ url_for('index', mode=value) }}"><span class="radio-mark" aria-hidden="true"></span>{{ icon('bias-' ~ value) }}<span class="bias-label-text">{% if value == 'emitter' %}Emitter Bias <small>(Unbypassed)</small>{% else %}{{ label }}{% endif %}{% if value == 'divider' %} <small>Lab03</small>{% endif %}</span></a>
-    {% if value == 'fixed' %}<span class="unsupported-bias" title="Emitter bypass is not supported by the current engine"><span class="radio-mark" aria-hidden="true"></span>{{ icon('bias-bypass') }}<span class="bias-label-text">Emitter Bias (Bypass C<sub>E</sub>)</span></span>{% endif %}
+    {% if value == 'fixed' %}<span class="unsupported-bias" title="This Lab03 Emitter Bias variant has no analytical mode"><span class="radio-mark" aria-hidden="true"></span>{{ icon('bias-bypass') }}<span class="bias-label-text">Emitter Bias (Bypass C<sub>E</sub>)</span></span>{% endif %}
     {% endfor %}
     <a data-bias-link="simulation" class="{{ '' if analytical else 'chosen' }} simulation-bias" {% if not analytical %}aria-current="page"{% endif %} href="{{ url_for('simulation') }}"><span class="radio-mark" aria-hidden="true"></span>{{ icon('bias-divider') }}<span class="bias-label-text">Voltage Divider Bias <small>Lab04</small></span></a>
   </section>
@@ -24,12 +24,17 @@
         <label for="spice-{{ key }}">{{ 'Amplitude' if key == 'amplitude' else 'Frequency' }}</label>
         <div class="knob" data-knob="{{ key }}" role="slider" tabindex="0" aria-label="{{ label }} rotary control" aria-valuemin="{{ 1 if key == 'amplitude' else 10 }}" aria-valuemax="{{ 1000 if key == 'amplitude' else 1000000 }}" aria-valuenow="{{ values[key] }}"><div class="knob-dial"><span></span></div></div>
         <div class="knob-range"><span>{{ '1 mV' if key == 'amplitude' else '10 Hz' }}</span><span>{{ '1 V' if key == 'amplitude' else '1 MHz' }}</span></div>
-        <div class="generator-value"><input id="spice-{{ key }}" form="spice-form" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" aria-describedby="unit-{{ key }}"><span id="unit-{{ key }}" class="unit spice-unit">{{ unit }}</span></div>
+        <div class="generator-value">
+          <input id="spice-{{ key }}" form="spice-form" name="{{ key }}" value="{{ values[key] }}" inputmode="decimal" aria-describedby="unit-{{ key }}">
+          <select id="unit-{{ key }}" class="unit spice-unit" form="spice-form" name="{{ key }}_unit" data-source-unit="{{ key }}" aria-label="{{ label }} unit">
+            {% for value, (unit_label, unit_factor) in source_units[key].items() %}<option value="{{ value }}"{% if value == values[key ~ '_unit'] %} selected{% endif %}>{{ unit_label }}</option>{% endfor %}
+          </select>
+        </div>
       </div>
       {% endfor %}
     </div>
-    <p class="source-note">Transient source · mV peak / Hz</p>
+    <p class="source-note">Transient source · peak amplitude and frequency</p>
     {% endif %}
   </section>
-  <section class="sidebar-section sidebar-project"><h2>{{ icon('folder') }} Project</h2><p>ENG29 2121 – {{ lab_id }}<br>Model: BJT (NPN, Common Emitter)<br>Bias: <span id="project-bias">{{ mode_labels.get(mode, 'Unknown mode') if analytical else mode_labels.divider }}</span><br>Version: v1.0.0</p><p class="project-truth">Emitter bypass: future feature (not supported)</p></section>
+  <section class="sidebar-section sidebar-project"><h2>{{ icon('folder') }} Project</h2><p>ENG29 2121 – {{ lab_id }}<br>Model: BJT (NPN, Common Emitter)<br>Bias: <span id="project-bias">{{ mode_labels.get(mode, 'Unknown mode') if analytical else mode_labels.divider }}</span><br>Version: v1.0.0</p></section>
 </aside>

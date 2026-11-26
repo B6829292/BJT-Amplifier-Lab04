@@ -69,12 +69,16 @@
 .lab-page .knob-dial span {position:absolute;top:3px;left:calc(50% - .5px);height:37%;width:1px;background:#314749;box-shadow:1px 0 0 #edf8ebaa}
 .lab-page .knob-range {display:flex;justify-content:space-between;width:100%;font-size:.72em;color:#213746}
 .lab-page .generator-value {display:flex;width:100%;margin-top:3px;border:1px solid #c5d6df;border-radius:3px;background:white;overflow:hidden}
-.lab-page .generator-value input {border:0;padding:2px 3px;width:55%;height:20px;font-size:.92em;border-radius:0}
-.lab-page .generator-value .unit {height:20px;font-size:.7em;padding:3px 2px;border:0;width:45%;background:#f4f8fb;white-space:nowrap;border-radius:0;display:flex;align-items:center}
+.lab-page .generator-value input {min-width:0;border:0;padding:2px 3px;width:43%;height:20px;font-size:.92em;border-radius:0}
+.lab-page .generator-value .unit {appearance:none;min-width:0;width:57%;height:20px;font-size:.7em;padding:2px 11px 2px 3px;border:0;border-radius:0;cursor:pointer;color:#294653;background:#f1f7fa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='m1 1 5 5 5-5' fill='none' stroke='%23375968' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 3px center/7px auto}
+.lab-page .generator-value :is(input,select):focus-visible {outline-offset:-2px}
+@media(min-width:761px) {
+  .lab-page .generator-value #spice-amplitude {width:37%}
+  .lab-page .generator-value #unit-amplitude {width:63%}
+}
 .lab-page .source-note {display:none}
 .lab-page .sidebar-project p {font-size:.88em;line-height:1.5;margin:4px 0}
 .lab-page .sidebar-project {padding-bottom:6px}
-.lab-page .sidebar-project .project-truth {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .lab-page .lab-workspace {display:grid;grid-template-columns:minmax(0,1.72fr) minmax(0,1fr);gap:6px 9px;align-items:stretch}
 .lab-page .card {border:1px solid #dce8ef;border-radius:4px;background:linear-gradient(110deg,#fafdff,#f2f8fc);box-shadow:0 2px 5px #3459780b}
 .lab-page .schematic-panel {display:flex;flex-direction:column;border-color:transparent;min-width:0;position:relative;background:linear-gradient(110deg,#fafcff,#f7f9fd)}
@@ -136,7 +140,7 @@
 .reference-circuit .current-glow {opacity:.52}
 .lab-page .overlay-toolbar {display:flex;gap:7px;align-items:center;padding:5px 7px;background:linear-gradient(#f7fbfd,#edf6fb);border-top:1px solid #e2edf2;white-space:nowrap}
 .lab-page .overlay-toolbar label {display:flex;align-items:center;gap:5px;font-size:.81em;cursor:pointer;position:relative}
-.lab-page .overlay-toolbar label:nth-child(2) {padding-right:9px;border-right:1px solid #c9d8e1}
+.lab-page .overlay-toolbar .ac-overlay-toggle {padding-right:9px;border-right:1px solid #c9d8e1}
 .lab-page .overlay-toolbar input {position:absolute;opacity:0;width:24px;height:16px;left:0;padding:0}
 .lab-page .switch-track {width:24px;height:13px;border:1px solid #8faebc;background:#8fa6b2;border-radius:10px;position:relative;display:inline-block;flex:none;pointer-events:none}
 .lab-page .switch-track::after {content:'';position:absolute;width:9px;height:9px;left:2px;top:1px;border-radius:50%;background:white;box-shadow:0 1px 2px #34556533;transition:left .12s}
@@ -160,6 +164,13 @@
 .lab-page .config-panel label span {color:#223844;margin:0;font-size:.9em}
 .lab-page .config-panel input,.lab-page .config-panel .spice-unit {height:18px;padding:1px 5px;font-size:1.02em;border-radius:3px;border:1px solid #c9d7df;background:linear-gradient(#fff,#f7fafc);box-shadow:inset 0 1px 2px #314f6410;display:block}
 .lab-page .model-field input {grid-column:1/-1;color:#4b5e6b;background:#edf3f6;font-size:.9em;cursor:not-allowed}
+.simulation-page .bypass-controls {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 16px}
+.simulation-page .simulation-run-settings {display:grid;gap:inherit}
+.simulation-page .simulation-run-settings > .analysis-row {grid-column:auto}
+.simulation-page .bypass-mode select {grid-column:1/-1;width:100%;color:#263a45}
+.simulation-page .bypass-value .spice-unit {display:grid;place-items:center;padding-inline:0}
+.simulation-page .bypass-controls :disabled {color:#4b5e6b;background:#edf3f6;cursor:not-allowed;opacity:1}
+.simulation-page .bypass-controls [aria-invalid=true] {border-color:#a53a24;box-shadow:0 0 0 1px #a53a24}
 .lab-page .config-panel .analysis-row {margin:0;display:block}
 .lab-page .config-panel #analysis {height:23px;padding:2px 5px;font-size:.94em;border-radius:3px;color:#405969}
 .lab-page .config-actions {display:flex;gap:5px;border-top:1px solid #deebf2;padding-top:7px;margin-top:1px}
@@ -189,8 +200,12 @@
 .lab-page .run-panel th,.lab-page .run-panel td {background:transparent;border:0;border-bottom:1px solid #e1ebf0;padding:2px 5px;height:18px;font-size:1em;font-weight:400}
 .lab-page .run-panel th {font:italic 1.1em var(--lab-math);text-align:left}
 .lab-page .run-panel td {font-weight:500;white-space:nowrap}
+.simulation-page #run-dc td {text-align:right;font-variant-numeric:tabular-nums}
 .lab-page .dc-region {display:flex;justify-content:space-between;align-items:center;margin:4px 9px;gap:5px;padding-top:3px;border-top:1px solid #dce8ee;font-size:.85em}
 .lab-page .dc-region strong {padding:3px 5px;background:#daf4df;color:#236133;border-radius:3px;white-space:nowrap}
+.simulation-page .dc-region strong {padding-inline:7px;font-weight:700}
+.simulation-page .dc-region[data-region=check] strong,
+.simulation-page #run-dc[data-stale=true] .dc-region strong {background:#fff0d8;color:#724412}
 .lab-page .empty-message {font-size:.85em;color:#5a7180;margin:8px 10px}
 .lab-page .empty-plot {height:126px;margin:6px 18px 9px 28px;border:1px solid #adbec8;background:repeating-linear-gradient(0deg,transparent 0,transparent 23px,#e1eaf1 24px),repeating-linear-gradient(90deg,transparent 0,transparent 35px,#e1eaf1 36px);display:grid;place-items:center}
 .lab-page .empty-plot span {max-width:17ch;text-align:center;background:#f7fbfce8;color:#5c7280;font-size:.9em;padding:7px}
@@ -201,13 +216,16 @@
 .lab-page .plots svg text {font:14px var(--lab-font);fill:#1f3544}
 .lab-page .plots svg .plot-axis-title {font-weight:700}
 .lab-page .plots svg .phase-axis {fill:#23833b}
+.simulation-page .plots .plot-grid {stroke:#d2e0e7}
+.simulation-page .plots svg [data-plot-reference=true] rect {fill:#f9fcff;stroke:#7f9baa}
+.simulation-page .plots svg [data-plot-reference=true] text:first-of-type {font-weight:700}
 .lab-page .plot-legend {font-size:.82em;gap:10px;justify-content:center;margin:1px 2px;flex-wrap:wrap}
 .lab-page .plot-legend-entry {white-space:nowrap}
 .lab-page .bode-note {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 .lab-page .run-panel details {margin:4px 9px;font-size:.78em;color:#496474}
 .lab-page .run-panel summary {padding:2px 0}
 .lab-page .mobile-scroll-hint {display:none}
-.lab-page .schematic-mobile-hint {display:none}
+.simulation-page .schematic-mobile-tools {display:none}
 .lab-page .run-panel {position:relative}
 .lab-page .run-panel details {position:absolute;top:28px;right:7px;margin:0;z-index:2}
 .lab-page .run-panel details:not([open]) summary {width:13px;height:13px;font-size:0;list-style:none;padding:0}
@@ -215,6 +233,7 @@
 .lab-page .run-panel details[open] {width:min(300px,80vw);padding:10px;background:#f8fcfe;border:1px solid #b7cedc;box-shadow:0 4px 16px #26435633;max-height:300px;overflow:auto}
 .lab-page .validation-panel .status {font-size:.87em;margin:5px 8px;padding:5px 7px;line-height:1.25;border-radius:3px}
 .lab-page .validation-panel .status strong {font-size:1.04em}
+.lab-page .validation-panel .status,.lab-page .validation-facts dd {overflow-wrap:anywhere}
 .lab-page .validation-panel .status p {margin:3px 0}
 .lab-page .validation-panel .status-ok {background:linear-gradient(110deg,#e7faeb,#d7f6de);border-color:#c0e9cb;color:#185d34}
 .simulation-page .validation-panel .status-ok {display:flex;align-items:center;gap:6px;font-weight:700}
@@ -224,6 +243,10 @@
 .lab-page .validation-row {display:flex;gap:3px;flex-wrap:wrap;line-height:1.25;font-size:.78em;padding:3px 0;border-bottom:1px solid #e0eaf0}
 .lab-page .validation-row dt {font-weight:600;color:#294958}
 .lab-page .validation-row dd {margin:0;color:#496371}
+.simulation-page .validation-facts .validation-row {display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.15fr);gap:3px 8px}
+.simulation-page #benchmark-measurements {margin:3px 9px 6px;padding-left:13px;font-size:.78em;line-height:1.35;color:#405b69}
+.simulation-page #device-model-status[data-state=loaded] {color:#1b6035;font-weight:700}
+.simulation-page #device-model-status[data-state=unavailable] {color:#913a23;font-weight:700}
 .lab-page .validation-footnote {margin:4px 9px 7px;font-size:.75em;color:#496371}
 .lab-page .solver-checks {list-style:none;padding:0;margin:3px 9px;font-size:.93em;line-height:1.3;display:grid;gap:4px}
 .lab-page .solver-checks li {display:flex;align-items:center;gap:6px}
@@ -244,14 +267,20 @@
 .lab-page .measurement-note {position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);margin:0}
 .reference-circuit :is(.flow-path,.node-pulse) {opacity:0}
 .reference-circuit .flow-path {stroke-width:2.85;stroke-linecap:round;stroke-dasharray:15 130;filter:drop-shadow(0 0 1.1px currentColor)}
-.reference-circuit .dc-motion .flow-path {color:#ffa329;stroke:#ffca66}
+.reference-circuit .dc-motion .flow-path {color:#ed8d20;stroke:#ffe2a0;stroke-width:2.65;stroke-dasharray:25 110;--flow-step:0s;--branch-delay:0s}
+.reference-circuit .dc-motion [data-current-step="2"] {--flow-step:.28s}
+.reference-circuit .dc-motion [data-current-flow=emitter] {--branch-delay:.34s}
 .reference-circuit .ac-motion .signal-blue {color:#1597ed;stroke:#88dbff}
 .reference-circuit .ac-motion .signal-green {color:#25c040;stroke:#7df38d}
 .reference-circuit .node-pulse {stroke:#f0a129;stroke-width:1.4}
-.reference-circuit[data-dc-active=true] .dc-motion .flow-path {animation:schematic-travel 1.70s linear infinite}
-.reference-circuit[data-dc-active=true] .dc-motion [data-pulse=emitter] {animation-delay:.17s}
-.reference-circuit[data-dc-active=true] .node-pulse {animation:schematic-node 1.70s ease-out .94s infinite}
-.reference-circuit[data-dc-active=true] .emitter-pulse {animation-delay:1.10s}
+.reference-circuit[data-dc-active=true] .dc-motion .flow-path {animation:dc-current-travel 1.48s linear infinite;animation-delay:calc(var(--flow-step) + var(--branch-delay))}
+.reference-circuit[data-collector-flow=reverse] .dc-motion [data-current-flow=collector],
+.reference-circuit[data-emitter-flow=reverse] .dc-motion [data-current-flow=emitter] {animation-direction:reverse}
+.reference-circuit[data-dc-active=true] .node-pulse {animation:schematic-node 1.48s ease-out .84s infinite}
+.reference-circuit[data-dc-active=true] .node-pulse[data-current-flow=emitter] {animation-delay:1.18s}
+.reference-circuit[data-collector-flow=idle] [data-current-flow=collector],
+.reference-circuit[data-emitter-flow=idle] [data-current-flow=emitter],
+.reference-circuit [data-analytical-result][visibility=hidden] {display:none}
 .reference-circuit[data-ac-active=true] .ac-motion .flow-path {animation:schematic-travel 1.16s linear infinite}
 .reference-circuit[data-ac-active=true] .ac-motion [data-pulse=output] {animation-delay:.22s}
 .lab-page[data-animation=off] .reference-circuit :is(.flow-path,.node-pulse),
@@ -263,6 +292,11 @@
   0% {stroke-dashoffset:15;opacity:0}
   14%,72% {opacity:1}
   100% {stroke-dashoffset:-100;opacity:0}
+}
+@keyframes dc-current-travel {
+  0% {stroke-dashoffset:25;opacity:0}
+  18%,60% {opacity:1}
+  84%,100% {stroke-dashoffset:-103;opacity:0}
 }
 @keyframes schematic-node {
   0%,100% {r:3;opacity:0}
@@ -290,8 +324,18 @@
 @media(max-width:760px) {
  .lab-page .schematic-stage {display:block;place-items:start;overflow-x:auto;overscroll-behavior-inline:contain}
  .lab-page .schematic-stage svg {width:550px;min-width:550px}
- .lab-page .schematic-mobile-hint {display:block;margin:0 6px 8px;font-size:10px;color:#456374}
+ .lab-page .generator-value :is(input,select.unit) {height:36px;min-height:36px;font-size:16px;padding-left:7px}
+ .lab-page .generator-value select.unit {padding-inline:5px 13px;border-top:1px solid #dce7ed;background-position:right 4px center;background-size:8px auto;letter-spacing:-.015em}
+ .simulation-page .schematic-panel[data-fit=true]:not(.circuit-expanded) .schematic-stage {overflow:hidden;padding:8px 4px}
+ .simulation-page .schematic-panel[data-fit=true]:not(.circuit-expanded) .schematic-stage svg {display:block;width:100%;min-width:0;height:auto}
+ .simulation-page .schematic-panel:not(.circuit-expanded) .schematic-mobile-tools:not([hidden]) {display:flex;align-items:center;gap:8px;padding:0 7px 5px}
+ .simulation-page .schematic-mobile-tools p {margin:0;font-size:11px;color:#456374}
+ .simulation-page .schematic-mobile-tools button {display:inline-flex;align-items:center;gap:5px;min-width:55px;min-height:44px;padding:4px 7px;font-size:12px;white-space:nowrap}
+ .simulation-page .schematic-mobile-tools button[aria-pressed=true] {border-color:#80aebb;background:#dff1f6;color:#144759}
+ .simulation-page .schematic-panel[data-fit=true] .schematic-pan-hint,
+ .simulation-page .schematic-panel[data-fit=false] .schematic-fit-hint {display:none}
  .lab-page .solver-checks {font-size:12px;gap:10px}
+ .simulation-page #benchmark-measurements {font-size:12px}
  .lab-page .model-provenance {font-size:12px}
 }
 @media(max-width:360px) {
@@ -300,6 +344,7 @@
  .lab-page .lab-sidebar nav a {flex:1 1 42%;justify-content:flex-start}
  .lab-page .config-fields {grid-template-columns:minmax(0,1fr);grid-template-rows:none}
  .lab-page .config-fields .input-row {grid-area:auto}
+ .simulation-page .bypass-controls {gap:8px}
  .lab-page .result-nav {flex-wrap:wrap}
  .lab-page .workspace-title h1 {min-width:0}
 }
@@ -338,11 +383,18 @@
   .lab-page .analytical-runs {grid-template-columns:minmax(0,1fr)}
 }
 @media (min-width:761px) and (max-width:940px) {
+  .lab-page .generator-value {flex-direction:column}
+  .lab-page .generator-value input,.lab-page .generator-value select.unit {width:100%}
+  .lab-page .generator-value #spice-amplitude,.lab-page .generator-value #unit-amplitude {width:100%}
   .lab-page .config-actions {flex-wrap:wrap}
   .lab-page .config-actions button[type=submit] {flex-basis:100%}
   .lab-page .config-actions .secondary {flex:1}
 }
 @media (min-width:941px) and (max-height:800px) {
+  .simulation-page .simulation-run-settings {grid-template-columns:minmax(0,1.18fr) minmax(0,1fr);align-items:end;column-gap:9px}
+  .simulation-page .bypass-controls {column-gap:6px}
+  .simulation-page .config-panel .bypass-value {grid-template-columns:minmax(0,1fr) 29px}
+  .simulation-page .bypass-value label span,.simulation-page .config-note {display:none}
   .simulation-page .solver-checks {gap:2px}
   .simulation-page .solver-detail {margin-top:0;line-height:1.15}
   .simulation-page .validation-panel .status {padding-block:4px;margin-bottom:3px}

@@ -1,9 +1,10 @@
-{% from 'schematic-symbols.html' import diagram_definitions, schematic_legend, bias_chip, math_symbol, vertical_resistor, npn_symbol %}
+{% from 'schematic-symbols.html' import diagram_definitions, schematic_legend, bias_chip, math_symbol, vertical_resistor, npn_symbol, dc_flow %}
 {% set unit_labels = {'V':'V', 'mV':'mV', 'ohm':'Ω', 'kohm':'kΩ', 'Mohm':'MΩ'} %}
 {% macro parameter(key) -%}
 <tspan data-circuit="{{ key }}">{{ values[key] }}</tspan> <tspan data-circuit-unit="{{ key }}">{{ unit_labels.get(units[key], '?') }}</tspan>
 {%- endmacro %}
-<svg class="circuit reference-circuit" viewBox="0 0 550 235" role="img" aria-label="NPN {{ circuit_name }} circuit">
+{% set current_active = result and not result.warnings %}
+<svg id="circuit-svg" class="circuit reference-circuit" viewBox="0 0 550 235" role="img" aria-label="NPN {{ circuit_name }} circuit" data-dc-active="{{ 'true' if current_active else 'false' }}" data-collector-amps="{{ result.ic if current_active else 0 }}" data-emitter-amps="{{ result.ie if current_active else 0 }}">
   {{ diagram_definitions() }}
   {{ schematic_legend(false) }}
   <g fill="none" stroke="#263238" stroke-width="1.62" stroke-linecap="round" stroke-linejoin="round">
@@ -54,10 +55,13 @@
     <text x="349" y="13.2">{{ math_symbol('V', 'CC') }} = {{ parameter('vcc') }}</text>
   </g>
   {% if result %}
-  <g data-analytical-result>
-    {% if result.ic > 0 %}
-    <path d="M340 29V94" fill="none" stroke="#ed9116" stroke-width="1.85" marker-end="url(#arrow-orange)"/>
-    <g class="current-label"><text x="348" y="40">{{ math_symbol('I', 'C') }} = {{ '%.2f'|format(result.ic * 1000) }} mA</text></g>
+  <g class="dc-layer" data-analytical-result>
+    {{ dc_flow(current_active) }}
+    {% if current_active %}
+    <g class="current-label">
+      <text x="348" y="40">{{ math_symbol('I', 'C') }} = {{ '%.2f'|format(result.ic * 1000) }} mA</text>
+      <text x="244" y="209">{{ math_symbol('I', 'E') }} = {{ '%.2f'|format(result.ie * 1000) }} mA</text>
+    </g>
     {% endif %}
     <g class="voltage-leaders" fill="none" stroke="#bf629b" stroke-width=".85"><path d="M206 124l16-17M330 104l18-31m-18 81-9 3"/></g>
     {% for key, subscript, x, y in [('vb', 'B', 218, 92), ('vc', 'C', 343, 57), ('ve', 'E', 256, 148)] %}

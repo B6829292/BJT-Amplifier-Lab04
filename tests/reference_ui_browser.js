@@ -69,7 +69,7 @@ async (page) => {
   check(await page.locator('#analysis').inputValue()==='all','reset restores all-analysis mode');
   await page.getByRole('button',{name:'Validate',exact:true}).click();
   check((await page.locator('#validation-check').textContent()).includes('3 current analyses'),'validate checks real current results');
-  check((await page.locator('#validation-check').textContent()).includes('Not run'),'validate does not claim instructor validation');
+  check(await page.locator('#device-model-status').textContent() === 'Loaded by ngspice','validation names the actual loaded model state');
   check(await page.locator('.solver-checks [data-check="dc"]').getAttribute('data-state')==='passed','DC check represents current solver completion');
   const downloadPromise=page.waitForEvent('download');await page.locator('#export-results').click();
   const download=await downloadPromise;

@@ -94,6 +94,12 @@ SPICE_FIELDS = (
     ('cin', 'Cin', 'µF', '10', 1e-6),
     ('cout', 'Cout', 'µF', '10', 1e-6),
 )
+BYPASS_FIELD = ('ce', 'CE', 'µF', '100', 1e-6)
+SOURCE_UNITS = {
+    'amplitude': {'mV': ('mV peak', 1e-3), 'V': ('V peak', 1), 'uV': ('µV peak', 1e-6)},
+    'frequency': {'Hz': ('Hz', 1), 'kHz': ('kHz', 1e3), 'MHz': ('MHz', 1e6)},
+}
+SOURCE_UNIT_DEFAULTS = {key + '_unit': next(iter(units)) for key, units in SOURCE_UNITS.items()}
 
 
 @app.route('/simulation', methods=['GET', 'POST'])
@@ -104,13 +110,27 @@ def simulation():
     source_fields = (('amplitude', 'Input amplitude', 'mV peak', '10', 0.001),
                      ('frequency', 'Input frequency', 'Hz', '1000', 1))
     values.update({key: request.form.get(key, default) for key, _, _, default, _ in source_fields})
+    values.update({key: request.form.get(key, default) for key, default in SOURCE_UNIT_DEFAULTS.items()})
+    bypass = request.form.get('emitter_bypass', 'off')
+    values['emitter_bypass'] = bypass
+    values['ce'] = request.form.get('ce', '' if bypass == 'on' else BYPASS_FIELD[3])
     result = error = None
     if request.method == 'POST':
         try:
             if analysis not in ('dc', 'ac', 'tran'):
                 raise ValueError('Choose a valid analysis mode.')
+            if bypass not in ('off', 'on'):
+                raise ValueError('Emitter bypass: choose Off or On.')
+            fields = SPICE_FIELDS + ((BYPASS_FIELD,) if bypass == 'on' else ())
+            if analysis == 'tran':
+                fields += source_fields
             numbers = {}
-            for key, label, _, _, factor in SPICE_FIELDS + (source_fields if analysis == 'tran' else ()):
+            for key, label, _, _, factor in fields:
+                if key in SOURCE_UNITS:
+                    choice = SOURCE_UNITS[key].get(values[key + '_unit'])
+                    if choice is None:
+                        raise ValueError(f'{label}: choose a valid unit.')
+                    _, factor = choice
                 try:
                     value = float(values[key])
                 except (ValueError, OverflowError):
@@ -122,13 +142,17 @@ def simulation():
             result = spice_engine.simulate(analysis, numbers)
         except (ValueError, spice_engine.SpiceError) as exc:
             error = str(exc)
+    model_info = (result or {}).get('model_info') or spice_engine.inspect_model()
     if request.method == 'POST' and request.accept_mimetypes.best == 'application/json':
-        return jsonify(mode=analysis, inputs=values, result=result, error=error)
+        return jsonify(mode=analysis, inputs=values, result=result, error=error, model_info=model_info)
     plot_data = None
     if result and analysis == 'ac':
         plot_data = {key: result[key] for key in ('frequency_hz', 'gain_db', 'phase_deg')}
     elif result and analysis == 'tran':
         plot_data = {key: result[key] for key in ('time_s', 'vin_v', 'vout_v')}
     return render_template('simulation.html', fields=SPICE_FIELDS, source_fields=source_fields,
+                           bypass_field=BYPASS_FIELD, bypass_enabled=bypass == 'on',
+                           source_units=SOURCE_UNITS, source_unit_defaults=SOURCE_UNIT_DEFAULTS,
                            values=values, analysis=analysis, plot_data=plot_data,
-                           result=result, error=error, analytical=False, mode='simulation', mode_labels=MODE_LABELS)
+                           result=result, error=error, model_info=model_info, analytical=False,
+                           mode='simulation', mode_labels=MODE_LABELS)

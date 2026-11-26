@@ -1,5 +1,16 @@
 {% from 'icons.html' import icon %}
 
+{% macro overlay_controls(ac=false) -%}
+<div class="overlay-toolbar">
+  <label><input type="checkbox" id="overlay-dc" data-overlay="dc" checked role="switch"><span class="switch-track"></span>Show DC Bias Overlay</label>
+  {% if ac %}<label class="ac-overlay-toggle"><input type="checkbox" id="overlay-ac" data-overlay="ac" checked role="switch"><span class="switch-track"></span>Show AC Amplification Overlay</label>{% endif %}
+  <label><input type="checkbox" id="overlay-animation" data-overlay="animation" checked role="switch"><span class="switch-track"></span>Animate Overlay</label>
+  <button id="pause-animation" type="button" aria-label="Pause overlay animation" aria-pressed="false">{{ icon('pause') }}</button>
+  <button id="restart-animation" type="button" aria-label="Restart overlay animation">{{ icon('reset') }}</button>
+  {% if ac %}<button id="expand-circuit" type="button" aria-label="Expand circuit schematic" aria-pressed="false">{{ icon('expand') }}</button>{% endif %}
+</div>
+{%- endmacro %}
+
 {% macro bias_picker(id, mode, mode_labels, analytical) -%}
 <div class="bias-type">
   <label for="{{ id }}">Bias Type</label>

@@ -9,6 +9,18 @@ assert.strictEqual(history.isCurrent(tran, {...common, frequency:'2000'}), false
 assert.strictEqual(history.isCurrent(dc, {...common, re:'2'}), false);
 assert.strictEqual(history.isCurrent(tran, {...common, re:'2'}), false);
 assert.strictEqual(history.isCurrent(dc, {...common, re:''}), false);
+const enabled = {...common, emitter_bypass:'on', ce:'100'};
+const bypassRun = {...tran, inputs:enabled};
+assert.strictEqual(history.isCurrent(tran, enabled), false);
+assert.strictEqual(history.isCurrent(bypassRun, {...enabled, ce:'100.0'}), true);
+assert.strictEqual(history.isCurrent(bypassRun, {...enabled, ce:'47'}), false);
+assert.strictEqual(history.isCurrent(bypassRun, common), false);
+assert.strictEqual(history.isCurrent(dc, {...common, emitter_bypass:'off', ce:'invalid'}), true);
+const sameSource = {...common, amplitude:'0.01', amplitude_unit:'V', frequency:'1', frequency_unit:'kHz'};
+assert.strictEqual(history.isCurrent(tran, sameSource), true);
+assert.strictEqual(history.isCurrent({...tran, inputs:sameSource}, common), true);
+assert.strictEqual(history.isCurrent(tran, {...sameSource, frequency:'1.001'}), false);
+assert.strictEqual(history.isCurrent(tran, {...sameSource, frequency_unit:'invalid'}), false);
 // JavaScript Number accepts radix literals that Python float rejects.
 for (const r1 of ['0x64', '0b1100100', '0o144']) {
   assert.strictEqual(history.isCurrent(dc, {...common, r1}), false, r1 + ' must not be current');

@@ -3,6 +3,10 @@
   const factors = {V: 1, mV: 0.001, ohm: 1, kohm: 1000, Mohm: 1000000};
   const minNormal = 2.2250738585072014e-308;
   const modeSelect = document.getElementById('mode');
+  const schematic = document.getElementById('circuit-svg');
+  SchematicMotion.bindControls(schematic);
+  SchematicMotion.setCurrentFlow(schematic, 'collector', Number(schematic.dataset.collectorAmps));
+  SchematicMotion.setCurrentFlow(schematic, 'emitter', Number(schematic.dataset.emitterAmps));
   function markStale() {
     const status = document.getElementById('result-status');
     status.dataset.stale = 'true';
@@ -13,6 +17,7 @@
     document.getElementById('result-freshness').textContent = 'Awaiting calculation';
     const overlay = document.querySelector('[data-analytical-result]');
     if (overlay) overlay.setAttribute('visibility', 'hidden');
+    schematic.dataset.dcActive = 'false';
     document.getElementById('result-mode').textContent = (modeSelect.selectedOptions[0].dataset.label || modeSelect.selectedOptions[0].textContent);
   }
   const modeFields = JSON.parse(form.dataset.modeFields);

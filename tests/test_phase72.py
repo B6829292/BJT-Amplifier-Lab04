@@ -23,6 +23,7 @@ class Phase72Tests(unittest.TestCase):
         self.assertEqual(current.count('data-current-arrow="collector"'), 2)
         self.assertEqual(current.count('data-current-arrow="emitter"'), 2)
         self.assertNotIn('flow-path', current)
+        self.assertEqual(body.count('data-current-step='), 4)
         self.assertIn('schematic-motion.js', body)
 
     def test_reference_schematic_has_distinct_electrical_symbols_and_motion_tracks(self):
@@ -33,4 +34,5 @@ class Phase72Tests(unittest.TestCase):
         for branch in ('collector', 'emitter', 'input', 'output'):
             self.assertTrue(f'data-pulse="{branch}"' in body, f'Missing directional pulse: {branch}')
         self.assertTrue('class="schematic-subscript"' in body, 'Engineering symbols use real subscripts')
-        self.assertNotIn('id="emitter-bypass-capacitor"', body)
+        self.assertIn('id="emitter-bypass-capacitor"', body)
+        self.assertIn('data-emitter-bypass visibility="hidden"', body)

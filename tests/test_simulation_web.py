@@ -21,13 +21,13 @@ class SimulationWebTests(unittest.TestCase):
         body = response.get_data(as_text=True)
         self.assertIn('DC Operating Point', body)
         self.assertIn('value="100"', body)
-        self.assertIn('not instructor-verified', body)
+        self.assertIn('id="device-model-status"', body)
         self.assertNotIn('Simulation successful', body)
 
     def test_dashboard_offers_circuit_and_all_bias_modes(self):
         body = self.client.get('/simulation').get_data(as_text=True)
         for value in ('Circuit Schematic', 'Circuit Configuration', 'Bias Selection',
-                      '/?mode=fixed', '/?mode=emitter', '/?mode=divider', 'future feature'):
+                      '/?mode=fixed', '/?mode=emitter', '/?mode=divider', 'Emitter Bypass'):
             self.assertIn(value, body)
 
     def test_result_dashboard_identifies_unrun_analyses_honestly(self):
@@ -66,6 +66,38 @@ class SimulationWebTests(unittest.TestCase):
         self.assertIsNone(failed['result'])
         self.assertEqual(failed['error'], 'Unavailable')
 
+    def test_bypass_control_selects_the_real_topology(self):
+        headers = {'Accept': 'application/json'}
+        for mode in ('dc', 'ac', 'tran'):
+            with self.subTest(analysis=mode), patch('app.spice_engine.simulate', return_value={}) as solver:
+                data = self.client.post('/simulation', data=dict(self.values, analysis=mode,
+                                        emitter_bypass='on', ce='47'), headers=headers).get_json()
+                self.assertIsNone(data['error'])
+                self.assertEqual(data['inputs']['emitter_bypass'], 'on')
+                self.assertAlmostEqual(solver.call_args.args[1]['ce'], 47e-6)
+
+        with patch('app.spice_engine.simulate', return_value={}) as solver:
+            data = self.client.post('/simulation', data=dict(self.values, ce='invalid'), headers=headers).get_json()
+            self.assertIsNone(data['error'])
+            self.assertEqual(data['inputs']['emitter_bypass'], 'off')
+            self.assertNotIn('ce', solver.call_args.args[1])
+
+    def test_bypass_rejects_invalid_switch_or_capacitance_before_running(self):
+        headers = {'Accept': 'application/json'}
+        for state, ce in [('invalid', '100'), ('on', ''), ('on', '0'), ('on', 'nan')]:
+            with self.subTest(state=state, ce=ce), patch('app.spice_engine.simulate', return_value={'analysis': 'dc'}) as solver:
+                data = self.client.post('/simulation', data=dict(self.values, emitter_bypass=state, ce=ce),
+                                        headers=headers).get_json()
+                self.assertIsNone(data['result'])
+                self.assertRegex(data['error'], r'Emitter bypass|CE:')
+                solver.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get('BJT_MODEL_PATH'), 'Requires local BJT model and ngspice')
+    def test_native_form_supports_bypass_without_javascript(self):
+        body = self.client.post('/simulation', data=dict(self.values, emitter_bypass='on', ce='100')).get_data(as_text=True)
+        self.assertIn('data-emitter-bypass visibility="visible"', body)
+        self.assertIn('CE e 0 0.0001', body)
+
     def test_analytical_modes_share_dashboard_navigation(self):
         for mode in ('fixed', 'emitter', 'divider'):
             body = self.client.get('/?mode=' + mode).get_data(as_text=True)
@@ -86,16 +118,62 @@ class SimulationWebTests(unittest.TestCase):
         sidebar = body.split('<aside class="lab-sidebar"', 1)[1].split('</aside>', 1)[0]
         for field in ('amplitude', 'frequency'):
             self.assertRegex(sidebar, rf'<input[^>]+id="spice-{field}"[^>]+form="spice-form"')
+            self.assertRegex(sidebar, rf'<select[^>]+id="unit-{field}"[^>]+form="spice-form"')
         self.assertEqual(body.count('id="spice-amplitude"'), 1)
         self.assertEqual(body.count('id="spice-frequency"'), 1)
 
+    def test_generator_units_convert_to_identical_si_values(self):
+        headers = {'Accept': 'application/json'}
+        cases = [('10', 'mV', '1000', 'Hz'), ('0.01', 'V', '1', 'kHz'), ('10000', 'uV', '0.001', 'MHz')]
+        for amplitude, amplitude_unit, frequency, frequency_unit in cases:
+            with self.subTest(amplitude_unit=amplitude_unit, frequency_unit=frequency_unit), \
+                    patch('app.spice_engine.simulate', return_value={'analysis':'tran'}) as solver:
+                data = self.client.post('/simulation', headers=headers, data=dict(self.values, analysis='tran',
+                    amplitude=amplitude, amplitude_unit=amplitude_unit, frequency=frequency, frequency_unit=frequency_unit)).get_json()
+                self.assertIsNone(data['error'])
+                self.assertEqual(data['inputs']['amplitude_unit'], amplitude_unit)
+                self.assertEqual(data['inputs']['frequency_unit'], frequency_unit)
+                numbers = solver.call_args.args[1]
+                self.assertAlmostEqual(numbers['amplitude'], 0.01, places=12)
+                self.assertEqual(numbers['frequency'], 1000)
+
+    def test_invalid_source_unit_does_not_reach_the_solver(self):
+        frozen = dict(self.values, analysis='tran', amplitude='10', amplitude_unit='length')
+        with patch('app.spice_engine.simulate', return_value={'analysis':'tran'}) as solver:
+            data = self.client.post('/simulation', data=frozen, headers={'Accept': 'application/json'}).get_json()
+            self.assertIn('Input amplitude: choose a valid unit.', data['error'])
+            self.assertIsNone(data['result'])
+            solver.assert_not_called()
+
     def test_validation_provenance_separates_evidence_from_status(self):
         body = self.client.get('/simulation').get_data(as_text=True)
-        for label in ('Device model', 'Model status', 'Instructor validation', 'Reference benchmark'):
+        for label in ('Device model', 'Model source', 'Model status', 'Reference benchmark'):
             self.assertIn(label, body)
         self.assertIn('Not run', body)
-        self.assertIn('not instructor-verified', body)
+        self.assertNotRegex(body, r'(?i)instructor(?:[ -]verified| validation)')
         self.assertIn('validation-row', body)
+
+    def test_missing_model_has_explicit_template_and_response_metadata(self):
+        with patch.dict(os.environ, {'BJT_MODEL_PATH': ''}):
+            page = self.client.get('/simulation').get_data(as_text=True)
+            self.assertIn('id="device-model-status" data-state="unavailable"', page)
+            response = self.client.post('/simulation', data=self.values, headers={'Accept': 'application/json'}).get_json()
+            self.assertIsNone(response['result'])
+            self.assertEqual(response['model_info']['status'], 'unavailable')
+            self.assertIn('BJT_MODEL_PATH', response['model_info']['detail'])
+
+    @unittest.skipUnless(os.environ.get('BJT_MODEL_PATH'), 'Requires local BJT model and ngspice')
+    def test_successful_model_metadata_matches_the_model_actually_loaded(self):
+        page = self.client.get('/simulation').get_data(as_text=True)
+        self.assertIn('id="device-model-status" data-state="configured"', page)
+        data = self.client.post('/simulation', data=self.values, headers={'Accept': 'application/json'}).get_json()
+        self.assertEqual(data['model_info'], data['result']['model_info'])
+        self.assertEqual(data['model_info']['device'], '2N3904')
+        self.assertEqual(data['model_info']['status'], 'loaded')
+        self.assertRegex(data['model_info']['fingerprint'], r'^[0-9a-f]{64}$')
+        self.assertNotIn(os.environ['BJT_MODEL_PATH'], json.dumps(data['model_info']))
+        if data['model_info']['reference']:
+            self.assertTrue(all(item['passed'] for item in data['result']['reference_checks']))
 
     def test_spice_decimal_notation_contract_for_freshness(self):
         headers = {'Accept': 'application/json'}

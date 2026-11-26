@@ -31,6 +31,13 @@
     return `10${superscript}`;
   }
 
+  function frequencyLabel(frequency) {
+    if (frequency < 1000) return `${+frequency.toPrecision(5)} Hz`;
+    const megahertz = frequency >= 1e6;
+    const scaled = frequency / (megahertz ? 1e6 : 1000);
+    return `${scaled.toLocaleString('en', {minimumFractionDigits: 2, maximumFractionDigits: 3})} ${megahertz ? 'MHz' : 'kHz'}`;
+  }
+
   function plot(title, x, series, xLabel, yLabel, logarithmic, dualAxis = false) {
     const width = 400, height = 200, left = 57, right = dualAxis ? 57 : 22, top = 16, bottom = 46;
     const plotRight = width - right, plotBottom = height - bottom;
@@ -130,53 +137,97 @@
     const crosshair = element('line', {y1: top, y2: plotBottom, stroke: '#7997a7', 'stroke-width': 1, 'stroke-dasharray': '3 2'});
     const markers = series.map(item => element('circle', {r: 3, fill: item.color, stroke: '#fff', 'stroke-width': 1.2,
       'data-sample-marker': item.name}));
-    const boxWidth = 170, boxHeight = 52;
-    const tooltipBox = element('rect', {width: boxWidth, height: boxHeight, rx: 3, fill: '#fbfdff', stroke: '#9cb5c6', 'stroke-width': 1});
+    const boxWidth = 122, boxHeight = 50;
+    const tooltipBox = element('rect', {width: boxWidth, height: boxHeight, rx: 4, fill: '#fbfdff', stroke: '#9cb5c6', 'stroke-width': 1});
     const tooltipText = Array.from({length: series.length + 1}, () => element('text', {'font-size': 13}));
     [crosshair, ...markers, tooltipBox, ...tooltipText].forEach(node => tooltip.appendChild(node));
     svg.appendChild(tooltip);
 
     let selected = 0;
-    function inspect(index) {
-      selected = Math.max(0, Math.min(x.length - 1, index));
-      const xx = px(x[selected]);
-      const boxX = Math.min(width - boxWidth - 5, Math.max(5, xx > width / 2 ? xx - boxWidth - 7 : xx + 7));
+    let reference = null;
+    let referenceFrequency;
+    function inspect({position, values}, pinned = false) {
+      const xx = px(position);
+      const besideMarker = xx > (left + plotRight) / 2 ? xx - boxWidth - 8 : xx + 8;
+      const boxX = Math.min(plotRight - boxWidth - 4, Math.max(left + 4, besideMarker));
+      const boxY = pinned ? Math.min(plotBottom - boxHeight - 4, Math.max(top + 4, py(values[0]) + 10)) : top + 5;
       crosshair.setAttribute('x1', xx);
       crosshair.setAttribute('x2', xx);
       markers.forEach((marker, i) => {
         marker.setAttribute('cx', xx);
-        marker.setAttribute('cy', py(series[i].values[selected], yAxis(series[i])));
+        marker.setAttribute('cy', py(values[i], yAxis(series[i])));
       });
       tooltipBox.setAttribute('x', boxX);
-      tooltipBox.setAttribute('y', top + 5);
-      const labels = [logarithmic ? 'f = ' + x[selected].toPrecision(4) + ' Hz' : 't = ' + +(x[selected] * 1000).toPrecision(4) + ' ms',
-        ...series.map(item => item.name + ' = ' + (item.values[selected] * displayScale).toPrecision(4) +
-          (dualAxis ? (item.wrapped ? '°' : ' dB') : ' mV'))];
+      tooltipBox.setAttribute('y', boxY);
+      const labels = [logarithmic ? `f = ${frequencyLabel(position)}` : `t = ${+(position * 1000).toPrecision(4)} ms`,
+        ...series.map((item, i) => item.name + ' = ' + (dualAxis
+          ? values[i].toFixed(item.wrapped ? 1 : 2) + (item.wrapped ? '°' : ' dB')
+          : (values[i] * displayScale).toPrecision(4) + ' mV'))];
       tooltipText.forEach((node, i) => {
         node.setAttribute('x', boxX + 7);
-        node.setAttribute('y', top + 20 + i * 15);
+        node.setAttribute('y', boxY + 14 + i * 14);
         node.textContent = labels[i];
       });
       tooltip.setAttribute('aria-label', labels.join('; '));
+      tooltip.setAttribute('data-plot-reference', String(pinned));
       tooltip.setAttribute('visibility', 'visible');
     }
 
-    svg.addEventListener('pointermove', event => {
+    function inspectSample(index) {
+      selected = Math.max(0, Math.min(x.length - 1, index));
+      inspect({position: x[selected], values: series.map(item => item.values[selected])});
+    }
+
+    function restoreReference() {
+      if (reference) inspect(reference, true);
+      else {
+        tooltip.setAttribute('visibility', 'hidden');
+        tooltip.setAttribute('data-plot-reference', 'false');
+      }
+    }
+
+    function setReferenceFrequency(frequency) {
+      if (Object.is(frequency, referenceFrequency)) return reference;
+      referenceFrequency = frequency;
+      reference = null;
+      if (Number.isFinite(frequency) && frequency >= x[0] && frequency <= x[x.length - 1]) {
+        const upper = x.findIndex(value => value >= frequency);
+        const lower = Math.max(0, upper - 1);
+        const exact = x[upper] === frequency;
+        const ratio = exact ? 1 : (xMap(frequency) - xMap(x[lower])) / (xMap(x[upper]) - xMap(x[lower]));
+        const values = series.map(item => {
+          const end = item.values[upper];
+          if (exact) return end;
+          const start = item.values[lower];
+          if (!item.wrapped) return start + (end - start) * ratio;
+          const phaseChange = (end - start + 540) % 360 - 180;
+          return (start + phaseChange * ratio + 540) % 360 - 180;
+        });
+        selected = ratio < .5 ? lower : upper;
+        reference = {position: frequency, frequencyLabel: frequencyLabel(frequency), values};
+      }
+      restoreReference();
+      return reference;
+    }
+
+    function inspectPointer(event) {
       const rect = svg.getBoundingClientRect();
       const xx = (event.clientX - rect.left) / rect.width * width;
       let best = 0;
       for (let i = 1; i < x.length; i++) {
         if (Math.abs(px(x[i]) - xx) < Math.abs(px(x[best]) - xx)) best = i;
       }
-      inspect(best);
-    });
-    svg.addEventListener('pointerleave', () => tooltip.setAttribute('visibility', 'hidden'));
-    svg.addEventListener('focus', () => inspect(selected));
-    svg.addEventListener('blur', () => tooltip.setAttribute('visibility', 'hidden'));
+      inspectSample(best);
+    }
+    svg.addEventListener('pointermove', inspectPointer);
+    svg.addEventListener('pointerdown', inspectPointer);
+    svg.addEventListener('pointerleave', restoreReference);
+    svg.addEventListener('focus', () => inspectSample(selected));
+    svg.addEventListener('blur', restoreReference);
     svg.addEventListener('keydown', event => {
       if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
         event.preventDefault();
-        inspect(event.key === 'Home' ? 0 : event.key === 'End' ? x.length - 1 : selected + (event.key === 'ArrowRight' ? 1 : -1));
+        inspectSample(event.key === 'Home' ? 0 : event.key === 'End' ? x.length - 1 : selected + (event.key === 'ArrowRight' ? 1 : -1));
       }
     });
     figure.appendChild(svg);
@@ -205,20 +256,23 @@
       note.textContent = 'Phase wraps at ±180°; gaps are intentional.';
       figure.appendChild(note);
     }
-    return figure;
+    return {figure, setReferenceFrequency};
   }
 
-  function render(data, container) {
+  function render(data, container, frequency) {
     if (data.frequency_hz) {
-      container.appendChild(plot('Bode gain / phase (wrapped)', data.frequency_hz, [
+      const chart = plot('Bode gain / phase (wrapped)', data.frequency_hz, [
         {name: 'Gain', values: data.gain_db, color: '#284de0'},
         {name: 'Phase', values: data.phase_deg, color: '#228344', wrapped: true}
-      ], 'Frequency (Hz, log)', 'Gain (dB)', true, true));
+      ], 'Frequency (Hz, log)', 'Gain (dB)', true, true);
+      container.appendChild(chart.figure);
+      chart.setReferenceFrequency(frequency);
+      return chart.setReferenceFrequency;
     } else {
       container.appendChild(plot('Transient input and output', data.time_s, [
         {name: 'Vin', values: data.vin_v, color: '#284de0'},
         {name: 'Vout', values: data.vout_v, color: '#159638'}
-      ], 'Time (ms)', 'Voltage (mV)', false));
+      ], 'Time (ms)', 'Voltage (mV)', false).figure);
     }
   }
 

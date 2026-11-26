@@ -81,6 +81,55 @@
     return prepare(data, frequency, {vin: defaultBounds, vout: defaultBounds})(elapsedSeconds);
   }
 
+  function setCurrentFlow(schematic, branch, amperes) {
+    // Values below half the displayed 0.01 mA step have no visible flow marker.
+    const direction = !Number.isFinite(amperes) || Math.abs(amperes) < 5e-6 ? 'idle' : amperes < 0 ? 'reverse' : 'forward';
+    const property = branch + 'Flow';
+    if (schematic.dataset[property] === direction) return;
+    schematic.dataset[property] = direction;
+    schematic.querySelectorAll(`[data-current-arrow="${branch}"]`).forEach(arrow => {
+      arrow.removeAttribute('marker-start');
+      arrow.removeAttribute('marker-end');
+      if (direction !== 'idle') arrow.setAttribute(direction === 'reverse' ? 'marker-start' : 'marker-end', 'url(#arrow-orange)');
+    });
+  }
+
+  function bindControls(schematic, {onChange = () => {}, onRestart = () => {}} = {}) {
+    const states = document.body.dataset;
+    const switches = [...document.querySelectorAll('.overlay-toolbar input[data-overlay]')];
+    const enabledAnimation = document.getElementById('overlay-animation');
+    const pause = document.getElementById('pause-animation');
+    const restart = document.getElementById('restart-animation');
+
+    function sync() {
+      switches.forEach(control => { states[control.dataset.overlay] = control.checked ? 'on' : 'off'; });
+      onChange();
+    }
+    function setPaused(value) {
+      states.paused = String(value);
+      pause.setAttribute('aria-pressed', String(value));
+      pause.setAttribute('aria-label', value ? 'Resume overlay animation' : 'Pause overlay animation');
+      sync();
+    }
+    function rewind() {
+      enabledAnimation.checked = true;
+      setPaused(false);
+      onRestart();
+      schematic.querySelectorAll('.flow-path, .node-pulse').forEach(node => {
+        for (const animation of node.getAnimations?.() ?? []) animation.currentTime = 0;
+      });
+    }
+
+    switches.forEach(control => control.addEventListener('change', sync));
+    pause.addEventListener('click', () => setPaused(states.paused !== 'true'));
+    restart.addEventListener('click', rewind);
+    setPaused(false);
+    return {reset() {
+      switches.forEach(control => { control.checked = true; });
+      rewind();
+    }};
+  }
+
   function create(waves) {
     const bounds = Object.fromEntries(keys.map(key => {
       const {waveX, waveWidth, waveY} = waves[key].dataset;
@@ -142,5 +191,5 @@
     };
   }
 
-  return {frame, create};
+  return {frame, create, setCurrentFlow, bindControls};
 });

@@ -2,7 +2,7 @@ const fs = require('fs');
 const vm = require('vm');
 const assert = require('assert');
 
-function renderInput(input) {
+function renderInput(input, frequency) {
   const original = JSON.stringify(input);
   const container = {children: [], appendChild(n) { this.children.push(n); }};
   function node(tag) {
@@ -11,11 +11,13 @@ function renderInput(input) {
       appendChild(n) { this.children.push(n); }};
   }
   const document = {
-    getElementById(id) { return id === 'plot-data' ? {textContent: original} : container; },
+    getElementById(id) { return id === 'plot-data' ? frequency === undefined && {textContent: original} : container; },
     createElementNS(_, tag) { return node(tag); }, createElement: node
   };
-  vm.runInNewContext(fs.readFileSync('static/plots.js', 'utf8'), {document, JSON:{parse:()=>input}});
-  return {container,original};
+  const window = {};
+  vm.runInNewContext(fs.readFileSync('static/plots.js', 'utf8'), {document, window, JSON:{parse:()=>input}});
+  const setFrequency = frequency === undefined ? null : window.renderSpicePlots(input, container, frequency);
+  return {container,original,setFrequency};
 }
 function render(phases) {
   const input = {frequency_hz: phases.map((_, i) => 10 ** i), gain_db: phases.map(() => 1), phase_deg: phases};
@@ -54,6 +56,24 @@ assert.deepStrictEqual(first.counts, [2, 2]);
 assert.match(first.caption, /wrapped/i);
 assert.deepStrictEqual(render([170, 179, -179, -170]).counts, [2, 2]);
 assert.deepStrictEqual(render([-90, 90, 100]).counts, [3]);
+
+const bode = {frequency_hz:[100,1000,10000],gain_db:[0,20,40],phase_deg:[170,179,-179]};
+const pinned = renderInput(bode, 1000);
+const bodeSvg = pinned.container.children[0].children[1];
+const readout = bodeSvg.children.find(node => node.attrs['data-plot-tooltip'] === 'true');
+assert.strictEqual(readout.attrs['data-plot-reference'], 'true');
+assert.match(readout.attrs['aria-label'], /1\.00 kHz.*20\.00 dB.*179\.0°/);
+const midFrequency = Math.sqrt(1000 * 10000);
+const interpolated = pinned.setFrequency(midFrequency);
+assert.ok(Math.abs(interpolated.values[0] - 30) < 1e-10);
+assert.ok(Math.abs(Math.abs(interpolated.values[1]) - 180) < 1e-9, 'phase interpolation follows the actual wrap');
+bodeSvg.events.pointermove({clientX:57});
+assert.strictEqual(readout.attrs['data-plot-reference'], 'false');
+bodeSvg.events.pointerleave();
+assert.strictEqual(readout.attrs['data-plot-reference'], 'true');
+assert.strictEqual(pinned.setFrequency(0), null);
+assert.strictEqual(readout.attrs.visibility, 'hidden');
+assert.strictEqual(bodeSvg.children.filter(node => node.tag === 'polyline' && node.attrs['data-series'] === 'Phase').length, 2);
 const transient = {time_s:[0,.001,.002],vin_v:[0,.01,0],vout_v:[0,-.02,0]};
 const plotted = renderInput(transient);
 const svg = plotted.container.children[0].children[1];

@@ -30,7 +30,11 @@ async (page, {baseURL = 'http://127.0.0.1:5088', artifactDir, rawMotionDir} = {}
   });
   check(solver.vce > 0 && solver.ic > 0 && solver.frequencies > 300 && solver.transientSamples > 100, 'Current solver data reached the UI');
   check(await page.locator('.solver-checks [data-check="input"]').getAttribute('data-state') === 'passed', 'Input validation runs on the current values');
-  check(await page.getByText('Reference benchmark: Not run', {exact: true}).count() === 1, 'Benchmark provenance stays truthful');
+  const expectedBenchmark = await page.evaluate(() => {
+    const checks = Object.values(LabDashboard.snapshot().records).map(record => record.result.reference_checks);
+    return checks.every(report => report?.length) ? 'Passed' : 'Not applicable';
+  });
+  check(await page.getByText(`Reference benchmark: ${expectedBenchmark}`, {exact: true}).count() === 1, 'Benchmark requires the documented reference fixture');
   check(await page.locator('.dc-current path').evaluateAll(paths => paths.length === 4 && paths.every(path => getComputedStyle(path).strokeDasharray === 'none' && path.getAttribute('marker-end') === 'url(#arrow-orange)' && path.getTotalLength() <= 24)), 'Both current branches use short continuous orange arrows');
   check(await page.locator('.current-glow').evaluate(node => getComputedStyle(node).filter.includes('current-glow')), 'Current glow uses the SVG filter');
   check(await page.locator('#circuit-svg .q-point').evaluate(group => {
@@ -125,7 +129,7 @@ async (page, {baseURL = 'http://127.0.0.1:5088', artifactDir, rawMotionDir} = {}
   const reduced = await wave();
   await page.waitForTimeout(115);
   check(JSON.stringify(await wave()) === JSON.stringify(reduced), 'Reduced motion preserves a stable real waveform');
-  check((await pulseState()).every(pulse => pulse.time === null), 'Reduced motion stops the four traveling highlights');
+  check((await pulseState()).every(pulse => pulse.time === null), 'Reduced motion stops the traveling highlights');
   check((await nodeTimes()).every(time => time === null), 'Reduced motion stops the node pulses');
   await page.emulateMedia({reducedMotion: 'no-preference'});
   const recording = [];
@@ -166,7 +170,7 @@ async (page, {baseURL = 'http://127.0.0.1:5088', artifactDir, rawMotionDir} = {}
   check(new Set(frames.map(frame => frame.vin)).size > 4, 'Blue input moves across the frame sequence');
   check(new Set(frames.map(frame => frame.vout)).size > 4, 'Green output moves across the frame sequence');
   const movingPulses = await pulseState();
-  check(movingPulses.length === 4 && movingPulses.every((pulse, index) => pulse.time > 0 && pulse.offset !== initialPulses[index].offset), 'Collector, emitter, input and output highlights move along their paths');
+  check(movingPulses.length === 6 && movingPulses.every((pulse, index) => pulse.time > 0 && pulse.offset !== initialPulses[index].offset), 'Collector, emitter, input and output highlights move along their paths');
   await page.getByRole('button', {name: 'Pause overlay animation'}).click();
   const paused = await wave();
   const pausedPulses = await pulseState();
@@ -179,7 +183,7 @@ async (page, {baseURL = 'http://127.0.0.1:5088', artifactDir, rawMotionDir} = {}
   await page.getByRole('button', {name: 'Resume overlay animation'}).click();
   await page.waitForTimeout(80);
   check(JSON.stringify(await wave()) !== JSON.stringify(paused), 'Resume advances from the paused time');
-  check((await pulseState()).every((pulse, index) => pulse.time > pausedPulses[index].time), 'Resume advances all four directional highlights');
+  check((await pulseState()).every((pulse, index) => pulse.time > pausedPulses[index].time), 'Resume advances every directional highlight');
   const resetFrame = await page.evaluate(() => {
     document.getElementById('restart-animation').click();
     return [...document.querySelectorAll('[data-signal-wave]')].map(node => node.getAttribute('points'));
